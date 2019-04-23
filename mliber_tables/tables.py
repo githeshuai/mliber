@@ -35,9 +35,9 @@ class Library(Base):
     name = Column(String(20), unique=True, nullable=False)
     type = Column(String(20), nullable=False)
     created_at = Column(DateTime)
-    windows_path = Column(Text, unique=True)
-    linux_path = Column(Text, unique=True)
-    mac_path = Column(Text, unique=True)
+    windows_path = Column(String(300), unique=True)
+    linux_path = Column(String(300), unique=True)
+    mac_path = Column(String(300), unique=True)
     description = Column(Text)
     # foreign key
     user_id = Column(Integer, ForeignKey("user.id"))   # created by

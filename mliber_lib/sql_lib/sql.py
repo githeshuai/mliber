@@ -32,7 +32,6 @@ class Sql(object):
         """
         self.__sql_engine = self.make_engine()
         Base.metadata.create_all(self.__sql_engine)
-        print "create done."
 
     def delete_all_table(self):
         """
