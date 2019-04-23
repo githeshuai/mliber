@@ -2,8 +2,6 @@
 from datetime import datetime
 from contextlib import contextmanager
 
-
-
 from mliber_lib.sql_lib.database_factory import DataBaseFactory
 from mliber_tables.tables import User, Library, Category, Asset, Tag
 
@@ -37,6 +35,10 @@ class Sql(object):
 
     @contextmanager
     def get_session(self):
+        """
+        get session
+        :return:
+        """
         try:
             yield self.session
         except RuntimeError as e:
@@ -45,13 +47,28 @@ class Sql(object):
         finally:
             self.session.close()
 
-    def create_user(self, name, chinese_name, created_by, password="123456", user_permission=False,
+    def create_user(self, name, chinese_name, created_by=1, password="123456", user_permission=False,
                     library_permission=False, category_permission=False, asset_permission=True, tag_permission=True,
                     status="Active", description=""):
-        now = datetime.now()
+        """
+        创建用户
+        :param name:
+        :param chinese_name:
+        :param created_by:
+        :param password:
+        :param user_permission:
+        :param library_permission:
+        :param category_permission:
+        :param asset_permission:
+        :param tag_permission:
+        :param status:
+        :param description:
+        :return:
+        """
+        now_date = datetime.now()
         with self.get_session() as session:
-            user = User(name=name, chinese_name=chinese_name, created_at=now, created_by=created_by, password=password,
-                        user_permission=user_permission, library_permission=library_permission,
+            user = User(name=name, chinese_name=chinese_name, created_at=now_date, created_by=created_by,
+                        password=password, user_permission=user_permission, library_permission=library_permission,
                         category_permission=category_permission, asset_permission=asset_permission,
                         tag_permission=tag_permission, status=status, description=description)
             session.add(user)
@@ -59,6 +76,4 @@ class Sql(object):
 
 
 if __name__ == "__main__":
-    import datetime
-    now = datetime.datetime.now()
-    Sql().create_user("lisi", "李四", 1, )
+    Sql().create_user("lisi", u"啊")

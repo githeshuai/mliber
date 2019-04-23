@@ -14,6 +14,10 @@ class Sql(object):
         self.__sql_engine = None
 
     def get_engine_str(self):
+        """
+        对不同的数据库，engine str方法不一样,继承时需要重写
+        :return:
+        """
         return None
 
     def make_engine(self):
