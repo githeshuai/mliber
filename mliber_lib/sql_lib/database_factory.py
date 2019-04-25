@@ -7,6 +7,10 @@ from mliber_custom.database import DATABASES
 
 class DataBaseFactory(object):
     def __init__(self, name):
+        """
+        built in
+        :param name: database name configuration in the config file
+        """
         self.name = name
         if not DATABASES. has_key(self.name):
             raise KeyError("There,s no database %s in the custom DATABASES." % self.name)

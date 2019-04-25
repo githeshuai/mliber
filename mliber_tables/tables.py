@@ -24,6 +24,9 @@ class User(Base):
     description = Column(Text)
     # relationship
     assets = relationship("Asset", backref="master", secondary="store")   # 与收藏资产的管理
+
+    def __str__(self):
+        return self.name
     
 
 class Library(Base):
@@ -43,6 +46,10 @@ class Library(Base):
     user_id = Column(Integer, ForeignKey("user.id"))   # created by
     # relation ship
     categories = relationship("Category", backref="library")
+    assets = relationship("Asset", backref="library")
+
+    def __str__(self):
+        return self.name
 
 
 class Category(Base):
@@ -62,6 +69,9 @@ class Category(Base):
     # relation ship
     assets = relationship("Asset", backref="category")
 
+    def __str__(self):
+        return self.name
+
 
 class Asset(Base):
     """
@@ -74,11 +84,31 @@ class Asset(Base):
     description = Column(Text)
     path = Column(Text)
     # foreign key
+    library_id = Column(Integer, ForeignKey("library.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
     user_id = Column(Integer, ForeignKey("user.id"))  # created by
     # relation ship
     objects = relationship("LiberObject", backref="asset")
     tags = relationship("Tag", backref="assets", secondary="asset_tag_link")
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(Base):
+    """
+    标签表
+    """
+    __tablename__ = "tag"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(20), nullable=False, unique=True)
+    created_at = Column(DateTime)
+    description = Column(Text)
+    # foreign key
+    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+
+    def __str__(self):
+        return self.name
 
 
 class LiberObject(Base):
@@ -98,18 +128,8 @@ class LiberObject(Base):
     asset_id = Column(Integer, ForeignKey("asset.id"))
     user_id = Column(Integer, ForeignKey("user.id"))  # created by
 
-
-class Tag(Base):
-    """
-    标签表
-    """
-    __tablename__ = "tag"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False, unique=True)
-    created_at = Column(DateTime)
-    description = Column(Text)
-    # foreign key
-    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+    def __str__(self):
+        return self.name
 
 
 class AssetTagLink(Base):
