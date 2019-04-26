@@ -26,7 +26,7 @@ class Sql(object):
         :return:
         """
         engine_str = self.get_engine_str()
-        engine = create_engine(engine_str)
+        engine = create_engine(engine_str, encoding='utf8', convert_unicode=True)
         return engine
 
     def connect(self):

@@ -24,7 +24,7 @@ class Sql(object):
     pool = dict()
     __has_init = False
 
-    def __new__(cls, name="default"):
+    def __new__(cls, name):
         """
         singleton
         :param name:
@@ -34,14 +34,14 @@ class Sql(object):
         if not obj:
             obj = object.__new__(cls)
             cls.pool[name] = obj
-            obj.name = name
         return obj
 
-    def __init__(self):
+    def __init__(self, name):
         """
         built in
         """
         if not self.__has_init:
+            self.name = name
             database = DataBaseFactory(self.name).database()
             database.connect()
             self.session = database.make_session()
@@ -170,13 +170,13 @@ class Sql(object):
 
 
 if __name__ == "__main__":
-    sql = Sql()
-    # parent = sql.create("Category", name=u"植物")
-    # trees = sql.create("Category", name=u"树木", parent_id=parent.id)
-    # sql.create("Category", name=u"蔬菜", parent_id=parent.id)
-    # sql.create("Category", name="桂花树", parent_id=trees.id)
+    sql = Sql("default")
+    parent = sql.create("Category", name=u"植物")
+    trees = sql.create("Category", name=u"树木", parent_id=parent.id)
+    sql.create("Category", name=u"蔬菜", parent_id=parent.id)
+    sql.create("Category", name="桂花树", parent_id=trees.id)
     # print sql.session.query(Category).filter(Category.parent_id.in_([None])).all()
-    sql = Sql()
-    categories = sql.find("Category", [["name", "like", u"%物"], ["id", "in", [3]]], "any")
-    for category in categories:
-        print category
+    # sql = Sql()
+    # categories = sql.find("Category", [["name", "like", u"%物"], ["id", "in", [3]]], "any")
+    # for category in categories:
+    #     print category.name

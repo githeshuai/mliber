@@ -22,6 +22,6 @@ DATABASES = {
     'sqlite': {
         "TYPE": "sqlite",
         "ENGINE": "sqlite",
-        "PATH": ""
+        "PATH": "D:/test.db"
     },
 }

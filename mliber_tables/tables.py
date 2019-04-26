@@ -1,7 +1,10 @@
 # -*- coding:utf-8 -*-
+from datetime import datetime
 from mliber_lib.sql_lib.sql import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Boolean, Enum
 from sqlalchemy.orm import relationship
+
+THIS_MOMENT = datetime.now()
 
 
 class User(Base):
@@ -13,7 +16,7 @@ class User(Base):
     name = Column(String(20), unique=True, nullable=False)
     chinese_name = Column(String(20))
     password = Column(String(20), default="123456")
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     created_by = Column(Integer)
     user_permission = Column(Boolean, default=0)
     library_permission = Column(Boolean, default=0)
@@ -37,7 +40,7 @@ class Library(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), unique=True, nullable=False)
     type = Column(String(20), nullable=False)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     windows_path = Column(String(300), unique=True)
     linux_path = Column(String(300), unique=True)
     mac_path = Column(String(300), unique=True)
@@ -60,7 +63,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
     parent_id = Column(Integer)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     description = Column(Text)
     path = Column(Text)
     # foreign key
@@ -80,7 +83,7 @@ class Asset(Base):
     __tablename__ = "asset"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     description = Column(Text)
     path = Column(Text)
     # foreign key
@@ -92,7 +95,7 @@ class Asset(Base):
     tags = relationship("Tag", backref="assets", secondary="asset_tag_link")
 
     def __str__(self):
-        return self.name
+        return self.name.encode("utf-8")
 
 
 class Tag(Base):
@@ -102,7 +105,7 @@ class Tag(Base):
     __tablename__ = "tag"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False, unique=True)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     description = Column(Text)
     # foreign key
     user_id = Column(Integer, ForeignKey("user.id"))  # created by
@@ -119,7 +122,7 @@ class LiberObject(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
     type = Column(String(20))
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=THIS_MOMENT)
     description = Column(Text)
     software = Column(Text)
     plugin = Column(Text)
