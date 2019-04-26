@@ -20,13 +20,21 @@ class Sql(object):
         """
         return None
 
+    def connenct_args(self):
+        """
+        获取连接参数
+        :return:
+        """
+        return {"encoding": "utf-8", "convert_unicode": True}
+
     def make_engine(self):
         """
         make engine
         :return:
         """
         engine_str = self.get_engine_str()
-        engine = create_engine(engine_str, encoding='utf8', convert_unicode=True)
+        args = self.connenct_args()
+        engine = create_engine(engine_str, **args)
         return engine
 
     def connect(self):

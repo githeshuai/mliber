@@ -170,13 +170,13 @@ class Sql(object):
 
 
 if __name__ == "__main__":
-    sql = Sql("default")
-    parent = sql.create("Category", name=u"植物")
-    trees = sql.create("Category", name=u"树木", parent_id=parent.id)
-    sql.create("Category", name=u"蔬菜", parent_id=parent.id)
-    sql.create("Category", name="桂花树", parent_id=trees.id)
+    sql = Sql("sqlite")
+    # parent = sql.create("Category", name=u"植物")
+    # trees = sql.create("Category", name=u"树木", parent_id=parent.id)
+    # sql.create("Category", name=u"蔬菜", parent_id=parent.id)
+    # sql.create("Category", name=u"桂花树", parent_id=trees.id)
     # print sql.session.query(Category).filter(Category.parent_id.in_([None])).all()
     # sql = Sql()
-    # categories = sql.find("Category", [["name", "like", u"%物"], ["id", "in", [3]]], "any")
-    # for category in categories:
-    #     print category.name
+    categories = sql.find("Category", [["id", "=", 3]], "any")
+    for category in categories:
+        print category.name
