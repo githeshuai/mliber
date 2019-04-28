@@ -4,9 +4,9 @@ from Qt.QtCore import *
 import mliber_resource
 
 
-class TitleWidgetUI(QWidget):
+class ToolbarUI(QWidget):
     def __init__(self, parent=None):
-        super(TitleWidgetUI, self).__init__(parent)
+        super(ToolbarUI, self).__init__(parent)
         self.setFixedHeight(50)
         main_layout = QHBoxLayout(self)
         # logo button
@@ -54,6 +54,6 @@ class TitleWidgetUI(QWidget):
 if __name__ == "__main__":
     from mliber_libs.qt_libs.render_ui import render_ui
     with render_ui():
-        tw = TitleWidgetUI()
+        tw = ToolbarUI()
         tw.show()
 
