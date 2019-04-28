@@ -3,7 +3,7 @@ from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
 
-import missile_resource
+import mliber_resource
 
 
 class FramelessWidget(QDialog):
@@ -43,17 +43,17 @@ class FramelessWidget(QDialog):
         self.title_label = QLabel(self)
         self.title_label.setStyleSheet("background: transparent;")
         self.minimum_btn = QToolButton(self)
-        self.minimum_btn.setIcon(missile_resource.icon("minus.png"))
+        self.minimum_btn.setIcon(mliber_resource.icon("minus.png"))
         self.minimum_btn.setStyleSheet("QToolButton{background-color: rgb(255, 255, 255, 10); "
                                        "padding:0px; border: 0px solid;}"
                                        "QToolButton::hover{background-color: #707070}")
         self.maximum_btn = QToolButton(self)
-        self.maximum_btn.setIcon(missile_resource.icon("max.png"))
+        self.maximum_btn.setIcon(mliber_resource.icon("max.png"))
         self.maximum_btn.setStyleSheet("QToolButton{background-color: rgb(255, 255, 255, 10);"
                                        "padding:0px; border: 0px solid;} "
                                        "QToolButton::hover{background-color: #707070}")
         self.close_btn = QToolButton(self)
-        self.close_btn.setIcon(missile_resource.icon("close.png"))
+        self.close_btn.setIcon(mliber_resource.icon("close.png"))
         self.close_btn.setStyleSheet("QToolButton{background-color: rgb(255, 255, 255, 10); "
                                      "padding:0px; border: 0px solid;}"
                                      "QToolButton::hover{background-color: #D50000}")
@@ -145,10 +145,10 @@ class FramelessWidget(QDialog):
         Returns:
         """
         if self.is_maximum:
-            self.maximum_btn.setIcon(missile_resource.icon("max.png"))
+            self.maximum_btn.setIcon(mliber_resource.icon("max.png"))
             self.showNormal()
         else:
-            self.maximum_btn.setIcon(missile_resource.icon("normal.png"))
+            self.maximum_btn.setIcon(mliber_resource.icon("normal.png"))
             self.showMaximized()
         self.is_maximum = not self.is_maximum
 
@@ -193,8 +193,8 @@ class FramelessWidget(QDialog):
 
 
 if __name__ == "__main__":
-    from missile_libs.qt_libs import render_ui
+    from mliber_libs.qt_libs import render_ui
     with render_ui.render_ui():
         f = FramelessWidget()
-        f.set_background_color(r"E:\missile\missile_icons\login_background.png")
+        f.set_background_color(r"E:\mliber\mliber_icons\login_background.png")
         f.show()

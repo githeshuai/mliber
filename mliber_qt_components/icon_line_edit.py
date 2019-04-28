@@ -18,7 +18,7 @@ class IconLineEdit(QLineEdit):
         super(IconLineEdit, self).__init__(parent)
         self.setFixedHeight(height)
         pixmap = QPixmap(icon_path)
-        pixmap_size = QSize(self.height()-2, self.height()-2)
+        pixmap_size = QSize(self.height(), self.height())
         self.pixmap = pixmap.scaled(pixmap_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         style_sheet = "QLineEdit{padding-left: %dpx; height: %dpx;font-size: %dpx;" \
                       " background-color: rgb(200, 200, 200, 50);}" \

@@ -4,8 +4,17 @@ from Qt.QtWidgets import QApplication
 
 
 class Global(object):
+    __has_inited = False
+
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = object.__new__(cls)
+        return cls.instance
+
     def __init__(self):
-        self.__dict = dict()
+        if not self.__has_inited:
+            self.__dict = dict()
+            self.__has_inited = True
 
     def set_value(self, **kwargs):
         """

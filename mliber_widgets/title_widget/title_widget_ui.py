@@ -17,10 +17,10 @@ class TitleWidgetUI(QWidget):
         logo_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         logo_button.setIcon(mliber_resource.icon("logo.png"))
         logo_button.setText("mliber")
-        # data base
-        self.database_button = QPushButton("Database", self)
         # login
         self.login_button = QPushButton("Login", self)
+        self.login_button.setFocusPolicy(Qt.NoFocus)
+        self.login_button.setWindowFlags(Qt.NoFocus)
         # settings
         self.settings_button = QPushButton("Settings", self)
         # button layout
@@ -45,7 +45,6 @@ class TitleWidgetUI(QWidget):
         button_layout.addWidget(self.close_btn)
         # add to main layout
         main_layout.addWidget(logo_button)
-        main_layout.addWidget(self.database_button)
         main_layout.addWidget(self.login_button)
         main_layout.addWidget(self.settings_button)
         main_layout.addStretch()
