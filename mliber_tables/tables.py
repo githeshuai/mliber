@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 from datetime import datetime
-from mliber_lib.sql_lib.sql import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Boolean, Enum
 from sqlalchemy.orm import relationship
+from mliber_libs.sql_libs.sql import Base
+from mliber_libs.os_libs import system
+
 
 THIS_MOMENT = datetime.now()
 
@@ -53,6 +55,15 @@ class Library(Base):
 
     def __str__(self):
         return self.name
+
+    def root_path(self):
+        """
+        根据当前系统获取
+        :return:
+        """
+        current_system = system.operation_system()
+        path_str = "{}_path".format(current_system)
+        return getattr(self, path_str)
 
 
 class Category(Base):
