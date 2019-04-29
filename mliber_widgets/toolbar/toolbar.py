@@ -61,7 +61,6 @@ class Toolbar(ToolbarUI):
         显示user manage窗口
         :return:
         """
-
         user_manage_ui = UserManage()
         user_manage_ui.exec_()
 
