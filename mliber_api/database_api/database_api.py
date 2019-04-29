@@ -105,18 +105,17 @@ class Database(object):
             expressions.append(express)
         return ",".join(expressions)
 
-    def create(self, entity_type, **data):
+    def create(self, entity_type, data):
         """
         创建
         :param entity_type: <str>
-        :param data: name="apple", library_id=1
+        :param data: <dict>
         :return:
         """
         entity = ENTITY_MAPPING.get(entity_type)
         obj = entity(**data)
         self.session.add(obj)
         self.session.commit()
-        self.session.close()
         return obj
 
     def find(self, entity_type, filters, filter_operator="all"):
@@ -149,15 +148,17 @@ class Database(object):
         entity_instances = self.find(entity_type, filters, filter_operator)
         return entity_instances[0] if entity_instances else None
 
-    def update(self, entity_type, entity_id, **kwargs):
+    def update(self, entity_type, entity_id, data):
         """
-        Sql().update(Asset, 1, name="banana")
+        :param entity_type: <str>
+        :param entity_id: <int>
+        :param data: <dict>
         :return:
         """
         entity_instance = self.find_one(entity_type, [["id", "=", entity_id]])
         if not entity_instance:
             return
-        for key, value in kwargs.iteritems():
+        for key, value in data.iteritems():
             setattr(entity_instance, key, value)
         self.session.commit()
         return entity_instance
@@ -170,7 +171,6 @@ class Database(object):
         """
         self.session.delete(entity_instance)
         self.session.commit()
-        self.session.close()
 
     def create_admin(self):
         """
@@ -180,21 +180,11 @@ class Database(object):
         admin = self.find_one("User", [["name", "=", "admin"]])
         if admin:
             return
-        self.create("User", name="admin", chinese_name=u"管理员", user_permission=1, library_permission=1)
+        self.create("User", {"name": "admin",
+                             "chinese_name": u"管理员",
+                             "user_permission": 1,
+                             "library_permission": 1})
 
 
 if __name__ == "__main__":
     db = Database("default")
-    # parent = database_api.create("Category", name=u"植物")
-    # trees = database_api.create("Category", name=u"树木", parent_id=parent.id)
-    # database_api.create("Category", name=u"蔬菜", parent_id=parent.id)
-    # database_api.create("Category", name=u"桂花树", parent_id=trees.id)
-    # database_api.create("Category", name=u"梨树", parent_id=2)
-    # print database_api.session.query(Category).filter(Category.parent_id.in_([None])).all()
-    # database_api = Sql()
-    # categories = db.find("Library", [["id", "=", 1]], "any")
-    # for category in categories:
-    #     print category.root_path()
-    db.create("User", name="zhangsan", chinese_name=u"张三")
-    user = db.update("User", 2, name="hes")
-    print user

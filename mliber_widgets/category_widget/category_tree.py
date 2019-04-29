@@ -111,7 +111,7 @@ class CategoryTree(QTreeWidget):
             return
         if selected_items:
             parent_id = selected_items[0].entity.id
-        self.db.create("Category", name="", parent_id=parent_id)
+        self.db.create("Category", {"name": "", "parent_id": parent_id})
 
     def delete_category(self):
         """

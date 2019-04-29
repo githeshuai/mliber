@@ -13,6 +13,7 @@ class UserManage(QDialog):
         self.resize(1200, 500)
         self.setWindowTitle("User Manager")
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.user_table_view = UserTableView(self)
         main_layout.addWidget(self.user_table_view)
         # button layout
@@ -29,27 +30,27 @@ class UserManage(QDialog):
         button_layout.addWidget(self.close_button)
         main_layout.addLayout(button_layout)
         # set style sheet
-        self.set_style()
-        self.set_signals()
+        self._set_style()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:
         """
-        self.add_btn.clicked.connect(self.add_user)
+        self.add_btn.clicked.connect(self._add_user)
         self.refresh_button.clicked.connect(self.refresh_table)
-        self.apply_btn.clicked.connect(self.apply)
+        self.apply_btn.clicked.connect(self._apply)
         self.close_button.clicked.connect(self.close)
 
-    def set_style(self):
+    def _set_style(self):
         """
         set style sheet
         :return:
         """
         self.setStyleSheet(mliber_resource.style())
 
-    def add_user(self):
+    def _add_user(self):
         """
         添加用户
         :return:
@@ -69,7 +70,7 @@ class UserManage(QDialog):
             return True
         return False
 
-    def apply(self):
+    def _apply(self):
         """
         完成创建或者更新
         :return:
@@ -78,8 +79,6 @@ class UserManage(QDialog):
         db = app_global.value("mliber_database")
         app_user = app_global.value("mliber_user")
         model_data = self.user_table_view.model().model_data
-        for i in model_data:
-            print i
         if not model_data:
             return
         for each_user in model_data:
@@ -97,10 +96,10 @@ class UserManage(QDialog):
                               "description": description}
             if user_id:
                 user_id = int(user_id)
-                db.update("User", user_id, **user_data_dict)
+                db.update("User", user_id, user_data_dict)
             else:
                 user_data_dict.update({"created_by": app_user.id})
-                db.create("User", **user_data_dict)
+                db.create("User", user_data_dict)
         self.refresh_table()
 
     def refresh_table(self):

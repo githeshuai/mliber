@@ -15,7 +15,7 @@ class UserTableView(QTableView):
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
     @staticmethod
-    def get_model_data():
+    def _get_model_data():
         """
         从数据库中获取user
         :return:
@@ -32,12 +32,12 @@ class UserTableView(QTableView):
             model_data.append(temp)
         return model_data
 
-    def set_model(self):
+    def _set_model(self):
         """
         set model
         :return:
         """
-        model_data = self.get_model_data()
+        model_data = self._get_model_data()
         header_list = ["id", "name", "chinese name", "password", "created at", "created by", "user permission",
                        "library permission", "category permission", "asset permission",
                        "tag permission", "status", "description"]
@@ -45,7 +45,7 @@ class UserTableView(QTableView):
         model.set_header(header_list)
         self.setModel(model)
 
-    def set_delegate(self):
+    def _set_delegate(self):
         """
         设置代理
         :return:
@@ -68,6 +68,5 @@ class UserTableView(QTableView):
         刷新ui
         :return:
         """
-        self.set_model()
-        self.set_delegate()
-        self.show_delegate()
+        self._set_model()
+        self._set_delegate()

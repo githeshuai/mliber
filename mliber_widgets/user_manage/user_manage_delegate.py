@@ -12,14 +12,13 @@ class UserManageDelegate(QItemDelegate):
         if index.column() in [1, 2, 3, 12]:
             editor = QLineEdit(parent)
             return editor
-        if index.column() in [6, 7, 8, 9, 10]:
+        if index.column() in xrange(6, 12):
             editor = QComboBox(parent)
-            editor.addItems(["True", "False"])
-            editor.currentIndexChanged.connect(self.onCurrentIndexChanged)
-            return editor
-        if index.column() == 11:
-            editor = QComboBox(parent)
-            editor.addItems(["Active", "Disable"])
+            editor.setFocusPolicy(Qt.NoFocus)
+            if index.column() == 11:
+                editor.addItems(["Active", "Disable"])
+            else:
+                editor.addItems(["True", "False"])
             editor.currentIndexChanged.connect(self.onCurrentIndexChanged)
             return editor
 
@@ -30,7 +29,7 @@ class UserManageDelegate(QItemDelegate):
             editor.setText(value)
         if isinstance(editor, QComboBox):
             value = index.model().data(index, Qt.UserRole)
-            editor.setCurrentIndex(editor.findText(str(value)))
+            editor.setCurrentIndex(editor.findText(value))
         editor.blockSignals(False)
 
     def setModelData(self, editor, model, index):

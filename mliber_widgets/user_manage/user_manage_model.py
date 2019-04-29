@@ -38,6 +38,8 @@ class UserManageModel(QAbstractTableModel):
         return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def setData(self, index, value, role):
+        if not index.isValid():
+            return
         if role == Qt.UserRole or role == Qt.DisplayRole:
             row = index.row()
             column = index.column()
