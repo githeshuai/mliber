@@ -44,7 +44,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         self.app_global = get_app_global()
-        self.sql = self.app_global.value("mliber_sql")
+        self.db = self.app_global.value("mliber_database")
         self.library = self.app_global.value("mliber_library")
         self.user = self.app_global.value("mliber_user")
 
@@ -54,7 +54,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         self.clear()
-        cats = self.sql.find("Category", [["parent_id", "is", None]])
+        cats = self.db.find("Category", [["parent_id", "is", None]])
         for cat in cats:
             cat_item = CategoryTreeItem(self)
             cat_item.set_entity(cat)
@@ -69,7 +69,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         cat_id = cat.id
-        children = self.sql.find("Category", [["parent_id", "=", cat_id]])
+        children = self.db.find("Category", [["parent_id", "=", cat_id]])
         if not children:
             return
         for child in children:
@@ -111,7 +111,7 @@ class CategoryTree(QTreeWidget):
             return
         if selected_items:
             parent_id = selected_items[0].entity.id
-        self.sql.create("Category", name="", parent_id=parent_id)
+        self.db.create("Category", name="", parent_id=parent_id)
 
     def delete_category(self):
         """

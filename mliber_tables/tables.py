@@ -25,7 +25,7 @@ class User(Base):
     category_permission = Column(Boolean, default=1)
     asset_permission = Column(Boolean, default=1)
     tag_permission = Column(Boolean, default=1)
-    status = Column(Enum("Active", "Disable"))
+    status = Column(Enum("Active", "Disable"), default="Active")
     description = Column(Text)
     # relationship
     assets = relationship("Asset", backref="master", secondary="store")   # 与收藏资产的管理

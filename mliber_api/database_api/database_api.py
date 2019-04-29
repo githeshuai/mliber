@@ -116,6 +116,7 @@ class Database(object):
         obj = entity(**data)
         self.session.add(obj)
         self.session.commit()
+        self.session.close()
         return obj
 
     def find(self, entity_type, filters, filter_operator="all"):
@@ -129,9 +130,9 @@ class Database(object):
         :return:
         """
         expression = self.__translate_filters_list(entity_type, filters)
-        logical_operator = self.__get_logical_operator(filter_operator)
         entity = ENTITY_MAPPING.get(entity_type)
         if expression:
+            logical_operator = self.__get_logical_operator(filter_operator)
             exp = "%s_(%s)" % (logical_operator, expression)
             entity_instances = self.session.query(entity).filter(eval(exp)).all()
         else:
@@ -148,16 +149,18 @@ class Database(object):
         entity_instances = self.find(entity_type, filters, filter_operator)
         return entity_instances[0] if entity_instances else None
 
-    def update(self, entity_instance, **kwargs):
+    def update(self, entity_type, entity_id, **kwargs):
         """
-        Sql().update(asset, user_id=1, name="banana")
-        :param entity_instance: instance of entity
+        Sql().update(Asset, 1, name="banana")
         :return:
         """
-        with self.get_session() as session:
-            for key, value in kwargs.iteritems():
-                setattr(entity_instance, key, value)
-                session.commit()
+        entity_instance = self.find_one(entity_type, [["id", "=", entity_id]])
+        if not entity_instance:
+            return
+        for key, value in kwargs.iteritems():
+            setattr(entity_instance, key, value)
+        self.session.commit()
+        return entity_instance
 
     def delete(self, entity_instance):
         """
@@ -167,6 +170,17 @@ class Database(object):
         """
         self.session.delete(entity_instance)
         self.session.commit()
+        self.session.close()
+
+    def create_admin(self):
+        """
+        创建管理员账户
+        :return:
+        """
+        admin = self.find_one("User", [["name", "=", "admin"]])
+        if admin:
+            return
+        self.create("User", name="admin", chinese_name=u"管理员", user_permission=1, library_permission=1)
 
 
 if __name__ == "__main__":
@@ -178,6 +192,9 @@ if __name__ == "__main__":
     # database_api.create("Category", name=u"梨树", parent_id=2)
     # print database_api.session.query(Category).filter(Category.parent_id.in_([None])).all()
     # database_api = Sql()
-    categories = db.find("Library", [["id", "=", 1]], "any")
-    for category in categories:
-        print category.root_path()
+    # categories = db.find("Library", [["id", "=", 1]], "any")
+    # for category in categories:
+    #     print category.root_path()
+    db.create("User", name="zhangsan", chinese_name=u"张三")
+    user = db.update("User", 2, name="hes")
+    print user

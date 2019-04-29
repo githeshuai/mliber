@@ -1,7 +1,11 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import *
+from Qt.QtGui import *
+from Qt.QtCore import *
 from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 from mliber_widgets.login_widget import LoginWidget
+from mliber_global.app_global import get_app_global
+from mliber_widgets.user_manage import UserManage
 
 
 class Toolbar(ToolbarUI):
@@ -15,6 +19,7 @@ class Toolbar(ToolbarUI):
         :return:
         """
         self.login_button.clicked.connect(self.show_login)
+        self.settings_button.clicked.connect(self.show_settings_menu)
 
     def show_login(self):
         """
@@ -24,6 +29,48 @@ class Toolbar(ToolbarUI):
         login_widget = LoginWidget(self)
         login_widget.move_to_center()
         login_widget.exec_()
+
+    def create_settings_menu(self):
+        """
+        创建setting菜单
+        :return:
+        """
+        menu = QMenu(self)
+        app_global = get_app_global()
+        user = app_global.value("mliber_user")
+        if user and user.user_permission:
+            user_manage_action = QAction("User Manage", self, triggered=self.show_user_manage)
+            menu.addAction(user_manage_action)
+        if user and user.library_permission:
+            library_manage_action = QAction("Library Manage", self, triggered=self.show_library_manage)
+            menu.addAction(library_manage_action)
+        return menu
+
+    def show_settings_menu(self):
+        """
+        显示settings菜单
+        :return:
+        """
+        menu = self.create_settings_menu()
+        point = self.settings_button.rect().bottomLeft()
+        point = self.settings_button.mapToGlobal(point)
+        menu.exec_(point)
+
+    def show_user_manage(self):
+        """
+        显示user manage窗口
+        :return:
+        """
+
+        user_manage_ui = UserManage()
+        user_manage_ui.exec_()
+
+    def show_library_manage(self):
+        """
+        显示library manage窗口
+        :return:
+        """
+        return
 
 
 if __name__ == "__main__":

@@ -19,8 +19,6 @@ class ToolbarUI(QWidget):
         logo_button.setText("mliber")
         # login
         self.login_button = QPushButton("Login", self)
-        self.login_button.setFocusPolicy(Qt.NoFocus)
-        self.login_button.setWindowFlags(Qt.NoFocus)
         # settings
         self.settings_button = QPushButton("Settings", self)
         # button layout

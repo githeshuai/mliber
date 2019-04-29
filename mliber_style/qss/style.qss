@@ -1,0 +1,559 @@
+*{
+    color: #fff;
+    font-family:FONT_NAME;
+}
+
+/*
+ --------------------------------------------------------------------------
+ Base widgets
+ --------------------------------------------------------------------------
+*/
+QLabel
+{
+    background: transparent;
+}
+
+
+QWidget
+{
+    color: rgb(255, 255, 255, 200);
+    background-color: BACKGROUND_COLOR;
+}
+
+QWidget:disabled
+{
+    color: rgb(255, 255, 255, 100);
+}
+
+QLineEdit, QPushButton, QToolBar, QToolButton, QTabBar, QTextEdit, QTabBar::tab
+{
+    border: 0px;
+    border-radius: 0px;
+}
+
+QToolButton
+{
+    background: transparent;
+}
+
+QPushButton
+{
+    color: #FFFFFF;
+    background-color: TITLE_COLOR;
+}
+
+QPushButton::hover
+{
+    color: #40444f;
+    background-color: ACCENT_COLOR;
+}
+
+QPushButton:focus
+{
+    outline: none;
+    border: 0px;
+    border-radius: 0px;
+}
+
+QDialog QPushButton:focus
+{
+    color: rgb(255, 255, 255, 255);
+    background-color: ACCENT_COLOR;
+}
+
+
+QGroupBox
+{
+    border: 1px solid;
+    border-color: MENU_COLOR;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+QGroupBox::title
+{
+    color: #000;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 5px;
+    padding: 0 2px 0 2px;
+}
+
+/*
+ --------------------------------------------------------------------------
+ QScrollArea
+ --------------------------------------------------------------------------
+*/
+
+QScrollArea
+{
+	border: 1px solid; border-color: TITLE_COLOR;
+}
+
+/*
+DIALOG
+*/
+QMessageBox QPushButton, QDialog QPushButton, QWidget QPushButton {
+    width: 100px;
+    height: 32px;
+}
+
+/*
+ --------------------------------------------------------------------------
+ Scroll Bar
+ --------------------------------------------------------------------------
+*/
+
+QScrollBar:vertical {
+	width: 6*DPIpx;
+}
+
+QScrollBar:horizontal {
+	height: 6*DPIpx;
+}
+
+QScrollBar:vertical,
+QScrollBar:horizontal{
+	margin: 0px;
+	border: 0px solid grey;
+	background: rgb(255, 255, 255, 0);
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal{
+	min-height: 0px;
+	background: rgb(255,255, 255, 50);
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+	background: rgb(255,255, 255, 100);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::add-line:horizontal {
+	height: 0px;
+	border: 0px solid grey;
+	subcontrol-origin: margin;
+	subcontrol-position: bottom;
+	background: rgb(80, 0, 0);
+}
+
+QScrollBar::sub-line:vertical,
+QScrollBar::sub-line:horizontal {
+	height: 0px;
+	border: 0px solid grey;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+	background: rgb(80, 80, 80);
+}
+
+QScrollBar::up-arrow:vertical,
+QScrollBar::down-arrow:vertical {
+	width: 0px;
+	height: 0px;
+	border: 0px;
+	background: white;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::add-page:vertical,
+QScrollBar::sub-page:horizontal, QScrollBar::sub-page:vertical {
+	background: none;
+}
+
+/*
+ --------------------------------------------------------------------------
+ Header View
+ --------------------------------------------------------------------------
+*/
+
+/* style the sort indicator */
+
+QAbstractItemView::separator{
+	height: 0px;
+	padding: 0px 0px 0px 0px;
+	background-color: rgb(255, 255, 255, 0);
+}
+
+
+QListView::item, QTreeView::item, QTreeView::item{
+	border: 0px;
+	outline: none;
+	border-style: solid;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	background-color: BACKGROUND_COLOR;
+}
+
+QHeaderView::section {
+    color: #222;
+	font: 16*DPIpx;
+	font-weight: bold;
+	height: 24*DPIpx;
+	border: 1px solid;
+	border-color: MENU_COLOR;
+	padding: 0px;
+	background-color: BACKGROUND_COLOR;
+}
+
+
+/*
+ --------------------------------------------------------------------------
+ List/Tree View
+ --------------------------------------------------------------------------
+*/
+
+QTreeView, QListView, QTableView{
+	font: 12*DPIpx;
+	color: rgb(255, 255, 255, 220);
+}
+
+QTreeWidget {
+	font: 12*DPIpx;
+}
+
+QTreeView, QListView, QTableView{
+    border: 0px;
+    outline: none;
+}
+
+QTreeView::item, QTreeView::branch {
+	height: 24*DPIpx;
+	show-decoration-selected: 1; /* make the selection span the entire width of the view */
+	background-color: BACKGROUND_COLOR;
+}
+
+QTreeView::item:focus{
+	border: 0px;
+	outline: none;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(IMG_DIR/branch_closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(IMG_DIR/branch_open.png);
+}
+
+QMenu::separator, QListView::item:hover,
+QTableView::item:hover, QTreeView::item:hover
+{
+    color: rgb(255, 255, 255, 255);
+	background-color: BACKGROUND_COLOR;
+}
+
+QTreeView::branch:selected,
+QMenu::item:selected {
+    color: rgb(255, 255, 255, 255);
+    background-color: ACCENT_COLOR;
+}
+
+QTreeView::item:selected, QTreeView::item:selected:active,
+QListView::item:selected, QListView::item:selected:active,
+QTableView::item:selected, QTableView::item:selected:active {
+    color: BACKGROUND_COLOR;
+    background-color: ACCENT_COLOR;
+}
+
+QCheckBox::indicator, QRadioButton::indicator, QMenu::indicator{
+	width: 18px;
+	height: 18px;
+}
+
+QListWidget::indicator
+{
+    width: 18px;
+    height: 18px;
+    border: 1px solid;
+    border-color: #616472;
+    background-color: MENU_COLOR;
+}
+
+QListWidget::indicator:hover
+{
+    width: 18px;
+    height: 18px;
+    border: 1px solid;
+    border-color: #616472;
+    background-color: TITLE_COLOR;
+}
+
+QRadioButton::indicator:checked {
+    image: url(IMG_DIR/radio_button_checked.png)
+}
+
+QRadioButton::indicator:unchecked {
+    image: url(IMG_DIR/radio_button_unchecked.png)
+}
+
+QCheckBox::checked, QRadioButton::checked
+{
+    color: ACCENT_COLOR;
+}
+
+QCheckBox::unchecked, QRadioButton::unchecked
+{
+    color: rgb(255, 255, 255, 80);
+}
+
+
+QCheckBox::indicator:checked, QMenu::indicator:checked, QListWidget::indicator:checked
+{
+    image: url(IMG_DIR/check_box_checked.png);
+}
+
+QCheckBox::indicator:unchecked, QMenu::indicator:non-exclusive:unchecked
+{
+    image: url(IMG_DIR/check_box_unchecked.png)
+}
+
+QCheckBox::indicator:disabled, QMenu::indicator:disabled
+{
+    image: url(IMG_DIR/check_box_unchecked.png)
+}
+
+QCheckBox
+{
+    background: transparent;
+}
+
+QCheckBox:focus
+{
+    border: 0px;
+    outline: none;
+}
+/*
+ --------------------------------------------------------------------------
+ ComboBox
+ --------------------------------------------------------------------------
+*/
+
+QComboBox {
+    border: 0px;
+	padding-left: 2px;
+    border-radius: 0px;
+	background-color: rgb(255, 255, 255, 15);
+}
+
+QComboBox::drop-down {
+    width: 20px;
+	background-color: rgb(255, 255, 255, 0);
+}
+
+QComboBox::down-arrow {
+    width: 20px;
+	image: url(IMG_DIR/combo_down.png);
+    background-color: rgb(255, 255, 255, 0);
+}
+
+QComboBox, QLineEdit, QTextEdit{
+	height: 25px;
+	padding: 0 4px;
+	/*font-size: 11pt;*/
+	border-radius: 0px;
+	background-color: rgb(255, 255, 255, 15);
+	border-bottom: 0px solid rgb(255, 255, 255, 50);
+	selection-color: BACKGROUND_COLOR;
+	selection-background-color: ACCENT_COLOR;
+}
+
+ComboBox:focus, QLineEdit:focus{
+	border: 0px;
+	border-bottom: 2px solid ACCENT_COLOR;
+	background-color: TITLE_COLOR;
+}
+
+QLineEdit:disabled
+{
+    background-color: rgb(255, 255, 255, 5);
+}
+
+QLineEdit[readOnly="true"]
+{
+    border: 0px;
+	border-bottom: 0px solid;
+    color: #8A8A8A;
+}
+
+
+QComboBox QAbstractItemView, QLineEdit QAbstractItemView{
+    color: #FFF;
+    background-color: MENU_COLOR;
+	selection-background-color: ACCENT_COLOR;
+	selection-color: BACKGROUND_COLOR;
+}
+
+
+QComboBox QAbstractItemView::item, QLineEdit QAbstractItemView::item{
+    min-height: 30px;
+}
+
+/*
+ --------------------------------------------------------------------------
+ Menu Item
+ --------------------------------------------------------------------------
+*/
+
+QMenu, QMenu QWidget {
+	font: 13*DPIpx;
+	font-family: Arial;
+	font-weight: 50px;
+	color: rgb(255, 255, 255, 255);
+	background-color: MENU_COLOR;
+}
+
+QMenu::item:selected {
+    color: BACKGROUND_COLOR;
+    background-color: ACCENT_COLOR;
+}
+
+QMenu::item {
+	border: 2px solid rgb(0, 0, 0, 0);
+	padding: 2px 25px 0px 22px;
+}
+
+QMenu::separator {
+	height: 1px;
+	padding: 0px 1px 0px 1px;
+}
+
+QMenu::indicator:non-exclusive {
+	width: 14px;
+	height: 14px;
+	padding-left: 2px;
+}
+
+/*
+ --------------------------------------------------------------------------
+ QSplitter
+ --------------------------------------------------------------------------
+*/
+
+
+QSplitter {
+	background-color: BACKGROUND_COLOR;
+}
+
+QSplitter:handle
+{
+    max-width: 5px;
+	background-color: rgb(255, 255, 255, 10);
+}
+
+QSplitter::handle:hover {
+    background-color: ACCENT_COLOR;
+}
+
+/*
+ --------------------------------------------------------------------------
+QProgressBar
+ --------------------------------------------------------------------------
+*/
+
+QProgressBar {
+    border: 1px solid rgb(255, 255, 255, 10);
+    border-radius: 0px;
+}
+
+QProgressBar::chunk {
+    background-color: #ff8c00;
+    width: 10px;
+    margin: 0.5px;
+}
+
+/*
+ --------------------------------------------------------------------------
+ Other
+ --------------------------------------------------------------------------
+*/
+ToolBar
+{
+    background-color: TITLE_COLOR;
+}
+
+QSizeGrip
+{
+
+    width: 10px;
+    height: 10px;
+    border: none;
+    background-color: transparent;
+    image: url(IMG_DIR/resize_bottom_right.png);
+}
+
+
+/*
+ --------------------------------------------------------------------------
+ TabWidget
+ --------------------------------------------------------------------------
+*/
+
+
+QTabWidget::pane, QTableView::pane
+{
+    border-top: 1px solid rgb(255, 255, 255, 60);
+    padding-top: 8px;
+}
+
+QTabWidget::tab-bar
+{
+    alignment: left;
+}
+
+QTabBar::tab
+{
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    border-bottom: 2px solid rgb(255, 255, 255, 5);
+}
+
+QTabBar::tab:selected
+{
+    color: ACCENT_COLOR;
+    border-bottom: 2px solid ACCENT_COLOR;
+}
+
+
+QTabBar::tab:hover
+{
+    color: ACCENT_COLOR;
+}
+
+
+/*
+ --------------------------------------------------------------------------
+    QToolTip
+ --------------------------------------------------------------------------
+*/
+QToolTip
+{
+    color: #ffffff; background-color: BACKGROUND_COLOR; border: 1px solid MENU_COLOR;
+}
+
+
+
+/*
+ --------------------------------------------------------------------------
+    custom classes
+ --------------------------------------------------------------------------
+*/
+
+
+TitleWidget
+{
+    background-color: TITLE_COLOR;
+}
+
+
+NoteWidget
+{
+    background-color: #383c45;
+}

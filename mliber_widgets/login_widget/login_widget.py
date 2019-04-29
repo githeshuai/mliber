@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 from PySide.QtGui import *
 from mliber_widgets.login_widget.login_widget_ui import LoginWidgetUI
 import mliber_utils
@@ -30,13 +31,12 @@ class LoginWidget(LoginWidgetUI):
         :return:
         """
         need_remember = mliber_utils.read_history("need_remember")
-        print repr(need_remember)
         if need_remember:
             self.remember_me_check.setChecked(True)
-        database = mliber_utils.read_history("database")
-        self.database_combo.setCurrentIndex(self.database_combo.findText(database))
-        self.user_le.setText(mliber_utils.read_history("user"))
-        self.password_le.setText(mliber_utils.read_history("password"))
+            database = mliber_utils.read_history("database")
+            self.database_combo.setCurrentIndex(self.database_combo.findText(database))
+            self.user_le.setText(mliber_utils.read_history("user"))
+            self.password_le.setText(mliber_utils.read_history("password"))
 
     def init_database(self):
         """
@@ -113,13 +113,15 @@ class LoginWidget(LoginWidgetUI):
             return
         try:
             db = Database(self.database)
-        except:
+            db.create_admin()
+        except Exception as e:
+            logging.error(str(e))
             MessageBox.critical(self, "Errir", u"不能连接数据库:%s" % self.database)
             return
         app_global = get_app_global()
         app_global.set_value(mliber_database=db)
         user = db.find_one("User", [["name", "=", self.user]])
-        if user and user.password == self.password:
+        if user and user.password == self.password and user.status == "Active":
             app_global.set_value(mliber_user=user)
             self.write_history()
         else:
