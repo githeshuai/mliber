@@ -53,7 +53,6 @@ class UserTableView(QTableView):
         delegate = UserManageDelegate(self)
         for column in xrange(6, 12):
             self.setItemDelegateForColumn(column, delegate)
-        self.show_delegate()
 
     def show_delegate(self):
         """
@@ -71,3 +70,4 @@ class UserTableView(QTableView):
         """
         self._set_model()
         self._set_delegate()
+        self.show_delegate()

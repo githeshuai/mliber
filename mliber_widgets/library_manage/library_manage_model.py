@@ -4,10 +4,11 @@ from Qt.QtCore import *
 from Qt.QtGui import *
 
 
-class ListModel(QAbstractListModel):
+class LibraryManageModel(QAbstractListModel):
     def __init__(self, model_data=[], parent=None):
-        super(ListModel, self).__init__(parent)
+        super(LibraryManageModel, self).__init__(parent)
         self.model_data = model_data
+        self.view = None
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.model_data)
@@ -40,8 +41,8 @@ class ListModel(QAbstractListModel):
     def setData(self, index, value, role):
         row = index.row()
         if value:
-            if role == Qt.DecorationRole:
-                self.model_data[row] = value
+            if role == Qt.UserRole:
+                self.model_data[row].icon_size = value
                 self.dataChanged.emit(index, index)
             return True
 

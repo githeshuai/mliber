@@ -6,6 +6,7 @@ from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 from mliber_widgets.login_widget import LoginWidget
 import mliber_global
 from mliber_widgets.user_manage import UserManage
+from mliber_widgets.library_manage import LibraryManage
 
 
 class Toolbar(ToolbarUI):
@@ -61,7 +62,7 @@ class Toolbar(ToolbarUI):
         显示user manage窗口
         :return:
         """
-        user_manage_ui = UserManage()
+        user_manage_ui = UserManage(self)
         user_manage_ui.exec_()
 
     def show_library_manage(self):
@@ -69,7 +70,8 @@ class Toolbar(ToolbarUI):
         显示library manage窗口
         :return:
         """
-        return
+        library_manage_ui = LibraryManage(self)
+        library_manage_ui.show()
 
 
 if __name__ == "__main__":

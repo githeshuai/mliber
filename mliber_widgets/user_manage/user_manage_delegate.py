@@ -4,7 +4,7 @@ from Qt.QtCore import *
 from Qt.QtGui import *
 
 
-class UserManageDelegate(QItemDelegate):
+class UserManageDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super(UserManageDelegate, self).__init__(parent)
 
