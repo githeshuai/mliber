@@ -33,6 +33,10 @@ class Global(object):
 
 
 def get_app_global():
+    """
+    获取全局变量
+    :return:
+    """
     app = QApplication.instance()
     if not app:
         app = QApplication(sys.argv)

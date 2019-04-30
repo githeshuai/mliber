@@ -38,10 +38,10 @@ class Toolbar(ToolbarUI):
         menu = QMenu(self)
         app_global = get_app_global()
         user = app_global.value("mliber_user")
-        if user and user.user_permission:
-            user_manage_action = QAction("User Manager", self, triggered=self.show_user_manage)
-            menu.addAction(user_manage_action)
-        if user and user.library_permission:
+        if user:
+            if user.user_permission:
+                user_manage_action = QAction("User Manager", self, triggered=self.show_user_manage)
+                menu.addAction(user_manage_action)
             library_manage_action = QAction("Library Manager", self, triggered=self.show_library_manage)
             menu.addAction(library_manage_action)
         return menu

@@ -47,6 +47,7 @@ class Library(Base):
     linux_path = Column(String(300), unique=True)
     mac_path = Column(String(300), unique=True)
     description = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
     user_id = Column(Integer, ForeignKey("user.id"))   # created by
     # relation ship
