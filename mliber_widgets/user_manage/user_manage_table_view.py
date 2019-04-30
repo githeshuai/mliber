@@ -12,7 +12,7 @@ class UserTableView(QTableView):
         super(UserTableView, self).__init__(parent)
         self.show_data()
         self.horizontalHeader().setStretchLastSection(True)
-        # self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setFocusPolicy(Qt.NoFocus)
 
     @staticmethod
     def _get_model_data():
@@ -51,7 +51,8 @@ class UserTableView(QTableView):
         :return:
         """
         delegate = UserManageDelegate(self)
-        self.setItemDelegate(delegate)
+        for column in xrange(6, 12):
+            self.setItemDelegateForColumn(column, delegate)
         self.show_delegate()
 
     def show_delegate(self):

@@ -53,11 +53,12 @@ QPushButton:focus
     outline: none;
     border: 0px;
     border-radius: 0px;
+    color: #40444f;
 }
 
 QDialog QPushButton:focus
 {
-    color: rgb(255, 255, 255, 255);
+    color: #40444f;
     background-color: ACCENT_COLOR;
 }
 

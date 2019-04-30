@@ -26,7 +26,7 @@ class UserManageModel(QAbstractTableModel):
         row = index.row()
         column = index.column()
         if column in [0, 1, 2, 3, 4, 5, 12]:
-            if role == Qt.DisplayRole:
+            if role == Qt.DisplayRole or role == Qt.EditRole:
                 return self.model_data[row][column]
             if role == Qt.TextAlignmentRole:
                 return Qt.AlignCenter
@@ -35,12 +35,12 @@ class UserManageModel(QAbstractTableModel):
                 return self.model_data[row][column]
 
     def flags(self, index):
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
 
     def setData(self, index, value, role):
         if not index.isValid():
             return
-        if role == Qt.UserRole or role == Qt.DisplayRole:
+        if role == Qt.UserRole or role == Qt.EditRole:
             row = index.row()
             column = index.column()
             if value:

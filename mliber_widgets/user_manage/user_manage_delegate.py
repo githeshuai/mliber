@@ -9,9 +9,6 @@ class UserManageDelegate(QItemDelegate):
         super(UserManageDelegate, self).__init__(parent)
 
     def createEditor(self, parent, option, index):
-        if index.column() in [1, 2, 3, 12]:
-            editor = QLineEdit(parent)
-            return editor
         if index.column() in xrange(6, 12):
             editor = QComboBox(parent)
             editor.setFocusPolicy(Qt.NoFocus)
@@ -24,21 +21,14 @@ class UserManageDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
-        if isinstance(editor, QLineEdit):
-            value = index.model().data(index, Qt.DisplayRole)
-            editor.setText(value)
         if isinstance(editor, QComboBox):
             value = index.model().data(index, Qt.UserRole)
             editor.setCurrentIndex(editor.findText(value))
         editor.blockSignals(False)
 
     def setModelData(self, editor, model, index):
-        if isinstance(editor, QLineEdit):
-            value = editor.text()
-            model.setData(index, value, Qt.DisplayRole)
-        if isinstance(editor, QComboBox):
-            value = editor.currentText()
-            model.setData(index, value, Qt.UserRole)
+        value = editor.currentText()
+        model.setData(index, value, Qt.UserRole)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
