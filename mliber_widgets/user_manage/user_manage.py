@@ -3,7 +3,7 @@ from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
 from user_manage_table_view import UserTableView
-from mliber_global.app_global import get_app_global
+import mliber_global
 import mliber_resource
 
 
@@ -75,9 +75,9 @@ class UserManage(QDialog):
         完成创建或者更新
         :return:
         """
-        app_global = get_app_global()
-        db = app_global.value("mliber_database")
-        app_user = app_global.value("mliber_user")
+        app = mliber_global.app()
+        db = app.value("mliber_database")
+        app_user = app.value("mliber_user")
         model_data = self.user_table_view.model().model_data
         if not model_data:
             return

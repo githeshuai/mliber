@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from PySide.QtGui import QTreeWidget, QTreeWidgetItem, QApplication, QMenu, QAction, QCursor
 from PySide.QtCore import Qt
-from mliber_global.app_global import get_app_global
+import mliber_global
 import mliber_resource
 from mliber_qt_components.messagebox import MessageBox
 
@@ -27,7 +27,7 @@ class CategoryTree(QTreeWidget):
         self.setSelectionMode(self.ExtendedSelection)
         self.setFocusPolicy(Qt.NoFocus)
         self.items_mapping = {}
-        self.app_global = None
+        self.app = None
         self.set_signals()
 
     def set_signals(self):
@@ -43,10 +43,10 @@ class CategoryTree(QTreeWidget):
         刷新global
         :return:
         """
-        self.app_global = get_app_global()
-        self.db = self.app_global.value("mliber_database")
-        self.library = self.app_global.value("mliber_library")
-        self.user = self.app_global.value("mliber_user")
+        self.app = mliber_global.app()
+        self.db = self.app.value("mliber_database")
+        self.library = self.app.value("mliber_library")
+        self.user = self.app.value("mliber_user")
 
     def refresh_data(self):
         """

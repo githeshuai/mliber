@@ -4,7 +4,7 @@ from Qt.QtGui import *
 from Qt.QtCore import *
 from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 from mliber_widgets.login_widget import LoginWidget
-from mliber_global.app_global import get_app_global
+import mliber_global
 from mliber_widgets.user_manage import UserManage
 
 
@@ -36,8 +36,8 @@ class Toolbar(ToolbarUI):
         :return:
         """
         menu = QMenu(self)
-        app_global = get_app_global()
-        user = app_global.value("mliber_user")
+        app = mliber_global.app()
+        user = app.value("mliber_user")
         if user:
             if user.user_permission:
                 user_manage_action = QAction("User Manager", self, triggered=self.show_user_manage)

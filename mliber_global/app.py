@@ -32,20 +32,20 @@ class Global(object):
         return self.__dict.get(key)
 
 
-def get_app_global():
+def app():
     """
     获取全局变量
     :return:
     """
-    app = QApplication.instance()
-    if not app:
-        app = QApplication(sys.argv)
-    app.globals = Global()
-    return app.globals
+    q_app = QApplication.instance()
+    if not q_app:
+        q_app = QApplication(sys.argv)
+    q_app.globals = Global()
+    return q_app.globals
 
 
 if __name__ == "__main__":
-    app_global = get_app_global()
+    app_global = app()
     app_global.set_value(a=1, b=2)
     print app_global.value("a")
     print app_global.value("b")

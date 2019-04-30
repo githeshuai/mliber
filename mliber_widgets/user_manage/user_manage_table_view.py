@@ -2,7 +2,7 @@
 from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
-from mliber_global.app_global import get_app_global
+import mliber_global
 from user_manage_model import UserManageModel
 from user_manage_delegate import UserManageDelegate
 
@@ -21,8 +21,8 @@ class UserTableView(QTableView):
         :return:
         """
         model_data = list()
-        app_global = get_app_global()
-        db = app_global.value("mliber_database")
+        app = mliber_global.app()
+        db = app.value("mliber_database")
         users = db.find("User", [])
         for user in users:
             temp = [user.id, user.name, user.chinese_name, user.password, user.created_at.strftime("%Y-%m-%d %H:%M:%S"),

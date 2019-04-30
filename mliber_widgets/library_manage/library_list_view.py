@@ -2,7 +2,9 @@
 from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
-from mliber_global.app_global import get_app_global
+import mliber_global
+from mliber_libs.os_libs.system import operation_system
+from mliber_custom.public_path import PUBLIC_PATH
 
 
 class LibraryListView(QListView):
@@ -30,8 +32,8 @@ class LibraryListView(QListView):
         获取所有的library
         :return:
         """
-        app_global = get_app_global()
-        db = app_global.get("mliber_database")
+        app = mliber_global.app()
+        db = app.get("mliber_database")
         libraries = db.find("Library", [])
         return libraries
 
@@ -40,3 +42,4 @@ class LibraryListView(QListView):
         设置model
         :return:
         """
+        pass
