@@ -188,3 +188,5 @@ class Database(object):
 
 if __name__ == "__main__":
     db = Database("default")
+    # db.create("Library", {"name": "mayaasset", "type": "MayaAsset", "windows_path": "D:/MayaAsset"})
+    db.create("Library", {"name": "nukeasset", "type": "NukeAsset", "windows_path": "D:/NukeAsset"})

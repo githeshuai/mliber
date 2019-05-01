@@ -17,7 +17,8 @@ class LibraryManageModel(QAbstractListModel):
         if not index.isValid():
             return
         row = index.row()
-        return self.model_data[row]
+        if role == Qt.UserRole:
+            return self.model_data[row]
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
