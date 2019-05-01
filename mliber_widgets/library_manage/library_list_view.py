@@ -2,7 +2,7 @@
 from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
-from library_manage_model import LibraryManageModel
+from library_manage_model import LibraryManageModel, LibraryManageProxyModel
 from library_manage_delegate import LibraryManageDelegate
 from mliber_conf import mliber_config
 import mliber_global
@@ -11,9 +11,10 @@ import mliber_resource
 
 
 class LibraryListView(QListView):
-    DEFAULT_ICON_SIZE = 180
+    DEFAULT_ICON_SIZE = 200
     MAX_ICON_SIZE = 256
-    MIN_ICON_SIZE = 32
+    MIN_ICON_SIZE = 128
+    double_clicked = Signal()
 
     def __init__(self, parent=None):
         super(LibraryListView, self).__init__(parent)
@@ -26,13 +27,14 @@ class LibraryListView(QListView):
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # show data
         self.show_data()
         # set style
         self.set_style()
+        # set signals
+        self.set_signals()
 
     def set_style(self):
         """
@@ -40,6 +42,25 @@ class LibraryListView(QListView):
         :return:
         """
         self.setStyleSheet(mliber_config.LIST_VIEW_STYLE)
+
+    def set_signals(self):
+        """
+        信号链接
+        :return:
+        """
+        self.doubleClicked.connect(self.set_global_library)
+
+    def set_global_library(self):
+        """
+        set global library
+        :return:
+        """
+        selected_item = self.selected_library()
+        if not selected_item:
+            return
+        app = mliber_global.app()
+        app.set_value(mliber_library=selected_item)
+        self.double_clicked.emit()
 
     @staticmethod
     def _get_model_data():
@@ -68,7 +89,9 @@ class LibraryListView(QListView):
             lib.icon_size = self.iconSize()
             model_data.append(lib)
         model = LibraryManageModel(model_data, self)
-        self.setModel(model)
+        proxy_model = LibraryManageProxyModel(self)
+        proxy_model.setSourceModel(model)
+        self.setModel(proxy_model)
 
     def _set_delegate(self):
         """
@@ -94,7 +117,6 @@ class LibraryListView(QListView):
         """
         self._set_model()
         self._set_delegate()
-        self.show_delegate()
 
     def set_item_size(self, size):
         """
@@ -113,6 +135,27 @@ class LibraryListView(QListView):
             index = source_model.index(row, 0)
             source_model.setData(index, size, Qt.UserRole)
 
+    def _selected_rows(self):
+        """
+        获取选择的行
+        :return:
+        """
+        selected_indexes = self.selectedIndexes()
+        src_indexes = [self.model().mapToSource(index) for index in selected_indexes]
+        rows = list(set([index.row() for index in src_indexes]))
+        return rows
+
+    def selected_library(self):
+        """
+        获取选择的library
+        :return:
+        """
+        selected_rows = self._selected_rows()
+        if not selected_rows:
+            return
+        row = selected_rows[0]
+        return self.model().sourceModel().model_data[row]
+
     def wheelEvent(self, event):
         zoom_amount = self.iconSize().width()
         modifiers = QApplication.keyboardModifiers()
@@ -124,7 +167,7 @@ class LibraryListView(QListView):
                 return
             degrees = event.delta() / 8
             step = degrees / 15
-            delta = step * 8
+            delta = step * 16
             zoom_amount += delta
             if zoom_amount > self.MAX_ICON_SIZE:
                 zoom_amount = self.MAX_ICON_SIZE
@@ -132,6 +175,18 @@ class LibraryListView(QListView):
                 zoom_amount = self.MIN_ICON_SIZE
             size = QSize(zoom_amount, zoom_amount)
             self.set_item_size(size)
-            # self.set_toast("Size: {0}%".format(int(zoom_amount/self.DEFAULT_ICON_SIZE*100)))
         else:
             QListView.wheelEvent(self, event)
+
+    def mousePressEvent(self, event):
+        """
+        当鼠标左键点击到空白处，取消选择
+        :param event:
+        :return:
+        """
+        super(LibraryListView, self).mousePressEvent(event)
+        point = event.pos()
+        index = self.indexAt(point)
+        if index.row() < 0:
+            self.clearSelection()
+

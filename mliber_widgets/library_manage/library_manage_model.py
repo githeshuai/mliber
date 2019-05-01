@@ -50,3 +50,45 @@ class LibraryManageModel(QAbstractListModel):
     def remove_all(self):
         for i in xrange(self.rowCount()):
             self.removeRows(0, 1)
+
+
+class LibraryManageProxyModel(QSortFilterProxyModel):
+    def __init__(self, parent=None):
+        super(LibraryManageProxyModel, self).__init__(parent)
+        self.regexp = QRegExp()
+        self.regexp.setCaseSensitivity(Qt.CaseInsensitive)
+        self.regexp.setPatternSyntax(QRegExp.RegExp)
+        self.filter_type = None
+
+    def set_filter_type(self, filter_type):
+        """
+        :param filter_type: <str> name or type
+        :return:
+        """
+        self.filter_type = filter_type
+
+    def filterAcceptsRow(self, sourceRow, sourceParent):
+        """
+        :type sourceRow:
+        :type sourceParent:
+        :rtype: bool
+        """
+        index = self.sourceModel().index(sourceRow, 0, sourceParent)
+        item = self.sourceModel().data(index)
+        if self.regexp.isEmpty():
+            return True
+        else:
+            if self.filter_type == "type":
+                return self.regexp.exactMatch(item.type)
+            return self.regexp.exactMatch(item.name)
+
+    def set_name_filter(self, regexp):
+        """
+        filter names
+        Args:
+            regexp:  <str>
+        Returns:
+        """
+        regexp = ".*%s.*" % regexp if regexp else ""
+        self.regexp.setPattern(regexp)
+        self.invalidateFilter()
