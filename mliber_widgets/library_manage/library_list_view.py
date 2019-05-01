@@ -156,6 +156,21 @@ class LibraryListView(QListView):
         row = selected_rows[0]
         return self.model().sourceModel().model_data[row]
 
+    def libraries(self):
+        """
+        获取所有的library
+        :return:
+        """
+        return self.model().sourceModel().model_data
+
+    def library_names(self):
+        """
+        获取所有的library name
+        :return:
+        """
+        libraries = self.libraries()
+        return [library.name for library in libraries]
+
     def wheelEvent(self, event):
         zoom_amount = self.iconSize().width()
         modifiers = QApplication.keyboardModifiers()

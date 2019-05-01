@@ -82,7 +82,7 @@ class LibraryManageProxyModel(QSortFilterProxyModel):
                 return self.regexp.exactMatch(item.type)
             return self.regexp.exactMatch(item.name)
 
-    def set_name_filter(self, regexp):
+    def set_filter(self, regexp):
         """
         filter names
         Args:
