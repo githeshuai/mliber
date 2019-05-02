@@ -109,6 +109,7 @@ class SearchLineEdit(QLineEdit):
         Returns:
         """
         self.clear()
+        self.return_pressed.emit()
 
     def show_search_menu(self):
         """

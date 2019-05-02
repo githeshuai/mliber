@@ -18,7 +18,7 @@ class IconLineEdit(QLineEdit):
         super(IconLineEdit, self).__init__(parent)
         self.setFixedHeight(height)
         pixmap = QPixmap(icon_path)
-        pixmap_size = QSize(self.height(), self.height())
+        pixmap_size = QSize(self.height()*0.8, self.height()*0.8)
         self.pixmap = pixmap.scaled(pixmap_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         style_sheet = "QLineEdit{padding-left: %dpx; height: %dpx;font-size: %dpx;" \
                       " background-color: rgb(200, 200, 200, 50);}" \
@@ -35,6 +35,6 @@ class IconLineEdit(QLineEdit):
 
 if __name__ == "__main__":
     app = QApplication([])
-    le = IconLineEdit(r"E:\liber\liber_icons\password.png", 30, 15)
+    le = IconLineEdit(r"D:/picture/thumbnail.png", 30, 15)
     le.show()
     app.exec_()
