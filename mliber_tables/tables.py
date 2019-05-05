@@ -43,9 +43,9 @@ class Library(Base):
     name = Column(String(20), unique=True, nullable=False)
     type = Column(String(20), nullable=False)
     created_at = Column(DateTime, default=THIS_MOMENT)
-    windows_path = Column(String(300), unique=True)
-    linux_path = Column(String(300), unique=True)
-    mac_path = Column(String(300), unique=True)
+    windows_path = Column(String(300))
+    linux_path = Column(String(300))
+    mac_path = Column(String(300))
     description = Column(Text)
     status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key

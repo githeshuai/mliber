@@ -14,6 +14,7 @@ class ChoosePathWidget(QWidget):
         self.label.setScaledContents(True)
         self.le = QLineEdit(self)
         self.btn = QPushButton("Browse", self)
+        self.btn.setMaximumHeight(25)
         layout.addWidget(self.label)
         layout.addWidget(self.le)
         layout.addWidget(self.btn)
@@ -51,6 +52,13 @@ class ChoosePathWidget(QWidget):
         """
         return self.le.text()
 
+    def set_path(self, path):
+        """
+        set path
+        :return:
+        """
+        self.le.setText(path)
+
     def set_signals(self):
         """
         信号连接
@@ -65,7 +73,8 @@ class ChoosePathWidget(QWidget):
         :return:
         """
         path, ext = QFileDialog.getOpenFileName(self, "image", filter="Files (%s)" % filter_)
-        self.le.setText(path)
+        if path:
+            self.le.setText(path)
 
 
 if __name__ == "__main__":

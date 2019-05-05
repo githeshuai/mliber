@@ -17,8 +17,11 @@ class LibraryManageModel(QAbstractListModel):
         if not index.isValid():
             return
         row = index.row()
+        library = self.model_data[row]
         if role == Qt.UserRole:
-            return self.model_data[row]
+            return library
+        if role == Qt.ToolTipRole:
+            return "windows: {}\nlinux: {}\nmac: {}".format(library.windows_path, library.linux_path, library.mac_path)
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -27,7 +30,6 @@ class LibraryManageModel(QAbstractListModel):
         self.beginInsertRows(parent, position, position+count-1)
         for index, i in enumerate(value):
             self.model_data.insert(position+index, i)
-        # self.model_data.sort(key=lambda x: x.name)
         self.endInsertRows()
         return True
 

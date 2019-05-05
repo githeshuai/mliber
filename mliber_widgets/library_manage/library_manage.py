@@ -2,138 +2,13 @@
 from Qt.QtWidgets import *
 from Qt.QtGui import *
 from Qt.QtCore import *
+from library_manage_ui import LibraryManageUI
+from create_library_dialog import CreateLibraryDialog
 import mliber_resource
 import mliber_global
 from mliber_conf.library_type import LIBRARY_TYPE
-from library_manage_ui import LibraryManageUI
-from mliber_qt_components.path_widget import PathWidget
-from mliber_qt_components.choose_path_widget import ChoosePathWidget
-
-
-class CreateLibraryWidget(QDialog):
-    create = Signal(list)
-
-    def __init__(self, parent=None):
-        super(CreateLibraryWidget, self).__init__(parent)
-        main_layout = QVBoxLayout(self)
-        # name layout
-        name_layout = QHBoxLayout()
-        name_label = QLabel("name", self)
-        self.name_le = QLineEdit(self)
-        name_layout.addWidget(name_label)
-        name_layout.addWidget(self.name_le)
-        # type layout
-        type_layout = QHBoxLayout()
-        type_label = QLabel("type", self)
-        type_label.setMaximumWidth(30)
-        self.type_combo = QComboBox(self)
-        type_layout.addWidget(type_label)
-        type_layout.addWidget(self.type_combo)
-        # path widget
-        self.path_widget = PathWidget(self)
-        self.choose_path_widget = ChoosePathWidget(self)
-        self.choose_path_widget.set_label_text(u"图标")
-        # description
-        description_layout = QHBoxLayout()
-        description_label = QLabel(u"描述", self)
-        description_label.setAlignment(Qt.AlignTop)
-        self.description_te = QTextEdit(self)
-        description_layout.addWidget(description_label)
-        description_layout.addWidget(self.description_te)
-        # button layout
-        button_layout = QHBoxLayout()
-        self.create_btn = QPushButton("Create")
-        self.close_btn = QPushButton("Close")
-        button_layout.addStretch()
-        button_layout.addWidget(self.create_btn)
-        button_layout.addWidget(self.close_btn)
-        # add to main layout
-        main_layout.addLayout(name_layout)
-        main_layout.addLayout(type_layout)
-        main_layout.addWidget(self.path_widget)
-        main_layout.addWidget(self.choose_path_widget)
-        main_layout.addLayout(description_layout)
-        main_layout.addLayout(button_layout)
-        # init
-        self.init()
-        # set signals
-        self.set_signals()
-
-    def init(self):
-        """
-        initialize
-        :return:
-        """
-        self.type_combo.addItems(LIBRARY_TYPE)
-
-    def set_signals(self):
-        """
-        :return:
-        """
-        self.create_btn.clicked.connect(self.on_create_btn_clicked)
-        self.close_btn.clicked.connect(self.close)
-
-    @property
-    def name(self):
-        """
-        :return:<str>
-        """
-        return self.name_le.text()
-
-    @property
-    def type(self):
-        """
-        :return: <str>
-        """
-        return self.type_combo.currentText()
-
-    @property
-    def windows_path(self):
-        """
-        windows path
-        :return:
-        """
-        return self.path_widget.windows_path()
-
-    @property
-    def linux_path(self):
-        """
-        linux path
-        :return:
-        """
-        return self.path_widget.linux_path()
-
-    @property
-    def mac_path(self):
-        """
-        mac path
-        :return:
-        """
-        return self.path_widget.mac_path()
-
-    @property
-    def icon_path(self):
-        """
-        mac path
-        :return:
-        """
-        return self.choose_path_widget.path
-
-    @property
-    def description(self):
-        """
-        :return: <str>
-        """
-        return self.description_te.toPlainText()
-
-    def on_create_btn_clicked(self):
-        """
-        当create button click
-        :return:
-        """
-        self.create.emit([self.name, self.type, self.windows_path, self.linux_path, self.mac_path,
-                          self.icon_path, self.description])
-        self.accept()
+from mliber_qt_components.messagebox import MessageBox
+from mliber_libs.os_libs.path import Path
 
 
 class LibraryManage(LibraryManageUI):
@@ -145,6 +20,9 @@ class LibraryManage(LibraryManageUI):
         self._set_signals()
         # init
         self.init()
+        # 右键菜单
+        self.library_list_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.library_list_view.customContextMenuRequested.connect(self.show_context_menu)
 
     def set_style(self):
         """
@@ -171,6 +49,7 @@ class LibraryManage(LibraryManageUI):
         self.search_le.return_pressed.connect(self._filter)
         self.type_combo.currentIndexChanged.connect(self._filter)
         self.menu_bar.clicked.connect(self.add_menu)
+        self.refresh_btn.clicked.connect(self.refresh_ui)
 
     def add_menu(self):
         """
@@ -181,13 +60,33 @@ class LibraryManage(LibraryManageUI):
         app = mliber_global.app()
         user = app.value("mliber_user")
         if user.library_permission:
-            add_action = QAction("Add", self, triggered=self.show_create_library_widget)
+            add_action = QAction("Add", self, triggered=self.show_create_library_dialog)
             menu.addAction(add_action)
         exit_action = QAction("exit", self, triggered=self.close)
         menu.addAction(exit_action)
         point = self.menu_bar.rect().bottomLeft()
         point = self.menu_bar.mapToGlobal(point)
         menu.exec_(point)
+
+    def show_context_menu(self):
+        """
+        显示右键菜单
+        :return:
+        """
+        selected_library = self.library_list_view.selected_library()
+        user = mliber_global.app().value("mliber_user")
+        menu = QMenu(self)
+        if selected_library:
+            action_text = "Edit" if user.library_permission else "Detail"
+            edit_action = QAction(action_text, menu, triggered=self.show_edit_library_dialog)
+            menu.addAction(edit_action)
+            if user.library_permission:
+                delete_action = QAction("Delete", menu, triggered=self.delete_library)
+                menu.addAction(delete_action)
+        else:
+            refresh_action = QAction("Refresh", menu, triggered=self.refresh_ui)
+            menu.addAction(refresh_action)
+        menu.exec_(QCursor.pos())
 
     def switch_search_type(self, button):
         """
@@ -229,14 +128,34 @@ class LibraryManage(LibraryManageUI):
         self.library_list_view.model().set_filter(self.filter_value)
         self.library_list_view.show_delegate()
 
-    def show_create_library_widget(self):
+    def show_create_library_dialog(self):
         """
         添加library
         :return:
         """
-        create_library_widget = CreateLibraryWidget(self)
-        create_library_widget.create.connect(self.add_library)
-        create_library_widget.exec_()
+        self.library_widget = CreateLibraryDialog(mode="create", parent=self)
+        self.library_widget.create.connect(self.add_library)
+        self.library_widget.exec_()
+
+    def show_edit_library_dialog(self):
+        """
+        edit current selected library
+        :return:
+        """
+        selected_library = self.library_list_view.selected_library()
+        user = mliber_global.app().value("mliber_user")
+        self.library_widget = CreateLibraryDialog(mode="update", parent=self)
+        self.library_widget.update.connect(self.update_library)
+        if not user.library_permission:
+            self.library_widget.exec_button.setHidden(True)
+        self.library_widget.set_name(selected_library.name)
+        self.library_widget.set_type(selected_library.type)
+        self.library_widget.set_windows_path(selected_library.windows_path)
+        self.library_widget.set_linux_path(selected_library.linux_path)
+        self.library_widget.set_mac_path(selected_library.mac_path)
+        self.library_widget.set_icon_path(selected_library.icon_path)
+        self.library_widget.set_description(selected_library.description)
+        self.library_widget.exec_()
 
     def add_library(self, args):
         """
@@ -244,4 +163,33 @@ class LibraryManage(LibraryManageUI):
         :param args:
         :return:
         """
-        self.library_list_view.append_library(*args)
+        add_result = self.library_list_view.append_library(*args)
+        if add_result:
+            self.library_widget.accept()
+            
+    def update_library(self, args):
+        """
+        update current selected library
+        :return:
+        """
+        update_result = self.library_list_view.update_library(*args)
+        if update_result:
+            self.library_widget.accept()
+
+    def refresh_ui(self):
+        """
+        刷新ui
+        :return:
+        """
+        self.library_list_view.refresh_ui()
+        self._filter()
+
+    def delete_library(self):
+        """
+        delete current library
+        :return:
+        """
+        selected_library = self.library_list_view.selected_library()
+        db = mliber_global.app().value("mliber_database")
+        db.update("Library", selected_library.id, {"status": "Disable"})
+        self.refresh_ui()
