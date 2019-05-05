@@ -7,8 +7,6 @@ from create_library_dialog import CreateLibraryDialog
 import mliber_resource
 import mliber_global
 from mliber_conf.library_type import LIBRARY_TYPE
-from mliber_qt_components.messagebox import MessageBox
-from mliber_libs.os_libs.path import Path
 
 
 class LibraryManage(LibraryManageUI):
@@ -50,6 +48,7 @@ class LibraryManage(LibraryManageUI):
         self.type_combo.currentIndexChanged.connect(self._filter)
         self.menu_bar.clicked.connect(self.add_menu)
         self.refresh_btn.clicked.connect(self.refresh_ui)
+        self.library_list_view.double_clicked.connect(self.close)
 
     def add_menu(self):
         """

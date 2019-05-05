@@ -10,8 +10,7 @@ from mliber_qt_components.frameless_widget import FramelessWidget
 class LoginWidgetUI(FramelessWidget):
     def __init__(self, parent=None):
         super(LoginWidgetUI, self).__init__(parent)
-        self.setFixedWidth(320)
-        self.setMinimumHeight(290)
+        self.setFixedSize(320, 290)
         central_widget = QWidget()
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         self.set_central_widget(central_widget)

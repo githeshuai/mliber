@@ -64,6 +64,15 @@ class LibraryListView(QListView):
         self.double_clicked.emit()
 
     @staticmethod
+    def _get_library_icon_path(library_name):
+        """
+        获取library 图标路径
+        :return:
+        """
+        icon_path = Path(mliber_global.public_dir()).join("library/%s.png" % library_name)
+        return icon_path
+
+    @staticmethod
     def _get_model_data():
         """
         获取所有的library
@@ -82,8 +91,7 @@ class LibraryListView(QListView):
         libraries = self._get_model_data()
         model_data = list()
         for lib in libraries:
-            name = lib.name
-            icon_path = Path(mliber_global.public_dir()).join("library/%s.png" % name)
+            icon_path = self._get_library_icon_path(lib.name)
             if not Path(icon_path).isfile():
                 icon_path = mliber_resource.icon_path("image.png")
             lib.icon_path = icon_path
@@ -199,6 +207,22 @@ class LibraryListView(QListView):
         paths["mac"] = mac_paths
         return paths
 
+    def validate_paths(self, windows_path, linux_path, mac_path):
+        """
+        检查是否已经有重复的路径
+        :param windows_path:
+        :param linux_path:
+        :param mac_path:
+        :return:
+        """
+        exist_paths = self.library_paths()
+        if windows_path in exist_paths.get("windows") or \
+                linux_path in exist_paths.get("linux") or \
+                mac_path in exist_paths.get("mac"):
+            MessageBox.warning(self, "warning", u"path exist !")
+            return False
+        return True
+
     def update_library(self, name, typ, windows_path, linux_path, mac_path, icon_path, description=""):
         """
         刷新library data
@@ -217,9 +241,9 @@ class LibraryListView(QListView):
                 "mac_path": mac_path, "description": description}
         try:
             library = db.update("Library", selected_library.id, data)
-            library_icon_path = Path(mliber_global.public_dir()).join("library/%s.png" % name)
+            library_icon_path = self._get_library_icon_path(name)
             if icon_path != library_icon_path:
-                if Path(library_icon_path).isfile():
+                if Path(icon_path).isfile():
                     Path(icon_path).copy_to(library_icon_path)
                 else:
                     library_icon_path = mliber_resource.icon_path("image.png")
@@ -249,12 +273,8 @@ class LibraryListView(QListView):
         if name in self.library_names():
             MessageBox.warning(self, "warning", u"%s exist !" % name)
             return False
-        exist_paths = self.library_paths()
-        if windows_path in exist_paths.get("windows") or \
-                linux_path in exist_paths.get("linux") or \
-                mac_path in exist_paths.get("mac"):
-            MessageBox.warning(self, "warning", u"path exist !")
-            return False
+        if not self.validate_paths(windows_path, linux_path, mac_path):
+            return
         app = mliber_global.app()
         db = app.value("mliber_database")
         user = app.value("mliber_user")
@@ -263,8 +283,7 @@ class LibraryListView(QListView):
                                         "description": description, "user_id": user.id})
         # 将icon 拷贝到 public dir
         if icon_path and Path(icon_path).isfile():
-            public_dir = mliber_global.public_dir()
-            library_icon_path = Path(public_dir).join("library/%s.png" % name)
+            library_icon_path = self._get_library_icon_path(name)
             Path(icon_path).copy_to(library_icon_path)
         else:
             library_icon_path = mliber_resource.icon_path("image.png")
