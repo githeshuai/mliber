@@ -9,6 +9,7 @@ class ToolbarUI(QWidget):
         super(ToolbarUI, self).__init__(parent)
         self.setFixedHeight(50)
         main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         # logo button
         logo_button = QToolButton(self)
         # logo_button.setMinimumHeight(40)

@@ -189,4 +189,5 @@ class Database(object):
 if __name__ == "__main__":
     db = Database("default")
     # db.create("Library", {"name": "mayaasset", "type": "MayaAsset", "windows_path": "D:/MayaAsset"})
-    db.create("Library", {"name": "nukeasset1", "type": "NukeAsset", "windows_path": "D:/NukeAsset1"})
+    # db.create("Library", {"name": "nukeasset1", "type": "NukeAsset", "windows_path": "D:/NukeAsset1"})
+    print db.find_one("Category", [["parent_id", "is", None]])

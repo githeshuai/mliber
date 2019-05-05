@@ -5,11 +5,12 @@ from Qt.QtCore import *
 from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 from mliber_widgets.login_widget import LoginWidget
 import mliber_global
-from mliber_widgets.user_manage import UserManage
-from mliber_widgets.library_manage import LibraryManage
 
 
 class Toolbar(ToolbarUI):
+    user_manage_action_triggered = Signal()
+    library_manage_action_triggered = Signal()
+
     def __init__(self, parent=None):
         super(Toolbar, self).__init__(parent)
         self._set_signals()
@@ -62,16 +63,14 @@ class Toolbar(ToolbarUI):
         显示user manage窗口
         :return:
         """
-        user_manage_ui = UserManage(self)
-        user_manage_ui.exec_()
+        self.user_manage_action_triggered.emit()
 
     def show_library_manage(self):
         """
         显示library manage窗口
         :return:
         """
-        library_manage_ui = LibraryManage(self)
-        library_manage_ui.show()
+        self.library_manage_action_triggered.emit()
 
 
 if __name__ == "__main__":

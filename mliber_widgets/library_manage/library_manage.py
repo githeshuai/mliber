@@ -10,6 +10,8 @@ from mliber_conf.library_type import LIBRARY_TYPE
 
 
 class LibraryManage(LibraryManageUI):
+    library_double_clicked = Signal()
+
     def __init__(self, parent=None):
         super(LibraryManage, self).__init__(parent)
         # set style
@@ -48,7 +50,15 @@ class LibraryManage(LibraryManageUI):
         self.type_combo.currentIndexChanged.connect(self._filter)
         self.menu_bar.clicked.connect(self.add_menu)
         self.refresh_btn.clicked.connect(self.refresh_ui)
-        self.library_list_view.double_clicked.connect(self.close)
+        self.library_list_view.double_clicked.connect(self.on_library_list_view_double_clicked)
+
+    def on_library_list_view_double_clicked(self):
+        """
+        当library list view 双击的时候
+        :return:
+        """
+        self.library_double_clicked.emit()
+        self.close()
 
     def add_menu(self):
         """

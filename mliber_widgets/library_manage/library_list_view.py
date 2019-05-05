@@ -8,6 +8,7 @@ from mliber_conf import mliber_config
 import mliber_global
 from mliber_libs.os_libs.path import Path
 import mliber_resource
+from mliber_libs.os_libs import system
 from mliber_qt_components.messagebox import MessageBox
 
 
@@ -207,9 +208,9 @@ class LibraryListView(QListView):
         paths["mac"] = mac_paths
         return paths
 
-    def validate_paths(self, windows_path, linux_path, mac_path):
+    def validate_path_unique(self, windows_path, linux_path, mac_path):
         """
-        检查是否已经有重复的路径
+        检查是否已经有重复的路径，并且检查该路径是否已经存在
         :param windows_path:
         :param linux_path:
         :param mac_path:
@@ -223,6 +224,27 @@ class LibraryListView(QListView):
             return False
         return True
 
+    def validate_path_can_be_created(self, windows_path, linux_path, mac_path):
+        """
+        检查该路径是否可正常创建
+        :param windows_path:
+        :param linux_path:
+        :param mac_path:
+        :return:
+        """
+        operation_system = system.operation_system()
+        try:
+            if operation_system == "windows":
+                Path(windows_path).makedirs()
+            elif operation_system == "linux":
+                Path(linux_path).makedirs()
+            elif operation_system == "mac":
+                Path(mac_path).makedirs()
+            return True
+        except WindowsError as e:
+            MessageBox.critical(self, "Error", str(e))
+            return False
+
     def update_library(self, name, typ, windows_path, linux_path, mac_path, icon_path, description=""):
         """
         刷新library data
@@ -235,6 +257,8 @@ class LibraryListView(QListView):
         :param description: <str>
         :return:
         """
+        if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
+            return
         selected_library = self.selected_library()
         db = mliber_global.app().value("mliber_database")
         data = {"name": name, "type": typ, "windows_path": windows_path, "linux_path": linux_path,
@@ -269,11 +293,13 @@ class LibraryListView(QListView):
         :return:
         """
         # 现在数据库里添加
-        # 因为library的name /windows path/linux path/mac path都是唯一性，所以添加之前先检查是否存在
         if name in self.library_names():
             MessageBox.warning(self, "warning", u"%s exist !" % name)
             return False
-        if not self.validate_paths(windows_path, linux_path, mac_path):
+        # 因为library的name /windows path/linux path/mac path都是唯一性，所以添加之前先检查是否是唯一的
+        if not self.validate_path_unique(windows_path, linux_path, mac_path):
+            return
+        if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
         app = mliber_global.app()
         db = app.value("mliber_database")
