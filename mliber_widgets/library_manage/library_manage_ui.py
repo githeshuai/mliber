@@ -12,7 +12,7 @@ class LibraryManageUI(QDialog):
         super(LibraryManageUI, self).__init__(parent)
         self.setWindowTitle("Library Manager")
         # setup ui
-        self.resize(630, 550)
+        self.resize(650, 550)
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.setContentsMargins(0, 0, 0, 0)

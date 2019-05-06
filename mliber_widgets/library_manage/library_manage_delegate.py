@@ -1,71 +1,32 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QLabel, QVBoxLayout, QToolButton, QHBoxLayout, QWidget, QStyledItemDelegate
+from Qt.QtGui import QIcon
+from Qt.QtCore import Qt, QSize
 import mliber_resource
-from mliber_libs.qt_libs.resize_pixmap_to_label import resize_pixmap_to_label
-
 
 FONT_HEIGHT = 18
 
 
-class IconLabel(QLabel):
-    BUTTON_HEIGHT = 20
-
+class IconWidget(QToolButton):
     def __init__(self, parent=None):
-        super(IconLabel, self).__init__(parent)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        btn_layout = QHBoxLayout()
-        self.type_button = QToolButton(self)
-        self.type_button.setMaximumHeight(self.BUTTON_HEIGHT)
-        self.type_button.setIconSize(QSize(self.BUTTON_HEIGHT*0.8, self.BUTTON_HEIGHT*0.8))
-        self.type_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.type_button.setIcon(mliber_resource.icon("library_type.png"))
-        button_style = "QToolButton{background:transparent; border: 0px; border-radius: 0px;padding: 0px;}" \
-                       "QToolButton::hover{background: transparent;}" \
-                       "QToolButton:focus{outline:none;border: 0px; border-radius: 0px;}"
-        self.type_button.setStyleSheet(button_style)
-        btn_layout.addStretch()
-        btn_layout.addWidget(self.type_button)
-        layout.addLayout(btn_layout)
-        layout.addStretch()
+        super(IconWidget, self).__init__(parent)
+        self.setStyleSheet("border: 0px solid; padding: 0px; background: transparent;")
 
-    def set_type(self, typ):
+    def mousePressEvent(self, event):
         """
-        set type
-        :param typ: <str>
+        取消事件
+        :param event:
         :return:
         """
-        self.type_button.setText(typ)
-
-
-class CellLibrary(QWidget):
-    def __init__(self, parent=None):
-        super(CellLibrary, self).__init__(parent)
-        self.setAutoFillBackground(True)
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(2, 0, 2, 0)
-        self.icon_label = IconLabel(self)
-        self.icon_label.setAlignment(Qt.AlignCenter)
-        self.icon_label.setStyleSheet("background: transparent;")
-        self.name_label = QLabel(self)
-        self.name_label.setStyleSheet("background: transparent;")
-        self.name_label.setMaximumHeight(FONT_HEIGHT)
-        self.name_label.setAlignment(Qt.AlignCenter)
-        # add to main layout
-        main_layout.addWidget(self.icon_label)
-        main_layout.addWidget(self.name_label)
-        main_layout.setSpacing(0)
+        event.ignore()
 
     def set_icon(self, icon_path):
         """
         设置显示图片
         :return:
         """
-        pix_map = QPixmap(icon_path)
-        scaled = resize_pixmap_to_label(pix_map, self.icon_label)
-        self.icon_label.setPixmap(scaled)
+        icon = QIcon(icon_path)
+        self.setIcon(icon)
 
     def set_icon_size(self, size):
         """
@@ -73,7 +34,71 @@ class CellLibrary(QWidget):
         :param size:
         :return:
         """
-        self.icon_label.resize(size)
+        self.setIconSize(size)
+        self.setFixedSize(size)
+
+
+class TypeWidget(QToolButton):
+    def __init__(self, parent=None):
+        super(TypeWidget, self).__init__(parent)
+        self.setMaximumHeight(FONT_HEIGHT)
+        self.setIconSize(QSize(FONT_HEIGHT * 0.8, FONT_HEIGHT * 0.8))
+        self.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.setIcon(mliber_resource.icon("library_type.png"))
+        button_style = "QToolButton{background:transparent; border: 0px; border-radius: 0px;padding: 0px;}" \
+                       "QToolButton::hover{background: transparent;}" \
+                       "QToolButton:focus{outline:none;border: 0px; border-radius: 0px;}"
+        self.setStyleSheet(button_style)
+
+    def mousePressEvent(self, event):
+        """
+        取消事件
+        :param event:
+        :return:
+        """
+        event.ignore()
+
+
+class CellLibrary(QWidget):
+    def __init__(self, parent=None):
+        super(CellLibrary, self).__init__(parent)
+        self.setAutoFillBackground(True)
+        self.setMouseTracking(True)
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(3, 0, 3, 0)
+        type_layout = QHBoxLayout()
+        type_layout.setContentsMargins(0, 0, 0, 0)
+        # type button
+        self.type_button = TypeWidget(self)
+        type_layout.addStretch()
+        type_layout.addWidget(self.type_button)
+        # icon label
+        self.icon_widget = IconWidget(self)
+        # name label
+        self.name_label = QLabel(self)
+        self.name_label.setStyleSheet("background: transparent;")
+        self.name_label.setMaximumHeight(FONT_HEIGHT)
+        self.name_label.setAlignment(Qt.AlignCenter)
+        # add to main layout
+        main_layout.addLayout(type_layout)
+        main_layout.addWidget(self.icon_widget)
+        main_layout.addWidget(self.name_label)
+        main_layout.setSpacing(2)
+
+    def set_icon(self, icon_path):
+        """
+        设置显示图片
+        :return:
+        """
+        self.icon_widget.set_icon(icon_path)
+
+    def set_icon_size(self, size):
+        """
+        set icon label size
+        :param size:
+        :return:
+        """
+        self.icon_widget.set_icon_size(size)
 
     def set_name(self, name):
         """
@@ -87,7 +112,7 @@ class CellLibrary(QWidget):
         :param typ: <str>
         :return:
         """
-        self.icon_label.set_type(typ)
+        self.type_button.setText(typ)
 
 
 class LibraryManageDelegate(QStyledItemDelegate):
@@ -100,9 +125,7 @@ class LibraryManageDelegate(QStyledItemDelegate):
 
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
-        source_model = index.model().sourceModel()
-        source_index = index.model().mapToSource(index)
-        item = source_model.data(source_index, Qt.UserRole)
+        item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
         editor.set_icon(item.icon_path)
         editor.set_name(item.name)
@@ -113,8 +136,18 @@ class LibraryManageDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
     def sizeHint(self, option, index):
+        item = self.get_item(index)
+        size = QSize(item.icon_size.width()+6, item.icon_size.height()+FONT_HEIGHT*2)
+        return size
+
+    @staticmethod
+    def get_item(index):
+        """
+        get source index
+        :param index:
+        :return:
+        """
         source_model = index.model().sourceModel()
         source_index = index.model().mapToSource(index)
         item = source_model.data(source_index, Qt.UserRole)
-        size = QSize(item.icon_size.width(), item.icon_size.height()+FONT_HEIGHT)
-        return size
+        return item
