@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtCore import *
-from Qt.QtGui import *
+from Qt.QtWidgets import QComboBox, QStyledItemDelegate
+from Qt.QtCore import Qt, QSize
 
 
 class UserManageDelegate(QStyledItemDelegate):

@@ -2,8 +2,7 @@
 """
 选择 windows path/linux path/mac path
 """
-from Qt.QtWidgets import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QVBoxLayout, QWidget
 from icon_line_edit import IconLineEdit
 import mliber_resource
 

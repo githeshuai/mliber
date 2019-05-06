@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog
 
 
 class ChoosePathWidget(QWidget):

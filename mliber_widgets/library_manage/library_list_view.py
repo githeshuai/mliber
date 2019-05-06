@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QListView, QAbstractItemView, QApplication
+from Qt.QtCore import QSize, Signal, Qt
 from library_manage_model import LibraryManageModel, LibraryManageProxyModel
 from library_manage_delegate import LibraryManageDelegate
 from mliber_conf import mliber_config

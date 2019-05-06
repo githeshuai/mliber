@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton
+from Qt.QtCore import QSize, Qt
 import mliber_resource
 
 

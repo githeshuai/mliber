@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QDialog
 from user_manage_table_view import UserTableView
 import mliber_global
 import mliber_resource

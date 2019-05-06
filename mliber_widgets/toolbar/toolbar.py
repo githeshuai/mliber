@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QMenu, QAction
+from Qt.QtCore import Signal
 from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 from mliber_widgets.login_widget import LoginWidget
 import mliber_global

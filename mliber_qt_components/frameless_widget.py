@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QSizeGrip, QLabel, QToolButton
+from Qt.QtGui import QBrush, QPalette, QImage
+from Qt.QtCore import Qt, QSize
 
 import mliber_resource
 

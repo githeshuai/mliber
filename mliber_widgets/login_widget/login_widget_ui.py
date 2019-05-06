@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLineEdit, QHBoxLayout, QToolButton, QCheckBox, \
+    QPushButton, QSizePolicy
+from Qt.QtCore import Qt
 import mliber_resource
 from mliber_qt_components.icon_line_edit import IconLineEdit
 from mliber_qt_components.frameless_widget import FramelessWidget

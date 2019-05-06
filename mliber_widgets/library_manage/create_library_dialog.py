@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox, QTextEdit, QPushButton
+from Qt.QtCore import Signal, Qt
 from mliber_qt_components.path_widget import PathWidget
 from mliber_qt_components.choose_path_widget import ChoosePathWidget
 from mliber_qt_components.messagebox import MessageBox

@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
 from main_widget_ui import MainWidgetUI
 from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage

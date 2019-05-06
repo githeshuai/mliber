@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QTableView
+from Qt.QtCore import Qt
 import mliber_global
 from user_manage_model import UserManageModel
 from user_manage_delegate import UserManageDelegate

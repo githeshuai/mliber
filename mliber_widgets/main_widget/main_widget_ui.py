@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtCore import *
-from Qt.QtGui import *
+from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView
+from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
 

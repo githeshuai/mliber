@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import *
-from Qt.QtGui import *
-from Qt.QtCore import *
+from Qt.QtWidgets import QMenu, QAction
+from Qt.QtGui import QCursor
+from Qt.QtCore import Signal, Qt
 from library_manage_ui import LibraryManageUI
 from create_library_dialog import CreateLibraryDialog
 import mliber_resource
