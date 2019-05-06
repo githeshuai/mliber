@@ -45,8 +45,7 @@ class MainWidget(MainWidgetUI):
         刷新library
         :return:
         """
-        self.category_widget.category_tree.refresh_global()
-        self.category_widget.category_tree.refresh_data()
+        self.category_widget.refresh_ui()
 
     def auto_login(self):
         """

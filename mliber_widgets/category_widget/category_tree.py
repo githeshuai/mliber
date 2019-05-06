@@ -116,7 +116,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         parent_id_filters = ["parent_id", "=", parent_id] if parent_id else ["parent_id", "is", None]
-        filters = [["name", "=", category_name], parent_id_filters]
+        filters = [["name", "=", category_name], ["library_id", "=", self.library.id], parent_id_filters]
         category = self.db.find_one("Category", filters)
         if category:
             return True
@@ -169,35 +169,46 @@ class CategoryTree(QTreeWidget):
         """
         if not self.pre_add_category():
             return
-        parent_id = None
-        parent_path = None
         selected_item = None
         selected_items = self.selected_items()
         if selected_items:
             selected_item = selected_items[0]
-            parent_id = selected_item.entity.id
-            parent_path = selected_item.entity.path
         name, ok = QInputDialog.getText(self, "Add Category", "Category Name")
         if name and ok:
-            category_exist = self.category_exist(name, parent_id)  # 检查category 是否存在
-            if category_exist:
-                MessageBox.warning(self, "Warning", u"Category: %s 已存在，不能重复创建." % name)
-                return
-            # 创建文件夹
-            category_relative_path = self.get_relative_path(name, parent_path)
-            category_abs_path = self.get_abs_path(category_relative_path)
-            try:
-                Path(category_abs_path).makedirs()
-            except WindowsError as e:
-                MessageBox.critical(self, "Window Error", str(e))
-                return
-            # 然后在数据库里添加
-            category = self.db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
-                                                   "user_id": self.user.id, "library_id": self.library.id})
-            # 在ui上显示
-            tree_widget_item = CategoryTreeItem(selected_item or self)
-            tree_widget_item.set_entity(category)
-            self.items_mapping[name] = tree_widget_item
+            self._add_category(name, selected_item)
+
+    def _add_category(self, name, parent_item):
+        """
+        :param name: <str>
+        :param parent_item: <QTreeWidgetItem or QTreeWidget>
+        :return:
+        """
+        parent_id = None
+        parent_path = None
+        if isinstance(parent_item, QTreeWidgetItem):
+            parent_id = parent_item.entity.id
+            parent_path = parent_item.entity.path
+        category_exist = self.category_exist(name, parent_id)  # 检查category 是否存在
+        if category_exist:
+            MessageBox.warning(self, "Warning", u"Category: %s 已存在，不能重复创建." % name)
+            return
+        # 创建文件夹
+        category_relative_path = self.get_relative_path(name, parent_path)
+        category_abs_path = self.get_abs_path(category_relative_path)
+        try:
+            Path(category_abs_path).makedirs()
+        except WindowsError as e:
+            MessageBox.critical(self, "Window Error", str(e))
+            return
+        # 在数据库里添加
+        category = self.db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
+                                               "user_id": self.user.id, "library_id": self.library.id})
+        # 在ui上显示
+        tree_widget_item = CategoryTreeItem(parent_item or self)
+        tree_widget_item.set_entity(category)
+        self.items_mapping[name] = tree_widget_item
+        if parent_item:
+            parent_item.setExpanded(True)
 
     def open_category(self):
         """
@@ -266,6 +277,17 @@ class CategoryTree(QTreeWidget):
             except WindowsError as e:
                 print str(e)
                 MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+
+    def search_item(self, item_text):
+        """
+        通过text找到item
+        :param item_text:
+        :return:
+        """
+        item = self.items_mapping.get(item_text)
+        if item:
+            index = self.indexFromItem(item)
+            self.scrollTo(index)
 
 
 class DeleteCategoryDialog(QDialog):

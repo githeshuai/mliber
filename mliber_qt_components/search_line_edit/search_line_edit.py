@@ -7,7 +7,7 @@ from Qt.QtCore import Qt, QSize, Signal
 
 class SearchLineEdit(QLineEdit):
     text_changed = Signal(basestring)
-    return_pressed = Signal()
+    return_pressed = Signal(basestring)
 
     def __init__(self, height=30, font_size=14, parent=None):
         """
@@ -101,7 +101,7 @@ class SearchLineEdit(QLineEdit):
             if len(self.search_list) > 10:
                 self.search_list.pop(-1)
             self.search_list.insert(0, text)
-        self.return_pressed.emit()
+        self.return_pressed.emit(self.text())
 
     def on_clear_button_clicked(self):
         """
@@ -109,7 +109,7 @@ class SearchLineEdit(QLineEdit):
         Returns:
         """
         self.clear()
-        self.return_pressed.emit()
+        self.return_pressed.emit(self.text())
 
     def show_search_menu(self):
         """
