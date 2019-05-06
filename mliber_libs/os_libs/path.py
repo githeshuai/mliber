@@ -45,6 +45,7 @@ class Path(object):
             return
         PathOperator(self.path).pre_create()
         os.makedirs(self.path)
+        PathOperator(self.path).post_create()
 
     def make_parent_dir(self):
         """
@@ -53,21 +54,20 @@ class Path(object):
         """
         parent_dir = self.parent()
         if not os.path.isdir(parent_dir):
-            PathOperator(Path(parent_dir).parent()).pre_create()
+            PathOperator(parent_dir).pre_create()
             os.makedirs(parent_dir)
+            PathOperator(parent_dir).post_create()
 
     def remove(self):
         """
         :return: None
         """
+        PathOperator(self.path).pre_delete()
         if self.isdir():
-            try:
-                shutil.rmtree(self.path)
-            except:
-                cmd = "rd /s /q \"%s\"" % self.path
-                subprocess.Popen(cmd, shell=True)
+            shutil.rmtree(self.path)
         elif self.isfile():
             os.remove(self.path)
+        PathOperator(self.path).post_delete()
 
     def dirname(self):
         """

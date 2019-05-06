@@ -121,10 +121,9 @@ class Database(object):
     def find(self, entity_type, filters, filter_operator="all"):
         """
         查询
-        注意： 中文的查询用relation用in，不要用=， =会报错，很懵逼
         :param entity_type: <str>
         :param filters: <list> like shotgun api
-            [["id", "is", 1]]
+            [["id", "=", 1]]
         :param filter_operator: <str>  "all" "and" “any” "or"
         :return:
         """

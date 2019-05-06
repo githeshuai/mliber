@@ -6,6 +6,7 @@ from library_manage_model import LibraryManageModel, LibraryManageProxyModel
 from library_manage_delegate import LibraryManageDelegate
 from mliber_conf import mliber_config
 import mliber_global
+import mliber_utils
 from mliber_libs.os_libs.path import Path
 import mliber_resource
 from mliber_libs.os_libs import system
@@ -57,11 +58,14 @@ class LibraryListView(QListView):
         set global library
         :return:
         """
-        selected_item = self.selected_library()
-        if not selected_item:
+        selected_library = self.selected_library()
+        if not selected_library:
             return
+        # set global
         app = mliber_global.app()
-        app.set_value(mliber_library=selected_item)
+        app.set_value(mliber_library=selected_library)
+        # write history
+        mliber_utils.write_history(library_id=selected_library.id)
         self.double_clicked.emit()
 
     @staticmethod

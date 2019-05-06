@@ -38,9 +38,8 @@ class UserTableView(QTableView):
         :return:
         """
         model_data = self._get_model_data()
-        header_list = ["id", "name", "chinese name", "password", "created at", "created by", "user permission",
-                       "library permission", "category permission", "asset permission",
-                       "tag permission", "status", "description"]
+        header_list = ["id", u"名字", u"中文名", u"密码", u"创建时间", u"创建者", u"用户权限",
+                       u"库权限", u"类别权限", u"资产权限", u"标签权限", u"状态", u"描述"]
         model = UserManageModel(model_data, self)
         model.set_header(header_list)
         self.setModel(model)

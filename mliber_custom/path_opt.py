@@ -23,6 +23,20 @@ class PathOperator(object):
         """
         return
 
+    def pre_delete(self):
+        """
+        删除文件或者文件夹之前执行的操作
+        :return:
+        """
+        return
+
+    def post_delete(self):
+        """
+        删除文件夹之后执行的操作
+        :return:
+        """
+        return
+
     def rename(self, new_name):
         """
         重命名
