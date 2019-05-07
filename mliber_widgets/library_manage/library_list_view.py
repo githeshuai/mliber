@@ -309,7 +309,7 @@ class LibraryListView(QListView):
         user = app.value("mliber_user")
         library = db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
                                         "linux_path": linux_path, "mac_path": mac_path, "status": status,
-                                        "description": description, "user_id": user.id})
+                                        "description": description, "created_by": user.id})
         # 将icon 拷贝到 public dir
         if icon_path and Path(icon_path).isfile():
             library_icon_path = self._get_library_icon_path(name)

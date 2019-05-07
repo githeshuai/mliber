@@ -203,7 +203,7 @@ class CategoryTree(QTreeWidget):
             return
         # 在数据库里添加
         category = self.db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
-                                               "user_id": self.user.id, "library_id": self.library.id})
+                                               "created_by": self.user.id, "library_id": self.library.id})
         # 在ui上显示
         tree_widget_item = CategoryTreeItem(parent_item or self)
         tree_widget_item.set_entity(category)

@@ -6,7 +6,9 @@ from mliber_libs.sql_libs.sql import Base
 from mliber_libs.os_libs import system
 
 
-THIS_MOMENT = datetime.now()
+def this_moment():
+    now = datetime.now()
+    return now
 
 
 class User(Base):
@@ -18,8 +20,10 @@ class User(Base):
     name = Column(String(20), unique=True, nullable=False)
     chinese_name = Column(String(20))
     password = Column(String(20), default="123456")
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     created_by = Column(Integer)
+    updated_by = Column(Integer)
     user_permission = Column(Boolean, default=0)
     library_permission = Column(Boolean, default=0)
     category_permission = Column(Boolean, default=1)
@@ -42,14 +46,16 @@ class Library(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), unique=True, nullable=False)
     type = Column(String(20), nullable=False)
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     windows_path = Column(String(300))
     linux_path = Column(String(300))
     mac_path = Column(String(300))
     description = Column(Text)
     status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
-    user_id = Column(Integer, ForeignKey("user.id"))   # created by
+    created_by = Column(Integer, ForeignKey("user.id"))   # created by
+    updated_by = Column(Integer, ForeignKey("user.id"))
     # relation ship
     categories = relationship("Category", backref="library")
     assets = relationship("Asset", backref="library")
@@ -75,12 +81,14 @@ class Category(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
     parent_id = Column(Integer)
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     description = Column(Text)
     path = Column(Text)
     # foreign key
     library_id = Column(Integer, ForeignKey("library.id"))
-    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+    created_by = Column(Integer, ForeignKey("user.id"))  # created by
+    updated_by = Column(Integer, ForeignKey("user.id"))
     # relation ship
     assets = relationship("Asset", backref="category")
 
@@ -95,13 +103,15 @@ class Asset(Base):
     __tablename__ = "asset"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     description = Column(Text)
     path = Column(Text)
     # foreign key
     library_id = Column(Integer, ForeignKey("library.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
-    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+    created_by = Column(Integer, ForeignKey("user.id"))  # created by
+    updated_by = Column(Integer, ForeignKey("user.id"))
     # relation ship
     objects = relationship("LiberObject", backref="asset")
     tags = relationship("Tag", backref="assets", secondary="asset_tag_link")
@@ -117,10 +127,16 @@ class Tag(Base):
     __tablename__ = "tag"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False, unique=True)
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     description = Column(Text)
     # foreign key
-    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+    created_by = Column(Integer, ForeignKey("user.id"))  # created by
+    updated_by = Column(Integer, ForeignKey("user.id"))
+    # color
+    colorR = Column(Integer, default=0)
+    colorG = Column(Integer, default=0)
+    colorB = Column(Integer, default=0)
 
     def __str__(self):
         return self.name
@@ -134,14 +150,16 @@ class LiberObject(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
     type = Column(String(20))
-    created_at = Column(DateTime, default=THIS_MOMENT)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
     description = Column(Text)
     software = Column(Text)
     plugin = Column(Text)
     path = Column(Text)
     # foreign key
     asset_id = Column(Integer, ForeignKey("asset.id"))
-    user_id = Column(Integer, ForeignKey("user.id"))  # created by
+    created_by = Column(Integer, ForeignKey("user.id"))  # created by
+    updated_by = Column(Integer, ForeignKey("user.id"))
 
     def __str__(self):
         return self.name
