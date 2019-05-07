@@ -128,8 +128,8 @@ class LibraryManageDelegate(QStyledItemDelegate):
         item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
         editor.set_icon(item.icon_path)
-        editor.set_name(item.name)
-        editor.set_type(item.type)
+        editor.set_name(item.library.name)
+        editor.set_type(item.library.type)
         editor.blockSignals(False)
 
     def updateEditorGeometry(self, editor, option, index):

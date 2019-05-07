@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication
 from Qt.QtCore import QSize, Signal, Qt
 from library_manage_model import LibraryManageModel, LibraryManageProxyModel
@@ -11,16 +12,28 @@ import mliber_resource
 from mliber_libs.os_libs import system
 from mliber_qt_components.messagebox import MessageBox
 
+DEFAULT_ICON_SIZE = 200
+
+
+class LibraryListItem(object):
+    def __init__(self, library):
+        """
+        :param library: <Library>
+        """
+        self.library = library
+        self.icon_path = mliber_resource.icon_path("image.png")
+        self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
+
 
 class LibraryListView(QListView):
-    DEFAULT_ICON_SIZE = 200
+
     MAX_ICON_SIZE = 256
     MIN_ICON_SIZE = 128
     double_clicked = Signal()
 
     def __init__(self, parent=None):
         super(LibraryListView, self).__init__(parent)
-        icon_size = QSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+        icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
         self.setMouseTracking(True)
         self.setSpacing(4)
@@ -76,31 +89,30 @@ class LibraryListView(QListView):
         icon_path = Path(mliber_global.public_dir()).join("library/%s.png" % library_name)
         return icon_path
 
-    @staticmethod
-    def _get_model_data():
+    def _get_model_data(self):
         """
         获取所有的library
         :return:
         """
+        model_data = list()
         app = mliber_global.app()
         db = app.value("mliber_database")
         libraries = db.find("Library", [["status", "=", "Active"]])
-        return libraries
+        for library in libraries:
+            item = LibraryListItem(library)
+            icon_path = self._get_library_icon_path(library.name)
+            if Path(icon_path).isfile():
+                item.icon_path = icon_path
+            item.icon_size = self.iconSize()
+            model_data.append(item)
+        return model_data
 
     def _set_model(self):
         """
         设置model
         :return:
         """
-        libraries = self._get_model_data()
-        model_data = list()
-        for lib in libraries:
-            icon_path = self._get_library_icon_path(lib.name)
-            if not Path(icon_path).isfile():
-                icon_path = mliber_resource.icon_path("image.png")
-            lib.icon_path = icon_path
-            lib.icon_size = self.iconSize()
-            model_data.append(lib)
+        model_data = self._get_model_data()
         model = LibraryManageModel(model_data, self)
         proxy_model = LibraryManageProxyModel(self)
         proxy_model.setSourceModel(model)
@@ -158,7 +170,7 @@ class LibraryListView(QListView):
         rows = list(set([index.row() for index in src_indexes]))
         return rows
 
-    def selected_library(self):
+    def selected_item(self):
         """
         获取选择的library
         :return:
@@ -169,12 +181,22 @@ class LibraryListView(QListView):
         row = selected_rows[0]
         return self.model().sourceModel().model_data[row]
 
+    def selected_library(self):
+        """
+        获取selected library
+        :return:
+        """
+        selected_item = self.selected_item()
+        if selected_item:
+            return selected_item.library
+
     def libraries(self):
         """
         获取所有的library
         :return:
         """
-        return self.model().sourceModel().model_data
+        items = self.model().sourceModel().model_data
+        return [item.library for item in items]
 
     def library_names(self):
         """
@@ -262,21 +284,18 @@ class LibraryListView(QListView):
         """
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
-        selected_library = self.selected_library()
+        selected_item = self.selected_item()
         db = mliber_global.app().value("mliber_database")
+        user = mliber_global.app().value("mliber_user")
+        now = datetime.now()
         data = {"name": name, "type": typ, "windows_path": windows_path, "linux_path": linux_path,
-                "mac_path": mac_path, "description": description}
+                "mac_path": mac_path, "description": description, "updated_by": user.id, "updated_at": now}
         try:
-            library = db.update("Library", selected_library.id, data)
+            db.update("Library", selected_item.library.id, data)
             library_icon_path = self._get_library_icon_path(name)
             if icon_path != library_icon_path:
                 if Path(icon_path).isfile():
                     Path(icon_path).copy_to(library_icon_path)
-                else:
-                    library_icon_path = mliber_resource.icon_path("image.png")
-            library.icon_path = library_icon_path
-            library.icon_size = self.iconSize()
-            self.refresh_ui()
             return True
         except RuntimeError as e:
             MessageBox.critical(self, "Error", str(e))
@@ -316,11 +335,12 @@ class LibraryListView(QListView):
             Path(icon_path).copy_to(library_icon_path)
         else:
             library_icon_path = mliber_resource.icon_path("image.png")
-        library.icon_path = library_icon_path
-        library.icon_size = self.iconSize()
+        item = LibraryListItem(library)
+        item.icon_path = library_icon_path
+        item.icon_size = self.iconSize()
         # 在model里添加
         source_model = self.model().sourceModel()
-        source_model.insertRows(source_model.rowCount(), 1, [library])
+        source_model.insertRows(source_model.rowCount(), 1, [item])
         self.show_delegate()
         return True
 

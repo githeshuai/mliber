@@ -82,7 +82,7 @@ class LibraryManage(LibraryManageUI):
         显示右键菜单
         :return:
         """
-        selected_library = self.library_list_view.selected_library()
+        selected_library = self.library_list_view.selected_item()
         user = mliber_global.app().value("mliber_user")
         menu = QMenu(self)
         if selected_library:
@@ -151,19 +151,19 @@ class LibraryManage(LibraryManageUI):
         edit current selected library
         :return:
         """
-        selected_library = self.library_list_view.selected_library()
+        selected_item = self.library_list_view.selected_item()
         user = mliber_global.app().value("mliber_user")
         self.library_widget = CreateLibraryDialog(mode="update", parent=self)
         self.library_widget.update.connect(self.update_library)
         if not user.library_permission:
             self.library_widget.exec_button.setHidden(True)
-        self.library_widget.set_name(selected_library.name)
-        self.library_widget.set_type(selected_library.type)
-        self.library_widget.set_windows_path(selected_library.windows_path)
-        self.library_widget.set_linux_path(selected_library.linux_path)
-        self.library_widget.set_mac_path(selected_library.mac_path)
-        self.library_widget.set_icon_path(selected_library.icon_path)
-        self.library_widget.set_description(selected_library.description)
+        self.library_widget.set_name(selected_item.library.name)
+        self.library_widget.set_type(selected_item.library.type)
+        self.library_widget.set_windows_path(selected_item.library.windows_path)
+        self.library_widget.set_linux_path(selected_item.library.linux_path)
+        self.library_widget.set_mac_path(selected_item.library.mac_path)
+        self.library_widget.set_icon_path(selected_item.icon_path)
+        self.library_widget.set_description(selected_item.library.description)
         self.library_widget.exec_()
 
     def add_library(self, args):
@@ -183,6 +183,7 @@ class LibraryManage(LibraryManageUI):
         """
         update_result = self.library_list_view.update_library(*args)
         if update_result:
+            self.refresh_ui()
             self.library_widget.accept()
 
     def refresh_ui(self):

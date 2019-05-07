@@ -15,9 +15,10 @@ class LibraryManageModel(QAbstractListModel):
         if not index.isValid():
             return
         row = index.row()
-        library = self.model_data[row]
+        item = self.model_data[row]
+        library = item.library
         if role == Qt.UserRole:
-            return library
+            return item
         if role == Qt.ToolTipRole:
             return "windows: {}\nlinux: {}\nmac: {}".format(library.windows_path, library.linux_path, library.mac_path)
 
@@ -79,8 +80,8 @@ class LibraryManageProxyModel(QSortFilterProxyModel):
             return True
         else:
             if self.filter_type == "type":
-                return self.regexp.exactMatch(item.type)
-            return self.regexp.exactMatch(item.name)
+                return self.regexp.exactMatch(item.library.type)
+            return self.regexp.exactMatch(item.library.name)
 
     def set_filter(self, regexp):
         """
