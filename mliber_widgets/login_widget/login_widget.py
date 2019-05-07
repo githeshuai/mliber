@@ -144,7 +144,7 @@ class LoginWidget(LoginWidgetUI):
             self.connect_failed()
             return
         app = mliber_global.app()
-        app.set_value(mliber_database=db)
+        app.set_value(mliber_database=self.database)
         user = db.find_one("User", [["name", "=", self.user]])
         if user and user.password == self.password and user.status == "Active":
             app.set_value(mliber_user=user)

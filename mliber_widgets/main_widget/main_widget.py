@@ -14,6 +14,11 @@ class MainWidget(MainWidgetUI):
         # set signals
         self.set_signals()
 
+    @property
+    def db(self):
+        database = mliber_global.app().value("mliber_database")
+        return Database(database)
+
     def set_signals(self):
         """
         信号连接
@@ -61,7 +66,7 @@ class MainWidget(MainWidgetUI):
                 password = mliber_utils.read_history("password")
                 db = Database(database)
                 db.create_admin()
-                app.set_value(mliber_database=db)
+                app.set_value(mliber_database=database)
                 user = db.find_one("User", [["name", "=", user_name]])
                 if user and user.password == password and user.status == "Active":
                     app.set_value(mliber_user=user)
@@ -78,8 +83,7 @@ class MainWidget(MainWidgetUI):
         app = mliber_global.app()
         library_id = mliber_utils.read_history("library_id")
         if library_id:
-            db = app.value("mliber_database")
-            library = db.find_one("Library", [["id", "=", library_id]])
+            library = self.db.find_one("Library", [["id", "=", library_id]])
             if library:
                 app.set_value(mliber_library=library)
                 self.refresh_library()

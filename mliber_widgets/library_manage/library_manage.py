@@ -7,6 +7,7 @@ from create_library_dialog import CreateLibraryDialog
 import mliber_resource
 import mliber_global
 from mliber_conf.library_type import LIBRARY_TYPE
+from mliber_api.database_api import Database
 
 
 class LibraryManage(LibraryManageUI):
@@ -200,6 +201,8 @@ class LibraryManage(LibraryManageUI):
         :return:
         """
         selected_library = self.library_list_view.selected_library()
-        db = mliber_global.app().value("mliber_database")
+        db = Database(mliber_global.app().value("mliber_database"))
         db.update("Library", selected_library.id, {"status": "Disable"})
+        if mliber_global.app().value("mliber_library") == selected_library:
+            mliber_global.app().set_value(mliber_library=None)
         self.refresh_ui()

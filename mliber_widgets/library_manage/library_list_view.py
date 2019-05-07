@@ -11,6 +11,7 @@ from mliber_libs.os_libs.path import Path
 import mliber_resource
 from mliber_libs.os_libs import system
 from mliber_qt_components.messagebox import MessageBox
+from mliber_api.database_api import Database
 
 DEFAULT_ICON_SIZE = 200
 
@@ -50,7 +51,12 @@ class LibraryListView(QListView):
         self.set_style()
         # set signals
         self.set_signals()
-
+    
+    @property
+    def db(self):
+        database = mliber_global.app().value("mliber_database")
+        return Database(database)
+    
     def set_style(self):
         """
         set style sheet
@@ -95,9 +101,7 @@ class LibraryListView(QListView):
         :return:
         """
         model_data = list()
-        app = mliber_global.app()
-        db = app.value("mliber_database")
-        libraries = db.find("Library", [["status", "=", "Active"]])
+        libraries = self.db.find("Library", [["status", "=", "Active"]])
         for library in libraries:
             item = LibraryListItem(library)
             icon_path = self._get_library_icon_path(library.name)
@@ -285,13 +289,12 @@ class LibraryListView(QListView):
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
         selected_item = self.selected_item()
-        db = mliber_global.app().value("mliber_database")
         user = mliber_global.app().value("mliber_user")
         now = datetime.now()
         data = {"name": name, "type": typ, "windows_path": windows_path, "linux_path": linux_path,
                 "mac_path": mac_path, "description": description, "updated_by": user.id, "updated_at": now}
         try:
-            db.update("Library", selected_item.library.id, data)
+            self.db.update("Library", selected_item.library.id, data)
             library_icon_path = self._get_library_icon_path(name)
             if icon_path != library_icon_path:
                 if Path(icon_path).isfile():
@@ -324,11 +327,10 @@ class LibraryListView(QListView):
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
         app = mliber_global.app()
-        db = app.value("mliber_database")
         user = app.value("mliber_user")
-        library = db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
-                                        "linux_path": linux_path, "mac_path": mac_path, "status": status,
-                                        "description": description, "created_by": user.id})
+        library = self.db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
+                                             "linux_path": linux_path, "mac_path": mac_path, "status": status,
+                                             "description": description, "created_by": user.id})
         # 将icon 拷贝到 public dir
         if icon_path and Path(icon_path).isfile():
             library_icon_path = self._get_library_icon_path(name)

@@ -22,7 +22,6 @@ RELATION_MAPPING = {"is": "is_",
 
 class Database(object):
     pool = dict()
-    __has_init = False
 
     def __new__(cls, name="default"):
         """
@@ -40,12 +39,12 @@ class Database(object):
         """
         built in
         """
-        if not self.__has_init:
-            self.name = name
-            database = DataBaseFactory(self.name).database()
-            database.connect()
-            self.session = database.make_session()
-            self.__has_init = True
+        # if not self.__has_init:
+        self.name = name
+        database = DataBaseFactory(self.name).database()
+        database.connect()
+        self.session = database.make_session()
+        self.__has_init = True
 
     @contextmanager
     def get_session(self):

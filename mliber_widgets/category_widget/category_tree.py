@@ -7,6 +7,7 @@ import mliber_global
 import mliber_resource
 from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.os_libs.path import Path
+from mliber_api.database_api import Database
 
 
 class CategoryTreeItem(QTreeWidgetItem):
@@ -47,7 +48,8 @@ class CategoryTree(QTreeWidget):
 
     @property
     def db(self):
-        return mliber_global.app().value("mliber_database")
+        database = mliber_global.app().value("mliber_database")
+        return Database(database)
 
     @property
     def library(self):
@@ -230,8 +232,9 @@ class CategoryTree(QTreeWidget):
         :param category: Category instance
         :return:
         """
-        self.db.delete(category)
-        children = self.db.find("Category", [["parent_id", "=", category.id]])
+        db = self.db
+        db.delete(category)
+        children = db.find("Category", [["parent_id", "=", category.id]])
         if children:
             for child in children:
                 self.recursion_delete_category(child)

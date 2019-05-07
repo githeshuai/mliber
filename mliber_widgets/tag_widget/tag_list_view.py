@@ -1,11 +1,13 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QListView, QAbstractItemView
 from Qt.QtCore import Qt
-from Qt.QtGui import QFontMetricsF, QFont
+from Qt.QtGui import QFontMetricsF, QFont, QColor
 from tag_model import TagModel, TagProxyModel
 from tag_delegate import TagDelegate
 from mliber_conf import mliber_config
 import mliber_global
+from mliber_api.database_api import Database
+from mliber_qt_components.messagebox import MessageBox
 
 
 LIST_VIEW_STYLE = "QListView::item{background: #393c46; border-radius: 10px; border: 0px solid;}" \
@@ -16,28 +18,20 @@ LIST_VIEW_STYLE = "QListView::item{background: #393c46; border-radius: 10px; bor
 
 
 class TagListItem(object):
-    def __init__(self):
-        self.__text = None
-        self.__width = None
+    def __init__(self, tag):
+        """
+        :param tag: <Tag> Tag object
+        """
+        self.tag = tag
+        self.text = self.tag.name
+        self.width = None
 
     def set_text(self, text):
         """
         :return:
         """
-        self.__text = text
-        self.__width = self.text_width() + 25
-
-    def text(self):
-        """
-        :return:
-        """
-        return self.__text
-
-    def width(self):
-        """
-        :return:
-        """
-        return self.__width
+        self.text = text
+        self.width = self.text_width() + 25
 
     @staticmethod
     def font():
@@ -51,7 +45,7 @@ class TagListItem(object):
         """
         :return:
         """
-        text = self.text()
+        text = self.text
         font = self.font()
         metrics = QFontMetricsF(font)
         return metrics.boundingRect(text)
@@ -63,6 +57,12 @@ class TagListItem(object):
         """
         text_width = self.text_rect().width()
         return max(0, text_width)
+
+    def color(self):
+        """
+        :return: QColor
+        """
+        return QColor(self.tag.colorR, self.tag.colorG, self.tag.colorB)
 
 
 class TagListView(QListView):
@@ -89,10 +89,8 @@ class TagListView(QListView):
 
     @property
     def db(self):
-        """
-        :return:
-        """
-        return mliber_global.app().value("mliber_database")
+        database = mliber_global.app().value("mliber_database")
+        return Database(database)
 
     @property
     def library(self):
@@ -115,9 +113,8 @@ class TagListView(QListView):
         :return:
         """
         model_data = list()
-        tags = ["hello", "world", u"我信了你的邪啊", u"顶你个肺", "what the fuck", u"植物", u"花"]
         for tag in tags:
-            item = TagListItem()
+            item = TagListItem(tag)
             item.set_text(tag)
             model_data.append(item)
         return model_data
@@ -158,14 +155,43 @@ class TagListView(QListView):
         self._set_model()
         self._set_delegate()
 
-    def add_tag(self, tag_name):
+    def exist_tags(self):
         """
-        添加标签
+        获取当前列表里所有的tag对象
         :return:
         """
-        # 首先在数据库里添加tag
+        items = self.model().sourceModel().model_data
+        return [item.tag for item in items]
 
+    def exist_tag_names(self):
+        """
+        获取当前列表里所有的tag名字
+        :return:
+        """
+        exist_tags = self.exist_tags()
+        return [tag.name for tag in exist_tags]
+
+    def append_tag(self, tag_name, colorR, colorG, colorB):
+        """
+        添加标签
+        :param tag_name: <str>
+        :param colorR: <int>
+        :param colorG: <int>
+        :param colorB: <int>
+        :return:
+        """
+        # 首先判断tag是否在数据库中存在，如果存在不创建
+        db = self.db
+        tag_exist = db.find_one("Tag", [["name", "=", tag_name]])
+        # tag存在数据库中，但是没有在当前list中，则需要添加进来
+        if tag_exist:
+            pass
+        else:
+            tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG, "colorB": colorB})
         # 在ui显示
+        item = TagListItem(tag)
+        source_model = self.model().sourceModel()
+        self.model().sourceModel().insertRow(source_model.rowCount(), 1, [item])
 
     def rename_tag(self):
         """
@@ -194,6 +220,6 @@ class TagListView(QListView):
 if __name__ == "__main__":
     from mliber_libs.qt_libs.render_ui import render_ui
     with render_ui():
-        tag = TagListView()
-        tag.show_data()
-        tag.show()
+        tlv = TagListView()
+        tlv.show_data()
+        tlv.show()

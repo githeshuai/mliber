@@ -53,7 +53,7 @@ class TagDelegate(QStyledItemDelegate):
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
         tag = self.get_tag_item(index)
-        editor.set_text(tag.text())
+        editor.set_text(tag.text)
         editor.blockSignals(False)
 
     def updateEditorGeometry(self, editor, option, index):
@@ -61,7 +61,7 @@ class TagDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         tag = self.get_tag_item(index)
-        return QSize(tag.width(), TAG_HEIGHT)
+        return QSize(tag.width, TAG_HEIGHT)
 
     @staticmethod
     def get_tag_item(index):

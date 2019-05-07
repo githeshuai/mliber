@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QDialog
 from user_manage_table_view import UserTableView
+from mliber_api.database_api import Database
 import mliber_global
 import mliber_resource
 
@@ -74,7 +75,7 @@ class UserManage(QDialog):
         :return:
         """
         app = mliber_global.app()
-        db = app.value("mliber_database")
+        db = Database(app.value("mliber_database"))
         app_user = app.value("mliber_user")
         model_data = self.user_table_view.model().model_data
         if not model_data:

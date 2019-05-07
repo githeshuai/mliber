@@ -4,6 +4,7 @@ from Qt.QtCore import Qt
 import mliber_global
 from user_manage_model import UserManageModel
 from user_manage_delegate import UserManageDelegate
+from mliber_api.database_api import Database
 
 
 class UserTableView(QTableView):
@@ -21,7 +22,7 @@ class UserTableView(QTableView):
         """
         model_data = list()
         app = mliber_global.app()
-        db = app.value("mliber_database")
+        db = Database(app.value("mliber_database"))
         users = db.find("User", [])
         for user in users:
             temp = [user.id, user.name, user.chinese_name, user.password, user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
