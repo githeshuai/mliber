@@ -44,7 +44,6 @@ class CategoryWidget(QWidget):
         刷新ui
         :return:
         """
-        self.category_tree.refresh_global()
         self.category_tree.refresh_data()
         self.set_completer()
 

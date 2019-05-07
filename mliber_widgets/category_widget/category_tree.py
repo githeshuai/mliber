@@ -35,7 +35,6 @@ class CategoryTree(QTreeWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.items_mapping = {}
-        self.app = None
         self.set_signals()
 
     def set_signals(self):
@@ -46,15 +45,17 @@ class CategoryTree(QTreeWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
 
-    def refresh_global(self):
-        """
-        刷新global
-        :return:
-        """
-        self.app = mliber_global.app()
-        self.db = self.app.value("mliber_database")
-        self.library = self.app.value("mliber_library")
-        self.user = self.app.value("mliber_user")
+    @property
+    def db(self):
+        return mliber_global.app().value("mliber_database")
+
+    @property
+    def library(self):
+        return mliber_global.app().value("mliber_library")
+
+    @property
+    def user(self):
+        return mliber_global.app().value("mliber_user")
 
     def refresh_data(self):
         """
