@@ -65,7 +65,10 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         self.clear()
-        cats = self.db.find("Category", [["parent_id", "is", None], ["library_id", "=", self.library.id]])
+        db = self.db
+        cats = db.find("Category", [["parent_id", "is", None],
+                                    ["library_id", "=", self.library.id],
+                                    ["status", "=", "Active"]])
         for cat in cats:
             cat_item = CategoryTreeItem(self)
             cat_item.set_entity(cat)
@@ -80,7 +83,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         cat_id = cat.id
-        children = self.db.find("Category", [["parent_id", "=", cat_id]])
+        children = self.db.find("Category", [["parent_id", "=", cat_id], ["status", "=", "Active"]])
         if not children:
             return
         for child in children:
@@ -229,12 +232,14 @@ class CategoryTree(QTreeWidget):
     def recursion_delete_category(self, category):
         """
         递归删除子类型
+        :param db: Database object
         :param category: Category instance
         :return:
         """
         db = self.db
-        db.delete(category)
-        children = db.find("Category", [["parent_id", "=", category.id]])
+        category_id = category.id
+        db.update("Category", category_id, {"status": "Disable"})
+        children = db.find("Category", [["parent_id", "=", category_id], ["status", "=", "Active"]])
         if children:
             for child in children:
                 self.recursion_delete_category(child)

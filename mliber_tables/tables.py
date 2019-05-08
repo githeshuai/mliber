@@ -85,6 +85,7 @@ class Category(Base):
     updated_at = Column(DateTime)
     description = Column(Text)
     path = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
     library_id = Column(Integer, ForeignKey("library.id"))
     created_by = Column(Integer, ForeignKey("user.id"))  # created by

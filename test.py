@@ -1,34 +1,22 @@
-# -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QApplication
-from Qt.QtGui import QImage, QPalette, QBrush
-from Qt.QtCore import Qt
+from Qt.QtWidgets import QDialog, QPushButton, QHBoxLayout
+from mliber_api.database_api import Database
 
 
-class HasBackgroundWidget(QWidget):
-    def __init__(self, image_path, parent=None):
-        super(HasBackgroundWidget, self).__init__(parent)
-        self.image_path = image_path
-        self.set_background()
+class TestWidget(QDialog):
+    def __init__(self, parent=None):
+        super(TestWidget, self).__init__(parent)
 
-    def set_background(self):
-        self.image = QImage()
-        self.image.load(self.image_path)
-        self.setAutoFillBackground(True)
-        self.set_palette()
+        layout = QHBoxLayout(self)
+        btn = QPushButton("test", self)
+        layout.addWidget(btn)
+        btn.clicked.connect(self.test)
 
-    def set_palette(self):
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(self.image.scaled(self.width(), self.height(),
-                                                                                   Qt.KeepAspectRatio,
-                                                                                   Qt.SmoothTransformation)))
-        self.setPalette(palette)
-
-    def resizeEvent(self, event):
-        self.set_palette()
+    def test(self):
+        db = Database()
+        print db.find("User", [])
 
 
-if __name__ == "__main__":
-    app = QApplication([])
-    widget = HasBackgroundWidget(r"D:\textures\seamless\3.jpg")
-    widget.show()
-    app.exec_()
+from mliber_libs.qt_libs import render_ui
+with render_ui.render_ui():
+    tw = TestWidget()
+    tw.show()
