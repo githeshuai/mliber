@@ -8,6 +8,11 @@ class Icon(QIcon):
         super(Icon, self).__init__(parent)
 
     def set_color(self, color, size=None):
+        """
+        :param color: QColor
+        :param size: QSize
+        :return:
+        """
         size = size or self.actualSize(QSize(256, 256))
         pixmap = self.pixmap(size)
         if not self.isNull():

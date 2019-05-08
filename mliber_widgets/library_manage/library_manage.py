@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QMenu, QAction
+from datetime import datetime
+from Qt.QtWidgets import QMenu, QAction, QInputDialog, QLineEdit
 from Qt.QtGui import QCursor
 from Qt.QtCore import Signal, Qt
 from library_manage_ui import LibraryManageUI
@@ -8,6 +9,7 @@ import mliber_resource
 import mliber_global
 from mliber_conf.library_type import LIBRARY_TYPE
 from mliber_api.database_api import Database
+from mliber_qt_components.messagebox import MessageBox
 
 
 class LibraryManage(LibraryManageUI):
@@ -53,6 +55,10 @@ class LibraryManage(LibraryManageUI):
         self.refresh_btn.clicked.connect(self.refresh_ui)
         self.library_list_view.double_clicked.connect(self.on_library_list_view_double_clicked)
 
+    @property
+    def user(self):
+        return mliber_global.app().value("mliber_user")
+
     def on_library_list_view_double_clicked(self):
         """
         当library list view 双击的时候
@@ -67,9 +73,7 @@ class LibraryManage(LibraryManageUI):
         :return:
         """
         menu = QMenu(self)
-        app = mliber_global.app()
-        user = app.value("mliber_user")
-        if user.library_permission:
+        if self.user.library_permission:
             add_action = QAction("Add", self, triggered=self.show_create_library_dialog)
             menu.addAction(add_action)
         exit_action = QAction("exit", self, triggered=self.close)
@@ -84,13 +88,12 @@ class LibraryManage(LibraryManageUI):
         :return:
         """
         selected_library = self.library_list_view.selected_item()
-        user = mliber_global.app().value("mliber_user")
         menu = QMenu(self)
         if selected_library:
-            action_text = "Edit" if user.library_permission else "Detail"
+            action_text = "Edit" if self.user.library_permission else "Detail"
             edit_action = QAction(action_text, menu, triggered=self.show_edit_library_dialog)
             menu.addAction(edit_action)
-            if user.library_permission:
+            if self.user.library_permission:
                 delete_action = QAction("Delete", menu, triggered=self.delete_library)
                 menu.addAction(delete_action)
         else:
@@ -153,10 +156,9 @@ class LibraryManage(LibraryManageUI):
         :return:
         """
         selected_item = self.library_list_view.selected_item()
-        user = mliber_global.app().value("mliber_user")
         self.library_widget = CreateLibraryDialog(mode="update", parent=self)
         self.library_widget.update.connect(self.update_library)
-        if not user.library_permission:
+        if not self.user.library_permission:
             self.library_widget.exec_button.setHidden(True)
         self.library_widget.set_name(selected_item.library.name)
         self.library_widget.set_type(selected_item.library.type)
@@ -200,9 +202,17 @@ class LibraryManage(LibraryManageUI):
         delete current library
         :return:
         """
+        # 输入密码验证
+        password, ok = QInputDialog.getText(self, "Password", "Input Password", echo=QLineEdit.Password)
+        if password and ok:
+            if password != self.user.password:
+                MessageBox.critical(self, "Wrong Password", u"密码错误")
+                return
         selected_library = self.library_list_view.selected_library()
         db = Database(mliber_global.app().value("mliber_database"))
-        db.update("Library", selected_library.id, {"status": "Disable"})
+        db.update("Library", selected_library.id, {"status": "Disable",
+                                                   "updated_at": datetime.now(),
+                                                   "updated_by": self.user.id})
         if mliber_global.app().value("mliber_library") == selected_library:
             mliber_global.app().set_value(mliber_library=None)
         self.refresh_ui()

@@ -33,6 +33,11 @@ RED_COLOR = "#f65150"
 # ORANGE COLOR
 ORANGE_COLOR = "#FF8C00"
 
+# TAG DEFAULT COLOR
+TAG_COLOR_R = 128
+TAG_COLOR_G = 128
+TAG_COLOR_B = 128
+
 
 # delegate list view style
 LIST_VIEW_STYLE = "QListView::item{background: #393c46;border-radius: 3px;}" \

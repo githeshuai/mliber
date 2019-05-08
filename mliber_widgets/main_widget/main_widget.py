@@ -19,6 +19,10 @@ class MainWidget(MainWidgetUI):
         database = mliber_global.app().value("mliber_database")
         return Database(database)
 
+    @property
+    def library(self):
+        return mliber_global.app().value("mliber_library")
+
     def set_signals(self):
         """
         信号连接
@@ -26,6 +30,8 @@ class MainWidget(MainWidgetUI):
         """
         self.tool_bar.user_manage_action_triggered.connect(self.show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self.show_library_manager)
+        self.category_widget.category_tree.itemSelectionChanged.connect(self._on_category_selection_changed)
+        self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
 
     def show_user_manager(self):
         """
@@ -44,12 +50,68 @@ class MainWidget(MainWidgetUI):
         library_manage_ui.library_double_clicked.connect(self.refresh_library)
         library_manage_ui.exec_()
 
-    def refresh_library(self):
+    def assets_of_library(self, library_id):
         """
-        刷新library
+        获取该library下所有的资产
+        :param library_id:
         :return:
         """
+        filters = [["library_id", "=", library_id], ["status", "=", "Active"]]
+        assets = self.db.find("Asset", filters)
+        return assets
+
+    def tags_of_assets(self, assets):
+        """
+        获取该library下所有资产的tag
+        :param assets: <list> Asset instance list
+        :return:
+        """
+        tags = list()
+        asset_tags = list()
+        for asset in assets:
+            asset_tags.extend(asset.tags)
+        if asset_tags:
+            tag_names = [tag.name for tag in asset_tags]
+            tag_names = list(set(tag_names))
+            tags = self.db.find("Tag", [["name", "in", tag_names], ["status", "=", "Active"]])
+        return tags
+
+    def _on_category_selection_changed(self):
+        """
+        当category选择改变的时候
+        :return:
+        """
+        print "category changed"
+
+    def _on_tag_selection_changed(self, tags):
+        """
+        当tag选择改变的时候
+        :return:
+        """
+        print tags
+
+    def refresh_library(self):
+        """
+        刷新library, 切换library的时候，
+        获取所有的category和所有的assets，列出当前类别下所有的tag
+        :return:
+        """
+        # 获取所有的assets, 显示在asset list view中
+        if not self.library:
+            self.category_widget.clear()
+            self.tag_widget.clear()
+            return
+        # 列出所有的category
         self.category_widget.refresh_ui()
+        # 求出所有资产
+        assets = self.assets_of_library(self.library.id)
+        # 列出所有的tag
+        tags = self.tags_of_assets(assets)
+        self.tag_widget.tag_list_view.show_data(tags)
+        tag_names = [tag.name for tag in tags]
+        self.tag_widget.set_completer(tag_names)
+        # 列出所有的资产
+        # todo
 
     def auto_login(self):
         """
@@ -83,10 +145,14 @@ class MainWidget(MainWidgetUI):
         app = mliber_global.app()
         library_id = mliber_utils.read_history("library_id")
         if library_id:
-            library = self.db.find_one("Library", [["id", "=", library_id]])
+            library = self.db.find_one("Library",
+                                       [["id", "=", library_id],
+                                        ["status", "=", "Active"]])
             if library:
                 app.set_value(mliber_library=library)
-                self.refresh_library()
+            else:
+                app.set_value(mliber_library=None)
+            self.refresh_library()
 
     def showEvent(self, event):
         """

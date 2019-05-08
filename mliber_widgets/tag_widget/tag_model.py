@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from Qt.QtGui import QColor
 from Qt.QtCore import QModelIndex, Qt, QSortFilterProxyModel, QAbstractListModel, QRegExp
 
 
@@ -14,9 +15,9 @@ class TagModel(QAbstractListModel):
         if not index.isValid():
             return
         row = index.row()
-        tag = self.model_data[row]
+        item = self.model_data[row]
         if role == Qt.UserRole:
-            return tag
+            return item
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -36,12 +37,14 @@ class TagModel(QAbstractListModel):
         self.endRemoveRows()
         return True
 
-    def setData(self, index, value, role):
+    def setData(self, index, value, role=Qt.UserRole):
         row = index.row()
-        if value:
-            if role == Qt.UserRole:
-                self.model_data[row].icon_size = value
-                self.dataChanged.emit(index, index)
+        if value and role == Qt.UserRole:
+            if isinstance(value, basestring):
+                self.model_data[row].text = value
+            elif isinstance(value, QColor):
+                self.model_data[row].color = value
+            self.dataChanged.emit(index, index)
             return True
 
     def remove_all(self):
@@ -55,14 +58,6 @@ class TagProxyModel(QSortFilterProxyModel):
         self.regexp = QRegExp()
         self.regexp.setCaseSensitivity(Qt.CaseInsensitive)
         self.regexp.setPatternSyntax(QRegExp.RegExp)
-        self.filter_type = None
-
-    def set_filter_type(self, filter_type):
-        """
-        :param filter_type: <str> name or type
-        :return:
-        """
-        self.filter_type = filter_type
 
     def filterAcceptsRow(self, sourceRow, sourceParent):
         """
@@ -71,11 +66,11 @@ class TagProxyModel(QSortFilterProxyModel):
         :rtype: bool
         """
         index = self.sourceModel().index(sourceRow, 0, sourceParent)
-        tag = self.sourceModel().data(index)
+        item = self.sourceModel().data(index)
         if self.regexp.isEmpty():
             return True
         else:
-            return self.regexp.exactMatch(tag)
+            return self.regexp.exactMatch(item.text)
 
     def set_filter(self, regexp):
         """

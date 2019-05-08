@@ -188,4 +188,7 @@ if __name__ == "__main__":
     db = Database("default")
     # db.create("Library", {"name": "mayaasset", "type": "MayaAsset", "windows_path": "D:/MayaAsset"})
     # db.create("Library", {"name": "nukeasset1", "type": "NukeAsset", "windows_path": "D:/NukeAsset1"})
-    print db.find_one("Category", [["parent_id", "is", None]])
+    assets = db.find("Asset", [["library_id", "=", 1]])
+    for asset in assets:
+        for tag in asset.tags:
+            print tag.name

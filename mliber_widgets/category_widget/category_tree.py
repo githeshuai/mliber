@@ -65,6 +65,8 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         self.clear()
+        if not self.library:
+            return
         db = self.db
         cats = db.find("Category", [["parent_id", "is", None],
                                     ["library_id", "=", self.library.id],
@@ -99,11 +101,12 @@ class CategoryTree(QTreeWidget):
         """
         menu = QMenu(self)
         show_in_explore_action = QAction(u"打开路径", self, triggered=self.open_category)
-        add_category_action = QAction(u"添加子类型", self, triggered=self.add_category)
-        delete_action = QAction(u"删除", self, triggered=self.delete_category)
         menu.addAction(show_in_explore_action)
-        menu.addAction(add_category_action)
-        menu.addAction(delete_action)
+        if self.user.category_permission:
+            add_category_action = QAction(u"添加子类型", self, triggered=self.add_category)
+            delete_action = QAction(u"删除", self, triggered=self.delete_category)
+            menu.addAction(add_category_action)
+            menu.addAction(delete_action)
         menu.exec_(QCursor.pos())
 
     def selected_items(self):
@@ -252,13 +255,9 @@ class CategoryTree(QTreeWidget):
         selected_items = self.selected_items()
         if not selected_items:
             return
-        if not self.user.category_permission:
-            MessageBox.warning(self, "Warning", u"你没有权限执行此操作")
-            return
-        else:
-            dialog = DeleteCategoryDialog(self)
-            dialog.accept_signal.connect(self._delete_category)
-            dialog.exec_()
+        dialog = DeleteCategoryDialog(self)
+        dialog.accept_signal.connect(self._delete_category)
+        dialog.exec_()
 
     def _delete_category(self, delete_source_file):
         """

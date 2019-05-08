@@ -391,4 +391,3 @@ class LibraryListView(QListView):
         index = self.indexAt(point)
         if index.row() < 0:
             self.clearSelection()
-

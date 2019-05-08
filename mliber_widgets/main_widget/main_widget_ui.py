@@ -3,6 +3,7 @@ from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView
 from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
+from mliber_widgets.tag_widget import TagWidget
 
 
 class MainWidgetUI(QDialog):
@@ -29,7 +30,8 @@ class MainWidgetUI(QDialog):
         self.category_widget = CategoryWidget(self)
         left_splitter.addWidget(self.category_widget)
         # add tag widget to left splitter
-
+        self.tag_widget = TagWidget(self)
+        left_splitter.addWidget(self.tag_widget)
         # add left splitter to main splitter
         self.splitter.addWidget(left_splitter)
         # add asset list view to main splitter
