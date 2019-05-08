@@ -108,6 +108,7 @@ class Asset(Base):
     updated_at = Column(DateTime)
     description = Column(Text)
     path = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
     library_id = Column(Integer, ForeignKey("library.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
@@ -131,6 +132,7 @@ class Tag(Base):
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
     description = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
     created_by = Column(Integer, ForeignKey("user.id"))  # created by
     updated_by = Column(Integer, ForeignKey("user.id"))
@@ -157,6 +159,7 @@ class LiberObject(Base):
     software = Column(Text)
     plugin = Column(Text)
     path = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key
     asset_id = Column(Integer, ForeignKey("asset.id"))
     created_by = Column(Integer, ForeignKey("user.id"))  # created by
