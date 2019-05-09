@@ -1,14 +1,16 @@
 # -*- coding:utf-8 -*-
 from contextlib import contextmanager
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import and_, or_  # do not delete
 from mliber_libs.sql_libs.database_factory import DataBaseFactory
-from mliber_tables.tables import User, Library, Category, Asset, Tag
+from mliber_tables.tables import User, Library, Category, Asset, Tag, LiberObject
 
 
 ENTITY_MAPPING = {"User": User,
                   "Library": Library,
                   "Category": Category,
-                  "Asset": Asset, "Tag": Tag}
+                  "Asset": Asset,
+                  "Tag": Tag,
+                  "LiberObject": LiberObject}
 
 RELATION_MAPPING = {"is": "is_",
                     "is_not": "isnot",

@@ -56,14 +56,6 @@ class AssetProxyModel(QSortFilterProxyModel):
         self.regexp = QRegExp()
         self.regexp.setCaseSensitivity(Qt.CaseInsensitive)
         self.regexp.setPatternSyntax(QRegExp.RegExp)
-        self.filter_type = None
-
-    def set_filter_type(self, filter_type):
-        """
-        :param filter_type: <str> name or type
-        :return:
-        """
-        self.filter_type = filter_type
 
     def filterAcceptsRow(self, sourceRow, sourceParent):
         """
@@ -76,9 +68,7 @@ class AssetProxyModel(QSortFilterProxyModel):
         if self.regexp.isEmpty():
             return True
         else:
-            if self.filter_type == "type":
-                return self.regexp.exactMatch(item.library.type)
-            return self.regexp.exactMatch(item.library.name)
+            return self.regexp.exactMatch(item.asset.name)
 
     def set_filter(self, regexp):
         """

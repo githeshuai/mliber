@@ -3,7 +3,6 @@ from Qt.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QDialog
 from user_manage_table_view import UserTableView
 from mliber_api.database_api import Database
 import mliber_global
-import mliber_resource
 
 
 class UserManage(QDialog):

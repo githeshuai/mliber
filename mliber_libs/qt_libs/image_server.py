@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 import time
 from Qt.QtCore import Signal, QThread, Qt, QSize, QObject
 from Qt.QtGui import QImageReader
+
+THREAD_COUNT = 10
 
 
 class ImageCacheThread(QThread):
@@ -29,7 +32,15 @@ class ImageCacheThread(QThread):
         image = reader.read()
         return image
 
-    def update_img_dict(self, image_path):
+    def append(self, image_path):
+        """
+        加入未缓存的图片
+        :return:
+        """
+        temp_img_dict = {image_path: [False, None]}
+        self.__img_dict.update(temp_img_dict)
+
+    def update(self, image_path):
         """
         Args:
             image_path: <str>
@@ -38,18 +49,17 @@ class ImageCacheThread(QThread):
                 'img_hash' : [True, QImage] # True: cached ,default is False
             }
         """
-        temp_img_dict = {image_path: [False, None]}
-        self.__img_dict.update(temp_img_dict)
+        self.__img_dict[image_path] = [False, None]
 
-    def clear_img_dict(self):
+    def clear(self):
         self.__img_dict = {}
 
     def run(self):
         while 1:
-            self.check_img_list()
+            self.cache()
             time.sleep(0.5)
 
-    def check_img_list(self):
+    def cache(self):
         for image_path, data in self.__img_dict.items():
             cached, item = data
             if not cached:
@@ -58,7 +68,9 @@ class ImageCacheThread(QThread):
                 self.cache_done_signal.emit(_img_item)
                 self.__img_dict[image_path] = [True, _img_item]
 
-    def get_img_cache(self, image_path):
+    def get_cache(self, image_path):
+        if not os.path.isfile(image_path):
+            return
         img_data = self.__img_dict.get(image_path, None)
         if img_data:
             cached, item = img_data
@@ -67,13 +79,13 @@ class ImageCacheThread(QThread):
             else:
                 return None
         else:
-            self.update_img_dict(image_path)
+            self.append(image_path)
 
 
 class ImageCacheThreadsServer(QObject):
     cache_done_signal = Signal(object)
 
-    def __init__(self, thread_count=3):
+    def __init__(self, thread_count=THREAD_COUNT):
         super(ImageCacheThreadsServer, self).__init__()
         self._thread_count = thread_count
         self._img_list = []
@@ -83,19 +95,27 @@ class ImageCacheThreadsServer(QObject):
             self.thread_pool[index].cache_done_signal.connect(self.cache_done_signal)
             self.thread_pool[index].start()
 
-    def get_qimage(self, image_path):
+    def get_image(self, image_path):
         if not image_path:
             return
         if image_path not in self._img_list:
             self._img_list.append(image_path)
         image_index = self._img_list.index(image_path)
         cur_img_thread_index = image_index % self._thread_count
-        return self.thread_pool[cur_img_thread_index].get_img_cache(image_path)
+        return self.thread_pool[cur_img_thread_index].get_cahce(image_path)
 
-    def clear_img_cache(self):
+    def update(self, image_path):
+        if not image_path:
+            return
+        image_index = self._img_list.index(image_path)
+        cur_img_thread_index = image_index % self._thread_count
+        self.thread_pool[cur_img_thread_index].update(image_path)
+        return self.thread_pool[cur_img_thread_index].get_cahce(image_path)
+
+    def clear(self):
         self._img_list = []
         for thread in self.thread_pool:
-            thread.clear_img_dict()
+            thread.clear()
 
     def __del__(self):
         for thread in self.thread_pool:

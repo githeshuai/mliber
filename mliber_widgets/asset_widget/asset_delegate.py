@@ -82,6 +82,7 @@ class CellAssetWidget(QWidget):
         main_layout.addLayout(flag_layout)
         main_layout.addWidget(self.icon_widget)
         main_layout.addWidget(self.name_label)
+        main_layout.setSpacing(2)
 
     def light_tag_flag(self, color):
         """

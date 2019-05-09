@@ -7,6 +7,7 @@ import mliber_global
 import mliber_resource
 from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
+from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 
 class MainWidget(MainWidgetUI):
@@ -138,8 +139,8 @@ class MainWidget(MainWidgetUI):
                 db = Database(database)
                 db.create_admin()
                 app.set_value(mliber_database=database)
-                user = db.find_one("User", [["name", "=", user_name]])
-                if user and user.password == password and user.status == "Active":
+                user = db.find_one("User", [["name", "=", user_name], ["status", "=", "Active"]])
+                if user and user.password == password:
                     app.set_value(mliber_user=user)
             except RuntimeError as e:
                 MessageBox.critical(self, "Login Failed", str(e))
@@ -168,6 +169,10 @@ class MainWidget(MainWidgetUI):
         在显示之前，获取历史记录，自动登录
         :return:
         """
+        # 开启刷图线程
+        image_service = ImageCacheThreadsServer()
+        mliber_global.app().set_value("mliber_image_service", image_service)
+        # 自动登录
         if self.auto_login():
             self.set_global_library_from_history()
 
