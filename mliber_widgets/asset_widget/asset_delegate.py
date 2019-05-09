@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QToolButton, QStyledItemDelegate
-from Qt.QtGui import QColor
+from Qt.QtGui import QColor, QIcon
 from Qt.QtCore import QSize, Qt
 from mliber_qt_components.icon import Icon
 from mliber_qt_components.icon_widget import IconWidget
@@ -115,12 +115,12 @@ class CellAssetWidget(QWidget):
         """
         self.name_label.setText(text)
 
-    def set_icon(self, icon_path):
+    def set_icon(self, icon):
         """
         设置显示图片
         :return:
         """
-        self.icon_widget.set_icon(icon_path)
+        self.icon_widget.set_icon(icon)
 
     def set_icon_size(self, size):
         """
@@ -143,7 +143,7 @@ class AssetDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
-        editor.set_icon(item.icon_path)
+        editor.set_icon(QIcon(item.icon_path))
         editor.set_name(item.asset.name)
         if item.has_tag():
             editor.light_tag_flag(QColor(50, 100, 255))

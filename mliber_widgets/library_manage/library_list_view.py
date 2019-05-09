@@ -12,6 +12,7 @@ import mliber_resource
 from mliber_libs.os_libs import system
 from mliber_qt_components.messagebox import MessageBox
 from mliber_api.database_api import Database
+from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 DEFAULT_ICON_SIZE = 200
 
@@ -34,6 +35,7 @@ class LibraryListView(QListView):
 
     def __init__(self, parent=None):
         super(LibraryListView, self).__init__(parent)
+        self.image_server = None
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
         self.setMouseTracking(True)
@@ -45,12 +47,26 @@ class LibraryListView(QListView):
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        # show data
-        self.show_data()
         # set style
         self.set_style()
         # set signals
         self.set_signals()
+
+    def start_image_cache_thread(self):
+        """
+        获取刷新图片线程
+        :return:
+        """
+        self.image_server = ImageCacheThreadsServer()
+        self.image_server.cache_done_signal.connect(self._img_cached_done)
+
+    def _img_cached_done(self, *args):
+        """
+        :return:
+        """
+        self.setUpdatesEnabled(False)
+        self.repaint()
+        self.setUpdatesEnabled(True)
     
     @property
     def db(self):
@@ -121,6 +137,7 @@ class LibraryListView(QListView):
         proxy_model = LibraryManageProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
+        # self.reset()
 
     def _set_delegate(self):
         """
@@ -144,6 +161,7 @@ class LibraryListView(QListView):
         show data in list view
         :return:
         """
+        self.start_image_cache_thread()
         self._set_model()
         self._set_delegate()
 

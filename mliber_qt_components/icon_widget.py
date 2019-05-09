@@ -16,12 +16,11 @@ class IconWidget(QToolButton):
         """
         event.ignore()
 
-    def set_icon(self, icon_path):
+    def set_icon(self, icon):
         """
         设置显示图片
         :return:
         """
-        icon = QIcon(icon_path)
         self.setIcon(icon)
 
     def set_icon_size(self, size):

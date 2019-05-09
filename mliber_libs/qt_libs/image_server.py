@@ -2,7 +2,7 @@
 import os
 import time
 from Qt.QtCore import Signal, QThread, Qt, QSize, QObject
-from Qt.QtGui import QImageReader
+from Qt.QtGui import QImageReader, QIcon, QPixmap
 
 THREAD_COUNT = 10
 
@@ -13,7 +13,7 @@ class ImageCacheThread(QThread):
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         self.__img_dict = {}
-        self.clear_img_dict()
+        self.clear()
 
     @staticmethod
     def load_image_from_disk(file_path):
@@ -21,16 +21,9 @@ class ImageCacheThread(QThread):
         load image from disk
         Args:
             file_path: <str> a file path
-        Returns: QImage
-
+        Returns: QIcon
         """
-        reader = QImageReader()
-        reader.setFileName(file_path)
-        image_size = reader.size()
-        image_size.scale(QSize(150, 150), Qt.KeepAspectRatio)
-        reader.setScaledSize(image_size)
-        image = reader.read()
-        return image
+        return QIcon(file_path)
 
     def append(self, image_path):
         """
@@ -60,6 +53,10 @@ class ImageCacheThread(QThread):
             time.sleep(0.5)
 
     def cache(self):
+        """
+        开始缓存
+        :return:
+        """
         for image_path, data in self.__img_dict.items():
             cached, item = data
             if not cached:
@@ -69,6 +66,12 @@ class ImageCacheThread(QThread):
                 self.__img_dict[image_path] = [True, _img_item]
 
     def get_cache(self, image_path):
+        """
+        从缓存序列中获取
+        :param image_path:
+        :return:
+        """
+        print image_path
         if not os.path.isfile(image_path):
             return
         img_data = self.__img_dict.get(image_path, None)
@@ -96,15 +99,25 @@ class ImageCacheThreadsServer(QObject):
             self.thread_pool[index].start()
 
     def get_image(self, image_path):
+        """
+        从缓存序列中获取
+        :param image_path:
+        :return:
+        """
         if not image_path:
             return
         if image_path not in self._img_list:
             self._img_list.append(image_path)
         image_index = self._img_list.index(image_path)
         cur_img_thread_index = image_index % self._thread_count
-        return self.thread_pool[cur_img_thread_index].get_cahce(image_path)
+        return self.thread_pool[cur_img_thread_index].get_cache(image_path)
 
     def update(self, image_path):
+        """
+        更新当前图
+        :param image_path:
+        :return:
+        """
         if not image_path:
             return
         image_index = self._img_list.index(image_path)
@@ -113,6 +126,10 @@ class ImageCacheThreadsServer(QObject):
         return self.thread_pool[cur_img_thread_index].get_cahce(image_path)
 
     def clear(self):
+        """
+        清空线程
+        :return:
+        """
         self._img_list = []
         for thread in self.thread_pool:
             thread.clear()
@@ -123,3 +140,4 @@ class ImageCacheThreadsServer(QObject):
                 thread.terminate()
             except Exception as e:
                 pass
+

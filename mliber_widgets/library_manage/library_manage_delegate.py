@@ -55,12 +55,12 @@ class CellLibrary(QWidget):
         main_layout.addWidget(self.name_label)
         main_layout.setSpacing(2)
 
-    def set_icon(self, icon_path):
+    def set_icon(self, icon):
         """
         设置显示图片
         :return:
         """
-        self.icon_widget.set_icon(icon_path)
+        self.icon_widget.set_icon(icon)
 
     def set_icon_size(self, size):
         """
@@ -88,6 +88,7 @@ class CellLibrary(QWidget):
 class LibraryManageDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super(LibraryManageDelegate, self).__init__(parent)
+        self.__parent = parent
 
     def createEditor(self, parent, option, index):
         editor = CellLibrary(parent)
@@ -97,7 +98,7 @@ class LibraryManageDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
-        editor.set_icon(item.icon_path)
+        editor.set_icon(self.__parent.image_server.get_image(item.icon_path))
         editor.set_name(item.library.name)
         editor.set_type(item.library.type)
         editor.blockSignals(False)

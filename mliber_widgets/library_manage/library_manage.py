@@ -19,20 +19,22 @@ class LibraryManage(LibraryManageUI):
         super(LibraryManage, self).__init__(parent)
         # set signals
         self._set_signals()
-        # init
-        self.init()
         # 右键菜单
         self.library_list_view.setContextMenuPolicy(Qt.CustomContextMenu)
         self.library_list_view.customContextMenuRequested.connect(self.show_context_menu)
 
-    def init(self):
+    def refresh_ui(self):
         """
         initialize
         :return:
         """
+        # show data
+        self.library_list_view.show_data()
         library_names = self.library_list_view.library_names()
         self.search_le.set_completer(library_names)
         self.type_combo.addItems(LIBRARY_TYPE)
+        # filter
+        self._filter()
 
     def _set_signals(self):
         """
@@ -179,14 +181,6 @@ class LibraryManage(LibraryManageUI):
         if update_result:
             self.refresh_ui()
             self.library_widget.accept()
-
-    def refresh_ui(self):
-        """
-        刷新ui
-        :return:
-        """
-        self.library_list_view.refresh_ui()
-        self._filter()
 
     def delete_library(self):
         """

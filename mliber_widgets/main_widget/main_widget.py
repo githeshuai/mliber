@@ -58,6 +58,7 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         library_manage_ui = LibraryManage(self)
+        library_manage_ui.refresh_ui()
         library_manage_ui.library_double_clicked.connect(self.refresh_library)
         library_manage_ui.exec_()
 
@@ -169,9 +170,6 @@ class MainWidget(MainWidgetUI):
         在显示之前，获取历史记录，自动登录
         :return:
         """
-        # 开启刷图线程
-        image_service = ImageCacheThreadsServer()
-        mliber_global.app().set_value("mliber_image_service", image_service)
         # 自动登录
         if self.auto_login():
             self.set_global_library_from_history()
