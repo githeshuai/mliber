@@ -17,8 +17,6 @@ class LibraryManage(LibraryManageUI):
 
     def __init__(self, parent=None):
         super(LibraryManage, self).__init__(parent)
-        # set style
-        self.set_style()
         # set signals
         self._set_signals()
         # init
@@ -26,13 +24,6 @@ class LibraryManage(LibraryManageUI):
         # 右键菜单
         self.library_list_view.setContextMenuPolicy(Qt.CustomContextMenu)
         self.library_list_view.customContextMenuRequested.connect(self.show_context_menu)
-
-    def set_style(self):
-        """
-        set style
-        :return:
-        """
-        self.setStyleSheet(mliber_resource.style())
 
     def init(self):
         """

@@ -28,8 +28,7 @@ class UserManage(QDialog):
         button_layout.addWidget(self.refresh_button)
         button_layout.addWidget(self.close_button)
         main_layout.addLayout(button_layout)
-        # set style sheet
-        self._set_style()
+        # set signals
         self._set_signals()
 
     def _set_signals(self):
@@ -41,13 +40,6 @@ class UserManage(QDialog):
         self.refresh_button.clicked.connect(self.refresh_table)
         self.apply_btn.clicked.connect(self._apply)
         self.close_button.clicked.connect(self.close)
-
-    def _set_style(self):
-        """
-        set style sheet
-        :return:
-        """
-        self.setStyleSheet(mliber_resource.style())
 
     def _add_user(self):
         """

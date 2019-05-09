@@ -347,16 +347,16 @@ class TagListView(QListView):
             menu.addAction(delete_action)
         menu.exec_(QCursor.pos())
 
-    def mousePressEvent(self, event):
-        """
-        当鼠标点击空白处，取消全部选择
-        :return:
-        """
-        super(TagListView, self).mousePressEvent(event)
-        point = event.pos()
-        index = self.indexAt(point)
-        if index.row() < 0:
-            self.deselect_all()
+    # def mousePressEvent(self, event):
+    #     """
+    #     当鼠标点击空白处，取消全部选择
+    #     :return:
+    #     """
+    #     super(TagListView, self).mousePressEvent(event)
+    #     point = event.pos()
+    #     index = self.indexAt(point)
+    #     if index.row() < 0:
+    #         self.deselect_all()
 
 
 if __name__ == "__main__":

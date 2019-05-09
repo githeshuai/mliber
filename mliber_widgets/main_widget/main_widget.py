@@ -4,6 +4,7 @@ from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage
 import mliber_utils
 import mliber_global
+import mliber_resource
 from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
 
@@ -11,8 +12,17 @@ from mliber_qt_components.messagebox import MessageBox
 class MainWidget(MainWidgetUI):
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
+        # set style
+        self.set_style()
         # set signals
         self.set_signals()
+
+    def set_style(self):
+        """
+        set style
+        :return:
+        """
+        return self.setStyleSheet(mliber_resource.style())
 
     @property
     def db(self):
@@ -105,13 +115,12 @@ class MainWidget(MainWidgetUI):
         self.category_widget.refresh_ui()
         # 求出所有资产
         assets = self.assets_of_library(self.library.id)
+        self.asset_widget.set_assets(assets)
         # 列出所有的tag
         tags = self.tags_of_assets(assets)
         self.tag_widget.tag_list_view.show_data(tags)
         tag_names = [tag.name for tag in tags]
         self.tag_widget.set_completer(tag_names)
-        # 列出所有的资产
-        # todo
 
     def auto_login(self):
         """

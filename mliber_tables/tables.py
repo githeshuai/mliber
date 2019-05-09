@@ -44,8 +44,8 @@ class Library(Base):
     """
     __tablename__ = "library"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), unique=True, nullable=False)
-    type = Column(String(20), nullable=False)
+    name = Column(String(100), unique=True, nullable=False)
+    type = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
     windows_path = Column(String(300))
@@ -79,7 +79,7 @@ class Category(Base):
     """
     __tablename__ = "category"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False)
+    name = Column(String(50), nullable=False)
     parent_id = Column(Integer)
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
@@ -103,7 +103,7 @@ class Asset(Base):
     """
     __tablename__ = "asset"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False)
+    name = Column(String(300), nullable=False)
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
     description = Column(Text)
@@ -128,7 +128,7 @@ class Tag(Base):
     """
     __tablename__ = "tag"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False, unique=True)
+    name = Column(String(300), nullable=False, unique=True)
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
     description = Column(Text)
@@ -151,8 +151,8 @@ class LiberObject(Base):
     """
     __tablename__ = "liberobject"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False)
-    type = Column(String(20))
+    name = Column(String(300), nullable=False)
+    type = Column(String(50))
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
     description = Column(Text)

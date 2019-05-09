@@ -4,6 +4,7 @@ from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
 from mliber_widgets.tag_widget import TagWidget
+from mliber_widgets.asset_widget import AssetWidget
 
 
 class MainWidgetUI(QDialog):
@@ -35,6 +36,7 @@ class MainWidgetUI(QDialog):
         # add left splitter to main splitter
         self.splitter.addWidget(left_splitter)
         # add asset list view to main splitter
-        self.splitter.addWidget(QListView(self))
+        self.asset_widget = AssetWidget(self)
+        self.splitter.addWidget(self.asset_widget)
         # add main splitter to main layout
         main_layout.addWidget(self.splitter)
