@@ -23,7 +23,13 @@ class ImageCacheThread(QThread):
             file_path: <str> a file path
         Returns: QIcon
         """
-        return QIcon(file_path)
+        reader = QImageReader()
+        reader.setFileName(file_path)
+        # image_size = reader.size()
+        # image_size.scale(QSize(150, 150), Qt.KeepAspectRatio)
+        # reader.setScaledSize(image_size)
+        image = reader.read()
+        return image
 
     def append(self, image_path):
         """
@@ -71,7 +77,6 @@ class ImageCacheThread(QThread):
         :param image_path:
         :return:
         """
-        print image_path
         if not os.path.isfile(image_path):
             return
         img_data = self.__img_dict.get(image_path, None)
@@ -135,9 +140,10 @@ class ImageCacheThreadsServer(QObject):
             thread.clear()
 
     def __del__(self):
+        print len(self.thread_pool)
         for thread in self.thread_pool:
             try:
+                thread.clear()
                 thread.terminate()
             except Exception as e:
                 pass
-

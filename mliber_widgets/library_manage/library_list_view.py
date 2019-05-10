@@ -51,6 +51,8 @@ class LibraryListView(QListView):
         self.set_style()
         # set signals
         self.set_signals()
+        # start image cache server
+        self.start_image_cache_thread()
 
     def start_image_cache_thread(self):
         """
@@ -62,12 +64,15 @@ class LibraryListView(QListView):
 
     def _img_cached_done(self, *args):
         """
+        当图片缓存成功，刷新ui
+        :param args:
         :return:
         """
-        self.setUpdatesEnabled(False)
-        self.repaint()
-        self.setUpdatesEnabled(True)
-    
+        source_model = self.model().sourceModel()
+        for row in xrange(source_model.rowCount()):
+            index = source_model.index(row, 0)
+            source_model.dataChanged.emit(index, index)
+
     @property
     def db(self):
         database = mliber_global.app().value("mliber_database")
@@ -137,7 +142,6 @@ class LibraryListView(QListView):
         proxy_model = LibraryManageProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
-        # self.reset()
 
     def _set_delegate(self):
         """
@@ -161,7 +165,7 @@ class LibraryListView(QListView):
         show data in list view
         :return:
         """
-        self.start_image_cache_thread()
+        self.image_server.clear()
         self._set_model()
         self._set_delegate()
 

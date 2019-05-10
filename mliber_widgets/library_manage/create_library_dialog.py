@@ -208,9 +208,9 @@ class CreateLibraryDialog(QDialog):
         if not all((self.name, self.type)):
             MessageBox.warning(self, "Warning", u"请填入必填项")
             return
+        data = [self.name, self.type, self.windows_path, self.linux_path,
+                self.mac_path, self.icon_path, self.description]
         if self.mode == "create":
-            self.create.emit([self.name, self.type, self.windows_path, self.linux_path, self.mac_path,
-                              self.icon_path, self.description])
+            self.create.emit(data)
         else:
-            self.update.emit([self.name, self.type, self.windows_path, self.linux_path, self.mac_path,
-                              self.icon_path, self.description])
+            self.update.emit(data)

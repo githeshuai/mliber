@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from functools import partial
 from Qt.QtCore import QModelIndex, Qt, QSortFilterProxyModel, QAbstractListModel, QRegExp
 
 
@@ -6,7 +7,7 @@ class LibraryManageModel(QAbstractListModel):
     def __init__(self, model_data=[], parent=None):
         super(LibraryManageModel, self).__init__(parent)
         self.model_data = model_data
-        self.view = None
+        self.__parent = parent
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.model_data)

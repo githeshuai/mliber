@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QLabel, QVBoxLayout, QToolButton, QHBoxLayout, QWidget, QStyledItemDelegate
 from Qt.QtCore import Qt, QSize
+from Qt.QtGui import QIcon, QPixmap
 import mliber_resource
 from mliber_qt_components.icon_widget import IconWidget
 
@@ -98,7 +99,9 @@ class LibraryManageDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
-        editor.set_icon(self.__parent.image_server.get_image(item.icon_path))
+        image = self.__parent.image_server.get_image(item.icon_path)
+        if image:
+            editor.set_icon(QIcon(QPixmap.fromImage(image)))
         editor.set_name(item.library.name)
         editor.set_type(item.library.type)
         editor.blockSignals(False)

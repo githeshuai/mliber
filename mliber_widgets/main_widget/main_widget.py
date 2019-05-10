@@ -7,7 +7,6 @@ import mliber_global
 import mliber_resource
 from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
-from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 
 class MainWidget(MainWidgetUI):
