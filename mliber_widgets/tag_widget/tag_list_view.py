@@ -160,15 +160,7 @@ class TagListView(QListView):
         self._set_model(tags)
         self._set_delegate()
 
-    def items(self):
-        """
-        获取当前所有的item
-        :return:
-        """
-        items = self.model().sourceModel().model_data
-        return items
-
-    @staticmethod
+    @property
     def tag_names(self):
         """
         获取当前列表里所有的tag名字
@@ -195,7 +187,8 @@ class TagListView(QListView):
             if tag_name not in self.tag_names:
                 item = TagListItem(tag)
         else:
-            tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG, "colorB": colorB})
+            tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG,
+                                    "colorB": colorB, "created_by": self.user.id})
             item = TagListItem(tag)
         # 在ui显示
         if item:

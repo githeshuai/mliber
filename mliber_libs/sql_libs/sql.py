@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.pool import NullPool
 Base = declarative_base()
 
 
@@ -25,7 +26,7 @@ class Sql(object):
         获取连接参数
         :return:
         """
-        return {"encoding": "utf-8", "convert_unicode": True}
+        return {"encoding": "utf-8", "convert_unicode": True, "poolclass": NullPool}
 
     def make_engine(self):
         """
@@ -57,5 +58,6 @@ class Sql(object):
         :return:
         """
         db_session = sessionmaker(self.__sql_engine)
-        session = db_session()
+        scoped_session_maker = scoped_session(db_session)
+        session = scoped_session_maker()
         return session

@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
-from PySide.QtGui import *
+from Qt.QtWidgets import QDesktopWidget
+from Qt.QtCore import Signal
 from mliber_widgets.login_widget.login_widget_ui import LoginWidgetUI
 import mliber_utils
 import mliber_resource
@@ -10,6 +11,8 @@ from mliber_api.database_api import Database
 
 
 class LoginWidget(LoginWidgetUI):
+    login_succeed = Signal()
+
     def __init__(self, parent=None):
         super(LoginWidget, self).__init__(parent)
         # set signals
@@ -143,6 +146,7 @@ class LoginWidget(LoginWidgetUI):
             logging.critical(str(e))
             self.connect_failed()
             return
+        self.login_succeed.emit()
         app = mliber_global.app()
         app.set_value(mliber_database=self.database)
         user = db.find_one("User", [["name", "=", self.user]])

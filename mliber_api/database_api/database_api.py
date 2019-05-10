@@ -177,13 +177,21 @@ class Database(object):
         创建管理员账户
         :return:
         """
-        admin = self.find_one("User", [["name", "=", "admin"]])
+        admin = self.find_one("User", [["name", "=", "admin"], ["status", "=", "Active"]])
         if admin:
             return
         self.create("User", {"name": "admin",
                              "chinese_name": u"管理员",
                              "user_permission": 1,
                              "library_permission": 1})
+
+    def __del__(self):
+        """
+        close session
+        :return:
+        """
+        print "del session"
+        self.session.close()
 
 
 if __name__ == "__main__":

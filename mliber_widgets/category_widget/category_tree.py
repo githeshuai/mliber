@@ -13,20 +13,22 @@ from mliber_api.database_api import Database
 class CategoryTreeItem(QTreeWidgetItem):
     def __init__(self, parent=None):
         super(CategoryTreeItem, self).__init__(parent)
-        self.entity = None
+        self.category = None
         self.father = parent
         self.setIcon(0, mliber_resource.icon("category.png"))
 
-    def set_entity(self, entity):
+    def set_category(self, category):
         """
-        :param entity: 表对象
+        :param category: 表对象
         :return:
         """
-        self.entity = entity
-        self.setText(0, entity.name)
+        self.category = category
+        self.setText(0, category.name)
 
 
 class CategoryTree(QTreeWidget):
+    selection_changed = Signal(list)
+
     def __init__(self, parent=None):
         super(CategoryTree, self).__init__(parent)
         self.setSelectionMode(self.ExtendedSelection)
@@ -45,6 +47,7 @@ class CategoryTree(QTreeWidget):
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
+        self.itemSelectionChanged.connect(self.on_item_selection_changed)
 
     @property
     def db(self):
@@ -73,7 +76,7 @@ class CategoryTree(QTreeWidget):
                                     ["status", "=", "Active"]])
         for cat in cats:
             cat_item = CategoryTreeItem(self)
-            cat_item.set_entity(cat)
+            cat_item.set_category(cat)
             self.items_mapping[cat.name] = cat_item
             self.get_children(cat, cat_item)
 
@@ -90,7 +93,7 @@ class CategoryTree(QTreeWidget):
             return
         for child in children:
             child_item = CategoryTreeItem(parent_item)
-            child_item.set_entity(child)
+            child_item.set_category(child)
             self.items_mapping[child.name] = child_item
             self.get_children(child, child_item)
 
@@ -111,11 +114,28 @@ class CategoryTree(QTreeWidget):
 
     def selected_items(self):
         """
-        获取选中的
+        获取选中的item
         :return:
         """
         selected_items = self.selectedItems()
         return selected_items
+
+    def selected_categories(self):
+        """
+        获取选中的category
+        :return:
+        """
+        selected_items = self.selected_items()
+        categories = [item.category for item in selected_items]
+        return categories
+
+    def on_item_selection_changed(self):
+        """
+        当item 选择改变的时候
+        :return:
+        """
+        selected_categories = self.selected_categories()
+        self.selection_changed.emit(selected_categories)
 
     def category_exist(self, category_name, parent_id):
         """
@@ -195,8 +215,8 @@ class CategoryTree(QTreeWidget):
         parent_id = None
         parent_path = None
         if isinstance(parent_item, QTreeWidgetItem):
-            parent_id = parent_item.entity.id
-            parent_path = parent_item.entity.path
+            parent_id = parent_item.category.id
+            parent_path = parent_item.category.path
         category_exist = self.category_exist(name, parent_id)  # 检查category 是否存在
         if category_exist:
             MessageBox.warning(self, "Warning", u"Category: %s 已存在，不能重复创建." % name)
@@ -214,10 +234,11 @@ class CategoryTree(QTreeWidget):
                                                "created_by": self.user.id, "library_id": self.library.id})
         # 在ui上显示
         tree_widget_item = CategoryTreeItem(parent_item or self)
-        tree_widget_item.set_entity(category)
+        tree_widget_item.set_category(category)
         self.items_mapping[name] = tree_widget_item
         if parent_item:
             parent_item.setExpanded(True)
+        self.db.session.close()
 
     def open_category(self):
         """
@@ -226,7 +247,7 @@ class CategoryTree(QTreeWidget):
         """
         selected_items = self.selected_items()
         if selected_items:
-            relative_path = selected_items[0].entity.path
+            relative_path = selected_items[0].category.path
             path = self.get_abs_path(relative_path)
         else:
             path = self.library.root_path()
@@ -266,10 +287,10 @@ class CategoryTree(QTreeWidget):
         """
         selected_items = self.selected_items()
         selected_item = selected_items[0]
-        category_relative_path = selected_item.entity.path
+        category_relative_path = selected_item.category.path
         category_abs_path = self.get_abs_path(category_relative_path)
         # 先删除数据库记录, 如果有子类别一并删除
-        self.recursion_delete_category(selected_item.entity)
+        self.recursion_delete_category(selected_item.category)
         # 从tree widget中移除
         parent = selected_item.father
         if parent is self:

@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from main_widget_ui import MainWidgetUI
+from mliber_widgets.login_widget import LoginWidget
 from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage
 import mliber_utils
@@ -38,10 +39,50 @@ class MainWidget(MainWidgetUI):
         信号连接
         :return:
         """
+        self.tool_bar.login_button.clicked.connect(self.show_login)
         self.tool_bar.user_manage_action_triggered.connect(self.show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self.show_library_manager)
-        self.category_widget.category_tree.itemSelectionChanged.connect(self._on_category_selection_changed)
+        self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
+
+    def get_children_categories(self, categories):
+        """
+        获取子类型，需要递归
+        :param categories: <list> list of Category
+        :return:
+        """
+        all_categories = list()
+
+        def get(category_list):
+            category_id_list = [category.id for category in category_list]
+            children_categories = self.db.find("Category", [["parent_id", "in", category_id_list]])
+            if children_categories:
+                all_categories.extend(children_categories)
+                get(children_categories)
+        get(categories)
+        all_categories.extend(categories)
+        return all_categories
+
+    def show_login(self):
+        """
+        显示login ui
+        :return:
+        """
+        login_widget = LoginWidget(self)
+        login_widget.login_succeed.connect(self.clear)
+        login_widget.move_to_center()
+        login_widget.exec_()
+
+    def clear(self):
+        """
+        刷新界面，必须重新选择library
+        :return:
+        """
+        self.category_widget.clear()
+        self.tag_widget.clear()
+        self.asset_widget.clear()
+        # set library
+        mliber_global.app().set_value(mliber_library=None)
 
     def show_user_manager(self):
         """
@@ -87,12 +128,16 @@ class MainWidget(MainWidgetUI):
             tags = self.db.find("Tag", [["name", "in", tag_names], ["status", "=", "Active"]])
         return tags
 
-    def _on_category_selection_changed(self):
+    def _on_category_selection_changed(self, categories):
         """
         当category选择改变的时候
         :return:
         """
-        print "category changed"
+        all_categories = self.get_children_categories(categories)
+        category_ids = [category.id for category in all_categories]
+        category_ids = list(set(category_ids))
+        assets = self.db.find("Asset", [["category_id", "in", category_ids]])
+        self.asset_widget.set_assets(assets)
 
     def _on_tag_selection_changed(self, tags):
         """
@@ -119,9 +164,7 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.set_assets(assets)
         # 列出所有的tag
         tags = self.tags_of_assets(assets)
-        self.tag_widget.tag_list_view.show_data(tags)
-        tag_names = [tag.name for tag in tags]
-        self.tag_widget.set_completer(tag_names)
+        self.tag_widget.set_tags(tags)
 
     def auto_login(self):
         """

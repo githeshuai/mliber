@@ -19,17 +19,7 @@ class Toolbar(ToolbarUI):
         信号连接
         :return:
         """
-        self.login_button.clicked.connect(self.show_login)
         self.settings_button.clicked.connect(self.show_settings_menu)
-
-    def show_login(self):
-        """
-        显示login ui
-        :return:
-        """
-        login_widget = LoginWidget(self)
-        login_widget.move_to_center()
-        login_widget.exec_()
 
     def create_settings_menu(self):
         """

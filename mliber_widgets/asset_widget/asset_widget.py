@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from asset_list_view import AssetListView
-import mliber_resource
 from mliber_qt_components.search_line_edit import SearchLineEdit
 
 
@@ -61,3 +60,11 @@ class AssetWidget(QWidget):
         model = self.asset_list_view.model()
         model.set_filter(filter_str)
         self.asset_list_view.show_delegate()
+
+    def clear(self):
+        """
+        清空
+        :return:
+        """
+        self.asset_list_view.model().sourceModel().remove_all()
+        self.search_le.setText("")
