@@ -165,7 +165,6 @@ class LibraryListView(QListView):
         show data in list view
         :return:
         """
-        self.image_server.clear()
         self._set_model()
         self._set_delegate()
 

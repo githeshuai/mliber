@@ -8,6 +8,7 @@ import mliber_global
 from mliber_libs.os_libs.path import Path
 import mliber_resource
 from mliber_api.database_api import Database
+from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 DEFAULT_ICON_SIZE = 200
 
@@ -61,6 +62,7 @@ class AssetListView(QListView):
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
+        self.image_server = None
         self.assets = None
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
@@ -78,6 +80,8 @@ class AssetListView(QListView):
         self.set_style()
         # set signals
         self.set_signals()
+        # start image cache thread
+        self.start_image_cache_thread()
 
     @property
     def db(self):
@@ -87,6 +91,25 @@ class AssetListView(QListView):
     @property
     def library(self):
         return mliber_global.app().value("mliber_library")
+
+    def start_image_cache_thread(self):
+        """
+        获取刷新图片线程
+        :return:
+        """
+        self.image_server = ImageCacheThreadsServer()
+        self.image_server.cache_done_signal.connect(self._img_cached_done)
+
+    def _img_cached_done(self, *args):
+        """
+        当图片缓存成功，刷新ui
+        :param args:
+        :return:
+        """
+        source_model = self.model().sourceModel()
+        for row in xrange(source_model.rowCount()):
+            index = source_model.index(row, 0)
+            source_model.dataChanged.emit(index, index)
 
     def set_style(self):
         """

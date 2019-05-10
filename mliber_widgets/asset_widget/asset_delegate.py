@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QToolButton, QStyledItemDelegate
-from Qt.QtGui import QColor, QIcon
+from Qt.QtGui import QColor, QIcon, QPixmap
 from Qt.QtCore import QSize, Qt
 from mliber_qt_components.icon import Icon
 from mliber_qt_components.icon_widget import IconWidget
@@ -134,6 +134,7 @@ class CellAssetWidget(QWidget):
 class AssetDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super(AssetDelegate, self).__init__(parent)
+        self.__parent = parent
 
     def createEditor(self, parent, option, index):
         editor = CellAssetWidget(parent)
@@ -143,7 +144,9 @@ class AssetDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self.get_item(index)
         editor.set_icon_size(item.icon_size)
-        editor.set_icon(QIcon(item.icon_path))
+        image = self.__parent.image_server.get_image(item.icon_path)
+        if image:
+            editor.set_icon(QIcon(QPixmap.fromImage(image)))
         editor.set_name(item.asset.name)
         if item.has_tag():
             editor.light_tag_flag(QColor(50, 100, 255))
