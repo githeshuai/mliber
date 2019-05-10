@@ -183,6 +183,17 @@ class TagWidget(QWidget):
         """
         self.tag_list_view.deselect_all()
 
+    def set_tags(self, tags):
+        """
+        接口
+        :param tags: <list>
+        :return:
+        """
+        self.tag_list_view.show_data(tags)
+        self.search_le.setText("")
+        # set completer
+        self.set_completer(self.tag_list_view.tag_names)
+
     def set_completer(self, tag_list):
         """
         set completer

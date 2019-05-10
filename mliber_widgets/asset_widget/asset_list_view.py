@@ -63,7 +63,7 @@ class AssetListView(QListView):
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
         self.image_server = None
-        self.assets = None
+        self.assets = []
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
         self.setMouseTracking(True)
@@ -243,6 +243,15 @@ class AssetListView(QListView):
         selected_items = self.selected_items()
         selected_assets = [selected_item.asset for selected_item in selected_items]
         return selected_assets
+
+    @property
+    def asset_names(self):
+        """
+        获取所有的asset name
+        :return:
+        """
+        asset_names = [asset.name for asset in self.assets]
+        return asset_names
 
     def wheelEvent(self, event):
         """

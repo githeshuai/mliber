@@ -59,6 +59,7 @@ class TagListView(QListView):
 
     def __init__(self, parent=None):
         super(TagListView, self).__init__(parent)
+        self.tags = []
         self.setSpacing(0)
         self.setMouseTracking(True)
         self.setSpacing(2)
@@ -116,6 +117,7 @@ class TagListView(QListView):
         :param tags: <list> Tag object instance list
         :return:
         """
+        self.tags = tags
         model_data = self._get_model_data(tags)
         model = TagModel(model_data, self)
         proxy_model = TagProxyModel(self)
@@ -166,20 +168,13 @@ class TagListView(QListView):
         items = self.model().sourceModel().model_data
         return items
 
-    def tags(self):
-        """
-        获取当前列表里所有的tag对象
-        :return:
-        """
-        items = self.items()
-        return [item.tag for item in items]
-
+    @staticmethod
     def tag_names(self):
         """
         获取当前列表里所有的tag名字
         :return:
         """
-        tags = self.tags()
+        tags = self.tags
         return [tag.name for tag in tags]
 
     def append_tag(self, tag_name, colorR, colorG, colorB):
@@ -197,7 +192,7 @@ class TagListView(QListView):
         tag = db.find_one("Tag", [["name", "=", tag_name], ["status", "=", "Active"]])
         # tag存在数据库中，但是没有在当前list中，则需要添加进来
         if tag:
-            if tag_name not in self.tag_names():
+            if tag_name not in self.tag_names:
                 item = TagListItem(tag)
         else:
             tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG, "colorB": colorB})

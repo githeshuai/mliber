@@ -8,7 +8,7 @@ from mliber_qt_components.search_line_edit import SearchLineEdit
 class AssetWidget(QWidget):
     def __init__(self, parent=None):
         super(AssetWidget, self).__init__(parent)
-        self.assets = None
+        self.assets = []
         main_layout = QVBoxLayout(self)
         # top layout
         top_layout = QHBoxLayout()
@@ -41,6 +41,8 @@ class AssetWidget(QWidget):
         self.assets = assets
         self.asset_list_view.set_assets(assets)
         self.search_le.setText("")
+        # set completer
+        self.set_completer(self.asset_list_view.asset_names)
 
     def set_completer(self, asset_list):
         """
