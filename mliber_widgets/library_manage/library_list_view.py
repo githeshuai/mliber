@@ -315,7 +315,8 @@ class LibraryListView(QListView):
         data = {"name": name, "type": typ, "windows_path": windows_path, "linux_path": linux_path,
                 "mac_path": mac_path, "description": description, "updated_by": user.id, "updated_at": now}
         try:
-            self.db.update("Library", selected_item.library.id, data)
+            with mliber_global.db() as db:
+                db.update("Library", selected_item.library.id, data)
             library_icon_path = self._get_library_icon_path(name)
             if icon_path != library_icon_path:
                 if Path(icon_path).isfile():

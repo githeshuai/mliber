@@ -185,10 +185,11 @@ class MainWidget(MainWidgetUI):
                 user = db.find_one("User", [["name", "=", user_name], ["status", "=", "Active"]])
                 if user and user.password == password:
                     app.set_value(mliber_user=user)
+                return True
             except RuntimeError as e:
                 MessageBox.critical(self, "Login Failed", str(e))
                 return False
-        return True
+        return False
 
     def set_global_library_from_history(self):
         """
@@ -198,9 +199,10 @@ class MainWidget(MainWidgetUI):
         app = mliber_global.app()
         library_id = mliber_utils.read_history("library_id")
         if library_id:
-            library = self.db.find_one("Library",
-                                       [["id", "=", library_id],
-                                        ["status", "=", "Active"]])
+            with mliber_global.db() as db:
+                library = db.find_one("Library",
+                                      [["id", "=", library_id],
+                                       ["status", "=", "Active"]])
             if library:
                 app.set_value(mliber_library=library)
             else:

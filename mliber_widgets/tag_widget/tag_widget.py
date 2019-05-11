@@ -212,8 +212,10 @@ class TagWidget(QWidget):
         self.tag_list_view.show_delegate()
 
     def clear(self):
-        self.tag_list_view.model().sourceModel().remove_all()
-        self.search_le.setText("")
+        model = self.tag_list_view.model()
+        if model:
+            model.sourceModel().remove_all()
+            self.search_le.setText("")
 
 
 if __name__ == "__main__":

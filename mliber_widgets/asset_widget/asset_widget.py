@@ -66,5 +66,7 @@ class AssetWidget(QWidget):
         清空
         :return:
         """
-        self.asset_list_view.model().sourceModel().remove_all()
-        self.search_le.setText("")
+        model = self.asset_list_view.model()
+        if model:
+            model.sourceModel().remove_all()
+            self.search_le.setText("")

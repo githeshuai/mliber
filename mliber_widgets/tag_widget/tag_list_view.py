@@ -207,9 +207,10 @@ class TagListView(QListView):
         if new_name and ok:
             item = self.model().sourceModel().data(index)
             tag_id = item.tag.id
-            self.db.update("Tag", tag_id, {"name": new_name,
-                                           "updated_by": self.user.id,
-                                           "updated_at": datetime.now()})
+            with mliber_global.db() as db:
+                db.update("Tag", tag_id, {"name": new_name,
+                                          "updated_by": self.user.id,
+                                          "updated_at": datetime.now()})
             # ui显示
             self.model().sourceModel().setData(index, new_name)
 
@@ -221,10 +222,11 @@ class TagListView(QListView):
         # 输入密码验证
 
         selected_tags = self.selected_tags()
-        for tag in selected_tags:
-            self.db.update("Tag", tag.id, {"status": "Disable",
-                                           "updated_by": self.user.id,
-                                           "updated_at": datetime.now()})
+        with mliber_global.db() as db:
+            for tag in selected_tags:
+                db.update("Tag", tag.id, {"status": "Disable",
+                                          "updated_by": self.user.id,
+                                          "updated_at": datetime.now()})
         # remove in ui
         for index, row in enumerate(self.selected_rows()):
             self.model().sourceModel().removeRows(row-index, 1)

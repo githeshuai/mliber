@@ -88,14 +88,15 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         cat_id = cat.id
-        children = self.db.find("Category", [["parent_id", "=", cat_id], ["status", "=", "Active"]])
-        if not children:
-            return
-        for child in children:
-            child_item = CategoryTreeItem(parent_item)
-            child_item.set_category(child)
-            self.items_mapping[child.name] = child_item
-            self.get_children(child, child_item)
+        with mliber_global.db() as db:
+            children = db.find("Category", [["parent_id", "=", cat_id], ["status", "=", "Active"]])
+            if not children:
+                return
+            for child in children:
+                child_item = CategoryTreeItem(parent_item)
+                child_item.set_category(child)
+                self.items_mapping[child.name] = child_item
+                self.get_children(child, child_item)
 
     def show_context_menu(self):
         """
@@ -146,7 +147,8 @@ class CategoryTree(QTreeWidget):
         """
         parent_id_filters = ["parent_id", "=", parent_id] if parent_id else ["parent_id", "is", None]
         filters = [["name", "=", category_name], ["library_id", "=", self.library.id], parent_id_filters]
-        category = self.db.find_one("Category", filters)
+        with mliber_global.db() as db:
+            category = db.find_one("Category", filters)
         if category:
             return True
         return False
@@ -238,7 +240,6 @@ class CategoryTree(QTreeWidget):
         self.items_mapping[name] = tree_widget_item
         if parent_item:
             parent_item.setExpanded(True)
-        self.db.session.close()
 
     def open_category(self):
         """
@@ -260,13 +261,13 @@ class CategoryTree(QTreeWidget):
         :param category: Category instance
         :return:
         """
-        db = self.db
-        category_id = category.id
-        db.update("Category", category_id, {"status": "Disable"})
-        children = db.find("Category", [["parent_id", "=", category_id], ["status", "=", "Active"]])
-        if children:
-            for child in children:
-                self.recursion_delete_category(child)
+        with mliber_global.db() as db:
+            category_id = category.id
+            db.update("Category", category_id, {"status": "Disable"})
+            children = db.find("Category", [["parent_id", "=", category_id], ["status", "=", "Active"]])
+            if children:
+                for child in children:
+                    self.recursion_delete_category(child)
 
     def delete_category(self):
         """
