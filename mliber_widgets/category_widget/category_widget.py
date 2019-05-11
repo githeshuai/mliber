@@ -60,17 +60,14 @@ class CategoryWidget(QWidget):
         complete_list = self.category_tree.items_mapping.keys()
         self.search_le.set_completer(complete_list)
 
-    @property
-    def user(self):
-        return mliber_global.app().value("mliber_user")
-
     def _create_category_menu(self):
         """
         创建setting菜单
         :return:
         """
         menu = QMenu(self)
-        if self.user.category_permission:
+        user = mliber_global.user()
+        if user.category_permission:
             add_category_action = QAction("Add Category", self, triggered=self._add_top_level_category)
             menu.addAction(add_category_action)
         collapse_all_action = QAction("Collapse All", self, triggered=self.collapse_all)

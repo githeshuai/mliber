@@ -22,10 +22,6 @@ class AssetListItem(object):
         self.icon_path = mliber_resource.icon_path("image.png")
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
 
-    @property
-    def user(self):
-        return mliber_global.app().value("mliber_user")
-
     def has_tag(self):
         """
         判断是否加了标签
@@ -50,7 +46,8 @@ class AssetListItem(object):
         masters = self.asset.master
         if masters:
             master_ids = [master.id for master in masters]
-            if self.user.id in master_ids:
+            user = mliber_global.user()
+            if user.id in master_ids:
                 return True
         return False
 
@@ -90,7 +87,7 @@ class AssetListView(QListView):
 
     @property
     def library(self):
-        return mliber_global.app().value("mliber_library")
+        return mliber_global.library()
 
     def start_image_cache_thread(self):
         """

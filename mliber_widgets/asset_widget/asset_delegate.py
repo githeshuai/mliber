@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
+from functools import partial
 from Qt.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QToolButton, QStyledItemDelegate
 from Qt.QtGui import QColor, QIcon, QPixmap
-from Qt.QtCore import QSize, Qt
+from Qt.QtCore import QSize, Qt, Signal, QModelIndex
 from mliber_qt_components.icon import Icon
 from mliber_qt_components.icon_widget import IconWidget
 import mliber_resource
@@ -44,12 +45,12 @@ class FlagWidget(QToolButton):
         self.setIconSize(size)
         self.setFixedSize(size)
 
-    def mousePressEvent(self, event):
-        """
-        :param event:
-        :return:
-        """
-        event.ignore()
+    # def mousePressEvent(self, event):
+    #     """
+    #     :param event:
+    #     :return:
+    #     """
+    #     event.ignore()
 
 
 class CellAssetWidget(QWidget):
@@ -132,17 +133,29 @@ class CellAssetWidget(QWidget):
 
 
 class AssetDelegate(QStyledItemDelegate):
+    tag_clicked = Signal(QModelIndex)
+
     def __init__(self, parent=None):
         super(AssetDelegate, self).__init__(parent)
         self.__parent = parent
+        self.__model = self.__parent.model()
+        self.__source_model = self.__model.sourceModel()
+
+    def set_signals(self):
+        """
+        信号连接
+        :return:
+        """
+        self.tag_clicked.connect(self.add_tag)
 
     def createEditor(self, parent, option, index):
         editor = CellAssetWidget(parent)
+        editor.tag_flag.clicked.connect(partial(self.tag_clicked.emit, index))
         return editor
 
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
-        item = self.get_item(index)
+        item = self._get_item(index)
         editor.set_icon_size(item.icon_size)
         image = self.__parent.image_server.get_image(item.icon_path)
         if image:
@@ -160,18 +173,31 @@ class AssetDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
     def sizeHint(self, option, index):
-        item = self.get_item(index)
+        item = self._get_item(index)
         size = QSize(item.icon_size.width()+6, item.icon_size.height()+FONT_HEIGHT*2)
         return size
+    
+    def _get_source_index(self, index):
+        """
+        获取source index
+        :return: 
+        """
+        source_index = self.__model.mapToSource(index)
+        return source_index
 
-    @staticmethod
-    def get_item(index):
+    def _get_item(self, index):
         """
         get source index
         :param index:
         :return:
         """
-        source_model = index.model().sourceModel()
-        source_index = index.model().mapToSource(index)
-        item = source_model.data(source_index, Qt.UserRole)
+        source_index = self._get_source_index(index)
+        item = self.__source_model.data(source_index, Qt.UserRole)
         return item
+
+    def add_tag(self, index):
+        """
+        添加tag
+        :return:
+        """
+        source_index = self._get_source_index(index)

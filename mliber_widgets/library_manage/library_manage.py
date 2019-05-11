@@ -50,7 +50,7 @@ class LibraryManage(LibraryManageUI):
 
     @property
     def user(self):
-        return mliber_global.app().value("mliber_user")
+        return mliber_global.user()
 
     def on_library_list_view_double_clicked(self):
         """
@@ -198,6 +198,6 @@ class LibraryManage(LibraryManageUI):
         db.update("Library", selected_library.id, {"status": "Disable",
                                                    "updated_at": datetime.now(),
                                                    "updated_by": self.user.id})
-        if mliber_global.app().value("mliber_library") == selected_library:
+        if mliber_global.library() == selected_library:
             mliber_global.app().set_value(mliber_library=None)
         self.refresh_ui()

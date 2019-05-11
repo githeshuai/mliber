@@ -32,7 +32,7 @@ class MainWidget(MainWidgetUI):
 
     @property
     def library(self):
-        return mliber_global.app().value("mliber_library")
+        return mliber_global.library()
 
     def set_signals(self):
         """

@@ -89,14 +89,14 @@ class TagListView(QListView):
         """
         :return:
         """
-        return mliber_global.app().value("mliber_library")
+        return mliber_global.library()
 
     @property
     def user(self):
         """
         :return:
         """
-        return mliber_global.app().value("mliber_user")
+        return mliber_global.user()
 
     @staticmethod
     def _get_model_data(tags):

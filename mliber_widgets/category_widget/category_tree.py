@@ -56,11 +56,7 @@ class CategoryTree(QTreeWidget):
 
     @property
     def library(self):
-        return mliber_global.app().value("mliber_library")
-
-    @property
-    def user(self):
-        return mliber_global.app().value("mliber_user")
+        return mliber_global.library()
 
     def refresh_data(self):
         """
@@ -106,7 +102,8 @@ class CategoryTree(QTreeWidget):
         menu = QMenu(self)
         show_in_explore_action = QAction(u"打开路径", self, triggered=self.open_category)
         menu.addAction(show_in_explore_action)
-        if self.user.category_permission:
+        user = mliber_global.user()
+        if user.category_permission:
             add_category_action = QAction(u"添加子类型", self, triggered=self.add_category)
             delete_action = QAction(u"删除", self, triggered=self.delete_category)
             menu.addAction(add_category_action)
@@ -187,7 +184,7 @@ class CategoryTree(QTreeWidget):
             MessageBox.warning(self, "Warning", "只支持在一个类型下创建子类型")
             return False
         # 检查是否选择了library
-        library = mliber_global.app().value("mliber_library")
+        library = self.library
         if not library:
             MessageBox.warning(self, "Warning", u"请先选择library")
             return False
@@ -232,8 +229,9 @@ class CategoryTree(QTreeWidget):
             MessageBox.critical(self, "Window Error", str(e))
             return
         # 在数据库里添加
+        user = mliber_global.user()
         category = self.db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
-                                               "created_by": self.user.id, "library_id": self.library.id})
+                                               "created_by": user.id, "library_id": self.library.id})
         # 在ui上显示
         tree_widget_item = CategoryTreeItem(parent_item or self)
         tree_widget_item.set_category(category)
@@ -400,7 +398,7 @@ class DeleteCategoryDialog(QDialog):
         检查密码是否正确
         :return:
         """
-        user = mliber_global.app().value("mliber_user")
+        user = mliber_global.user()
         password = user.password
         if self.password == password:
             return True

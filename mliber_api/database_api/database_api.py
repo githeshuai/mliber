@@ -185,13 +185,19 @@ class Database(object):
                              "user_permission": 1,
                              "library_permission": 1})
 
+    def close(self):
+        """
+        close session
+        :return:
+        """
+        self.session.close()
+
     def __del__(self):
         """
         close session
         :return:
         """
-        print "del session"
-        self.session.close()
+        self.close()
 
 
 if __name__ == "__main__":

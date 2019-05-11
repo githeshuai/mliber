@@ -77,6 +77,10 @@ class LibraryListView(QListView):
     def db(self):
         database = mliber_global.app().value("mliber_database")
         return Database(database)
+
+    @property
+    def user(self):
+        return mliber_global.user()
     
     def set_style(self):
         """
@@ -310,10 +314,9 @@ class LibraryListView(QListView):
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
         selected_item = self.selected_item()
-        user = mliber_global.app().value("mliber_user")
         now = datetime.now()
         data = {"name": name, "type": typ, "windows_path": windows_path, "linux_path": linux_path,
-                "mac_path": mac_path, "description": description, "updated_by": user.id, "updated_at": now}
+                "mac_path": mac_path, "description": description, "updated_by": self.user.id, "updated_at": now}
         try:
             with mliber_global.db() as db:
                 db.update("Library", selected_item.library.id, data)
@@ -348,11 +351,9 @@ class LibraryListView(QListView):
             return
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
-        app = mliber_global.app()
-        user = app.value("mliber_user")
         library = self.db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
                                              "linux_path": linux_path, "mac_path": mac_path, "status": status,
-                                             "description": description, "created_by": user.id})
+                                             "description": description, "created_by": self.user.id})
         # 将icon 拷贝到 public dir
         if icon_path and Path(icon_path).isfile():
             library_icon_path = self._get_library_icon_path(name)

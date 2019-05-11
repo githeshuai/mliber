@@ -121,7 +121,7 @@ class TagWidget(QWidget):
 
     @property
     def user(self):
-        return mliber_global.app().value("mliber_user")
+        return mliber_global.user()
 
     def _create_tag_menu(self):
         """
