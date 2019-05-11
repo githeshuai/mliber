@@ -37,11 +37,25 @@ class AssetModel(QAbstractListModel):
         self.endRemoveRows()
         return True
 
-    def setData(self, index, value, role):
+    def setData(self, index, value, role=Qt.UserRole):
+        """
+        :param index:
+        :param value: <list> [type, value]
+        :param role:
+        :return:
+        """
         row = index.row()
         if value:
             if role == Qt.UserRole:
-                self.model_data[row].icon_size = value
+                typ, data = value
+                if typ == "size":
+                    self.model_data[row].icon_size = data
+                if typ == "tag":
+                    self.model_data[row].has_tag = data
+                if typ == "description":
+                    self.model_data[row].has_description = data
+                if typ == "store":
+                    self.model_data[row].stored_by_me = data
                 self.dataChanged.emit(index, index)
             return True
 

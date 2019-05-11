@@ -8,6 +8,7 @@ from mliber_qt_components.icon_widget import IconWidget
 import mliber_resource
 
 FONT_HEIGHT = 18
+DEFAULT_COLOR = QColor(138, 138, 138)
 
 
 class FlagWidget(QToolButton):
@@ -16,7 +17,7 @@ class FlagWidget(QToolButton):
         self.setStyleSheet("border: 0px solid; padding: 0px; background: transparent;")
         self.set_icon_size(QSize(15, 15))
 
-    def set_icon(self, icon_path, icon_color=QColor(138, 138, 138)):
+    def set_icon(self, icon_path, icon_color=DEFAULT_COLOR):
         """
         set icon
         :param icon_path: <str>
@@ -101,6 +102,13 @@ class CellAssetWidget(QWidget):
         """
         self.store_flag.set_icon_color(color)
 
+    def dark_store_flag(self):
+        """
+        取消点亮
+        :return:
+        """
+        self.store_flag.set_icon_color(DEFAULT_COLOR)
+
     def light_description_flag(self, color):
         """
         点亮description flag
@@ -133,7 +141,7 @@ class CellAssetWidget(QWidget):
 
 
 class AssetDelegate(QStyledItemDelegate):
-    tag_clicked = Signal(QModelIndex)
+    store_clicked = Signal(QModelIndex)
 
     def __init__(self, parent=None):
         super(AssetDelegate, self).__init__(parent)
@@ -141,16 +149,9 @@ class AssetDelegate(QStyledItemDelegate):
         self.__model = self.__parent.model()
         self.__source_model = self.__model.sourceModel()
 
-    def set_signals(self):
-        """
-        信号连接
-        :return:
-        """
-        self.tag_clicked.connect(self.add_tag)
-
     def createEditor(self, parent, option, index):
         editor = CellAssetWidget(parent)
-        editor.tag_flag.clicked.connect(partial(self.tag_clicked.emit, index))
+        editor.store_flag.clicked.connect(partial(self.store_clicked.emit, index))
         return editor
 
     def setEditorData(self, editor, index):
@@ -161,12 +162,14 @@ class AssetDelegate(QStyledItemDelegate):
         if image:
             editor.set_icon(QIcon(QPixmap.fromImage(image)))
         editor.set_name(item.asset.name)
-        if item.has_tag():
+        if item.has_tag:
             editor.light_tag_flag(QColor(50, 100, 255))
-        if item.has_description():
+        if item.has_description:
             editor.light_description_flag(QColor(50, 255, 100))
-        if item.stored_by_me():
+        if item.stored_by_me:
             editor.light_store_flag(QColor(255, 100, 50))
+        else:
+            editor.dark_store_flag()
         editor.blockSignals(False)
 
     def updateEditorGeometry(self, editor, option, index):
@@ -194,10 +197,3 @@ class AssetDelegate(QStyledItemDelegate):
         source_index = self._get_source_index(index)
         item = self.__source_model.data(source_index, Qt.UserRole)
         return item
-
-    def add_tag(self, index):
-        """
-        添加tag
-        :return:
-        """
-        source_index = self._get_source_index(index)

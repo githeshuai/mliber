@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QListView, QAbstractItemView, QApplication
-from Qt.QtCore import QSize, Signal, Qt
+from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
+from Qt.QtCore import QSize, Signal, Qt, QModelIndex
+from Qt.QtGui import QCursor
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
 from mliber_conf import mliber_config
@@ -21,24 +22,11 @@ class AssetListItem(object):
         self.asset = asset
         self.icon_path = mliber_resource.icon_path("image.png")
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
+        self.has_tag = True if self.asset.tags else False
+        self.has_description = True if self.asset.description else False
+        self.stored_by_me = self.is_stored_by_me()
 
-    def has_tag(self):
-        """
-        判断是否加了标签
-        :return:
-        """
-        value = True if self.asset.tags else False
-        return value
-
-    def has_description(self):
-        """
-        判断是否有评论
-        :return:
-        """
-        value = True if self.asset.description else False
-        return value
-
-    def stored_by_me(self):
+    def is_stored_by_me(self):
         """
         是否被自己收藏
         :return:
@@ -56,6 +44,8 @@ class AssetListView(QListView):
     MAX_ICON_SIZE = 256
     MIN_ICON_SIZE = 128
     double_clicked = Signal()
+    add_tag_signal = Signal(basestring)
+    leftPressed = Signal(QModelIndex)
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
@@ -70,7 +60,7 @@ class AssetListView(QListView):
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
-        self.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # set style
@@ -88,6 +78,10 @@ class AssetListView(QListView):
     @property
     def library(self):
         return mliber_global.library()
+
+    @property
+    def user(self):
+        return mliber_global.user()
 
     def start_image_cache_thread(self):
         """
@@ -120,7 +114,14 @@ class AssetListView(QListView):
         信号链接
         :return:
         """
-        return
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.show_context_menu)
+        self.leftPressed.connect(self.test)
+
+    def test(self, index):
+        item = self.item_of_index(index)
+        asset = item.asset
+        print asset.tags
 
     def _get_asset_path(self, asset):
         """
@@ -183,6 +184,7 @@ class AssetListView(QListView):
         :return:
         """
         delegate = AssetDelegate(self)
+        delegate.store_clicked.connect(self._store)
         self.setItemDelegate(delegate)
         self.show_delegate()
 
@@ -209,14 +211,22 @@ class AssetListView(QListView):
         self.setIconSize(size)
         for row in xrange(row_count):
             index = source_model.index(row, 0)
-            source_model.setData(index, size, Qt.UserRole)
+            source_model.setData(index, ["size", size], Qt.UserRole)
+
+    def _selected_indexes(self):
+        """
+        获取选择的index
+        :return:
+        """
+        selected_indexes = self.selectedIndexes()
+        return selected_indexes
 
     def _selected_rows(self):
         """
         获取选择的行
         :return:
         """
-        selected_indexes = self.selectedIndexes()
+        selected_indexes = self._selected_indexes()
         src_indexes = [self.model().mapToSource(index) for index in selected_indexes]
         rows = list(set([index.row() for index in src_indexes]))
         return rows
@@ -240,7 +250,7 @@ class AssetListView(QListView):
         selected_items = self.selected_items()
         selected_assets = [selected_item.asset for selected_item in selected_items]
         return selected_assets
-
+    
     @property
     def asset_names(self):
         """
@@ -249,6 +259,110 @@ class AssetListView(QListView):
         """
         asset_names = [asset.name for asset in self.assets]
         return asset_names
+    
+    def item_of_index(self, index):
+        """
+        根据index 获取item
+        :param index: <QModelIndex>
+        :return:
+        """
+        model = self.model().sourceModel()
+        item = model.model_data[index.row()]
+        return item
+
+    def _add_tag_of_asset(self, asset, tag_name):
+        """
+        :return:
+        """
+        tag_ids = [tag.id for tag in asset.tags]
+        db = self.db
+        tag = db.find_one("Tag", [["name", "=", tag_name]])
+        if not tag:
+            tag = db.create("Tag", {"name": tag_name})
+        tag_ids.append(tag.id)
+        tags = self.db.find("Tag", [["id", "in", tag_ids]])
+        db.update("Asset", asset.id, {"tags": tags})
+        db.close()
+        
+    def _add_tag(self, tag_name):
+        """
+        给选中的资产添加tag
+        :return:
+        """
+        selected_indexes = self._selected_indexes()
+        if not selected_indexes:
+            return
+        for index in selected_indexes:
+            model = self.model().sourceModel()
+            item = model.model_data[index.row()]
+            asset = item.asset
+            self._add_tag_of_asset(asset, tag_name)
+            model.setData(index, ["tag", True], Qt.UserRole)
+        self.add_tag_signal.emit(tag_name)
+
+    def _show_add_tag_widget(self):
+        """
+        :return:
+        """
+        text, ok = QInputDialog.getText(self, "Add Tag", "Input a tag name.")
+        if text and ok:
+            self._add_tag(text)
+
+    def _store_asset(self, user, asset_id):
+        """
+        收藏asset
+        :param user: <int>
+        :param asset_id: <int>
+        :return:
+        """
+        user = self.db.find_one("User", [["id", "=", user.id]])
+        assets = user.assets
+        asset_ids = [asset.id for asset in assets]
+        if asset_id in asset_ids:
+            return
+        asset_ids.append(asset_id)
+        db = self.db
+        assets = self.db.find("Asset", [["id", "in", asset_ids]])
+        db.update("User", user.id, {"assets": assets})
+
+    def _remove_asset_from_user(self, user, asset_id):
+        """
+        讲资产从我的收藏中移出
+        :param user:
+        :param asset_id:
+        :return:
+        """
+        user = self.db.find_one("User", [["id", "=", user.id]])
+        assets = user.assets
+        asset_ids = [asset.id for asset in assets]
+        if asset_id in asset_ids:
+            db = self.db
+            asset_ids.remove(asset_id)
+            assets = db.find("Asset", [["id", "in", asset_ids]])
+            db.update("User", user.id, {"assets": assets})
+
+    def _store(self, index):
+        item = self.item_of_index(index)
+        user = self.user
+        asset = item.asset
+        if not item.stored_by_me:
+            self._store_asset(user, asset.id)
+            self.model().sourceModel().setData(index, ["store", True], Qt.UserRole)
+        else:
+            self._remove_asset_from_user(user, asset.id)
+            self.model().sourceModel().setData(index, ["store", False], Qt.UserRole)
+
+    def show_context_menu(self):
+        """
+        显示右键菜单
+        :return:
+        """
+        menu = QMenu()
+        user = mliber_global.user()
+        if user.asset_permission:
+            add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
+            menu.addAction(add_tag_action)
+        menu.exec_(QCursor.pos())
 
     def wheelEvent(self, event):
         """
@@ -288,3 +402,7 @@ class AssetListView(QListView):
         index = self.indexAt(point)
         if index.row() < 0:
             self.clearSelection()
+            return
+        # if event.type() == QEvent.MouseButtonPress:
+        if event.button() == Qt.LeftButton:
+            self.leftPressed.emit(index)

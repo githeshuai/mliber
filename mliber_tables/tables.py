@@ -44,7 +44,7 @@ class Library(Base):
     """
     __tablename__ = "library"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), unique=True, nullable=False)
+    name = Column(String(100), nullable=False)
     type = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=this_moment())
     updated_at = Column(DateTime)
@@ -137,9 +137,9 @@ class Tag(Base):
     created_by = Column(Integer, ForeignKey("user.id"))  # created by
     updated_by = Column(Integer, ForeignKey("user.id"))
     # color
-    colorR = Column(Integer, default=0)
-    colorG = Column(Integer, default=0)
-    colorB = Column(Integer, default=0)
+    colorR = Column(Integer, default=128)
+    colorG = Column(Integer, default=128)
+    colorB = Column(Integer, default=128)
 
     def __str__(self):
         return self.name

@@ -44,6 +44,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.library_manage_action_triggered.connect(self.show_library_manager)
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
+        self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
 
     def get_children_categories(self, categories):
         """
@@ -52,14 +53,16 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         all_categories = list()
+        db = self.db
 
         def get(category_list):
             category_id_list = [category.id for category in category_list]
-            children_categories = self.db.find("Category", [["parent_id", "in", category_id_list]])
+            children_categories = db.find("Category", [["parent_id", "in", category_id_list]])
             if children_categories:
                 all_categories.extend(children_categories)
                 get(children_categories)
         get(categories)
+        db.close()
         all_categories.extend(categories)
         return all_categories
 
@@ -125,7 +128,7 @@ class MainWidget(MainWidgetUI):
         if asset_tags:
             tag_names = [tag.name for tag in asset_tags]
             tag_names = list(set(tag_names))
-            tags = self.db.find("Tag", [["name", "in", tag_names], ["status", "=", "Active"]])
+            tags = self.db.find("Tag", [["name", "in", tag_names]])
         return tags
 
     def _on_category_selection_changed(self, categories):
@@ -165,6 +168,14 @@ class MainWidget(MainWidgetUI):
         # 列出所有的tag
         tags = self.tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
+
+    def _add_tag(self, tag_name):
+        """
+        当资产添加tag的时候，在tag widget里添加
+        :param tag_name:
+        :return:
+        """
+        self.tag_widget.tag_list_view.append_tag(tag_name)
 
     def auto_login(self):
         """

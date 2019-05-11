@@ -332,9 +332,9 @@ class TagListView(QListView):
         selected_items = self.selected_items()
         if len(selected_items):
             change_color_action = QAction("Change Color", self, triggered=self.change_color)
-            delete_action = QAction("Delete", self, triggered=self.delete_tag)
+            # delete_action = QAction("Delete", self, triggered=self.delete_tag)
             menu.addAction(change_color_action)
-            menu.addAction(delete_action)
+            # menu.addAction(delete_action)
         menu.exec_(QCursor.pos())
 
     # def mousePressEvent(self, event):

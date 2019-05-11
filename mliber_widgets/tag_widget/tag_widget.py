@@ -212,6 +212,10 @@ class TagWidget(QWidget):
         self.tag_list_view.show_delegate()
 
     def clear(self):
+        """
+        clear list view
+        :return:
+        """
         model = self.tag_list_view.model()
         if model:
             model.sourceModel().remove_all()
