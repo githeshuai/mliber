@@ -4,7 +4,7 @@ from Qt.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QToolButton,
 from Qt.QtGui import QColor, QIcon, QPixmap
 from Qt.QtCore import QSize, Qt, Signal, QModelIndex
 from mliber_qt_components.icon import Icon
-from mliber_qt_components.icon_widget import IconWidget
+from mliber_qt_components.image_sequence_widget import ImageSequenceWidget
 import mliber_resource
 
 FONT_HEIGHT = 18
@@ -46,13 +46,6 @@ class FlagWidget(QToolButton):
         self.setIconSize(size)
         self.setFixedSize(size)
 
-    # def mousePressEvent(self, event):
-    #     """
-    #     :param event:
-    #     :return:
-    #     """
-    #     event.ignore()
-
 
 class CellAssetWidget(QWidget):
     def __init__(self, parent=None):
@@ -74,7 +67,7 @@ class CellAssetWidget(QWidget):
         flag_layout.addWidget(self.store_flag)
         flag_layout.addWidget(self.description_flag)
         # central icon widget
-        self.icon_widget = IconWidget(self)
+        self.icon_widget = ImageSequenceWidget(self)
         # text label
         self.name_label = QLabel(self)
         self.name_label.setStyleSheet("background: transparent;")
@@ -124,12 +117,12 @@ class CellAssetWidget(QWidget):
         """
         self.name_label.setText(text)
 
-    def set_icon(self, icon):
+    def set_icon(self, icon_path):
         """
         设置显示图片
         :return:
         """
-        self.icon_widget.set_icon(icon)
+        self.icon_widget.setDirname(icon_path)
 
     def set_icon_size(self, size):
         """
@@ -137,7 +130,15 @@ class CellAssetWidget(QWidget):
         :param size:
         :return:
         """
-        self.icon_widget.set_icon_size(size)
+        self.icon_widget.setSize(size)
+
+    def set_view(self, view):
+        """
+        set parent view
+        :param view: QListView
+        :return:
+        """
+        self.icon_widget.setView(view)
 
 
 class AssetDelegate(QStyledItemDelegate):
@@ -151,6 +152,7 @@ class AssetDelegate(QStyledItemDelegate):
 
     def createEditor(self, parent, option, index):
         editor = CellAssetWidget(parent)
+        editor.set_view(self.__parent)
         editor.store_flag.clicked.connect(partial(self.store_clicked.emit, index))
         return editor
 
@@ -158,9 +160,10 @@ class AssetDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self._get_item(index)
         editor.set_icon_size(item.icon_size)
-        image = self.__parent.image_server.get_image(item.icon_path)
-        if image:
-            editor.set_icon(QIcon(QPixmap.fromImage(image)))
+        # image = self.__parent.image_server.get_image(item.icon_path)
+        # if image:
+        #     editor.set_icon(QIcon(QPixmap.fromImage(image)))
+        editor.set_icon(item.icon_path)
         editor.set_name(item.asset.name)
         if item.has_tag:
             editor.light_tag_flag(QColor(50, 100, 255))

@@ -20,7 +20,7 @@ class AssetListItem(object):
         :param asset: <Asset>
         """
         self.asset = asset
-        self.icon_path = mliber_resource.icon_path("image.png")
+        self.icon_path = None
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
@@ -45,7 +45,7 @@ class AssetListView(QListView):
     MIN_ICON_SIZE = 128
     double_clicked = Signal()
     add_tag_signal = Signal(basestring)
-    leftPressed = Signal(QModelIndex)
+    left_pressed = Signal(QModelIndex)
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
@@ -116,9 +116,13 @@ class AssetListView(QListView):
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
-        self.leftPressed.connect(self.test)
+        self.left_pressed.connect(self.test)
 
     def test(self, index):
+        """
+        :param index: QModelIndex
+        :return:
+        """
         item = self.item_of_index(index)
         asset = item.asset
         print asset.tags
@@ -140,7 +144,8 @@ class AssetListView(QListView):
         :return:
         """
         asset_path = self._get_asset_path(asset)
-        return Path(asset_path).join("thumbnail.png")
+        thumbnail_dir = Path(asset_path).join("thumbnail")
+        return thumbnail_dir
 
     def set_assets(self, assets):
         """
@@ -161,8 +166,7 @@ class AssetListView(QListView):
         for asset in assets:
             item = AssetListItem(asset)
             icon_path = self._get_asset_icon_path(asset)
-            if Path(icon_path).isfile():
-                item.icon_path = icon_path
+            item.icon_path = icon_path
             item.icon_size = self.iconSize()
             model_data.append(item)
         return model_data
@@ -342,6 +346,11 @@ class AssetListView(QListView):
             db.update("User", user.id, {"assets": assets})
 
     def _store(self, index):
+        """
+        收藏
+        :param index: QModelIndex
+        :return:
+        """
         item = self.item_of_index(index)
         user = self.user
         asset = item.asset
@@ -405,4 +414,4 @@ class AssetListView(QListView):
             return
         # if event.type() == QEvent.MouseButtonPress:
         if event.button() == Qt.LeftButton:
-            self.leftPressed.emit(index)
+            self.left_pressed.emit(index)
