@@ -169,7 +169,7 @@ class TagListView(QListView):
         tags = self.tags
         return [tag.name for tag in tags]
 
-    def append_tag(self, tag_name, colorR, colorG, colorB):
+    def append_tag(self, tag_name, colorR=138, colorG=138, colorB=138):
         """
         添加标签
         :param tag_name: <str>
