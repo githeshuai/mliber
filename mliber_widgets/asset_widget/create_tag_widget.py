@@ -18,6 +18,7 @@ class CreateTagWidget(QDialog):
         self.setMinimumHeight(350)
         # setup ui
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setAlignment(Qt.AlignTop)
         # top btn layout
         top_btn_layout = QHBoxLayout()
@@ -122,7 +123,7 @@ class CreateTagWidget(QDialog):
         if tag_name in self.exist_tags():
             return
         button = IconButton(self)
-        button.setFixedWidth(self.width()*0.95)
+        button.setFixedWidth(self.width())
         button.setText(tag_name)
         button.set_height(24)
         button.set_icon(mliber_resource.icon("tag.png"))
