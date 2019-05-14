@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QToolButton
-from Qt.QtGui import QIcon
 
 
 class IconWidget(QToolButton):
