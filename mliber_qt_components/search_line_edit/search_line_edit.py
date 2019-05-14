@@ -70,11 +70,10 @@ class SearchLineEdit(QLineEdit):
             icon_path: <str> an icon file path
         Returns:
         """
-        pixmap = QPixmap(icon_path)
         button = QToolButton(self)
         button_size = QSize(self.height()*0.6, self.height()*0.6)
         button.setFixedSize(button_size)
-        button.setIcon(QIcon(pixmap))
+        button.setIcon(QIcon(icon_path))
         button.setIconSize(QSize(button.size().width()-2, button.size().height()-2))
         button.setStyleSheet('border: 0px; padding: 0px; background: transparent;')
         button.setCursor(Qt.ArrowCursor)

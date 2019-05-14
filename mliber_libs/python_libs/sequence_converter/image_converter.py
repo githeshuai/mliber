@@ -90,6 +90,6 @@ class ImageConverter(object):
 
 
 if __name__ == "__main__":
-    src = "D:/textures/hdr/aaa.exr"
+    src = "D:/textures/hdr/_street_sun_light_hdr.exr"
     dst = "D:/exr.png"
     ImageConverter(src, dst).convert()

@@ -1,13 +1,14 @@
 # -*- coding:utf-8 -*-
+import copy
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
 from Qt.QtGui import QCursor
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
+from create_tag_widget import CreateTagWidget
 from mliber_conf import mliber_config
 import mliber_global
 from mliber_libs.os_libs.path import Path
-import mliber_resource
 from mliber_api.database_api import Database
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
@@ -274,21 +275,23 @@ class AssetListView(QListView):
         item = model.model_data[index.row()]
         return item
 
-    def _add_tag_of_asset(self, asset, tag_name):
+    def _add_tag_of_asset(self, asset, tag_names):
         """
         :return:
         """
-        tag_ids = [tag.id for tag in asset.tags]
+        tag_ids = list()
         db = self.db
-        tag = db.find_one("Tag", [["name", "=", tag_name]])
-        if not tag:
-            tag = db.create("Tag", {"name": tag_name})
-        tag_ids.append(tag.id)
+        for tag_name in tag_names:
+            tag = db.find_one("Tag", [["name", "=", tag_name]])
+            if not tag:
+                tag = db.create("Tag", {"name": tag_name})
+            tag_ids.append(tag.id)
+        tag_ids = list(set(tag_ids))
         tags = self.db.find("Tag", [["id", "in", tag_ids]])
         db.update("Asset", asset.id, {"tags": tags})
         db.close()
         
-    def _add_tag(self, tag_name):
+    def _add_tag(self, tag_names):
         """
         给选中的资产添加tag
         :return:
@@ -300,17 +303,25 @@ class AssetListView(QListView):
             model = self.model().sourceModel()
             item = model.model_data[index.row()]
             asset = item.asset
-            self._add_tag_of_asset(asset, tag_name)
+            self._add_tag_of_asset(asset, tag_names)
             model.setData(index, ["tag", True], Qt.UserRole)
-        self.add_tag_signal.emit(tag_name)
+        self.add_tag_signal.emit(tag_names)
 
     def _show_add_tag_widget(self):
         """
         :return:
         """
-        text, ok = QInputDialog.getText(self, "Add Tag", "Input a tag name.")
-        if text and ok:
-            self._add_tag(text)
+        assets = self.selected_assets()
+        if not assets:
+            return
+        tags = []
+        for asset in assets:
+            tags.extend(asset.tags)
+        create_tag_dialog = CreateTagWidget(self)
+        for tag in tags:
+            create_tag_dialog.add_tag(tag.name, tag.color())
+        create_tag_dialog.ok_clicked.connect(self._add_tag)
+        create_tag_dialog.exec_()
 
     def _store_asset(self, user, asset_id):
         """

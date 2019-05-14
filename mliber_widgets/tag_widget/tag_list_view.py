@@ -166,34 +166,39 @@ class TagListView(QListView):
         获取当前列表里所有的tag名字
         :return:
         """
-        tags = self.tags
-        return [tag.name for tag in tags]
+        items = self.model().sourceModel().model_data
+        return [item.tag.name for item in items]
 
-    def append_tag(self, tag_name, colorR=138, colorG=138, colorB=138):
+    def append_tag(self, tag_names, colorR=138, colorG=138, colorB=138):
         """
         添加标签
-        :param tag_name: <str>
+        :param tag_names: <str>
         :param colorR: <int>
         :param colorG: <int>
         :param colorB: <int>
         :return:
         """
         # 首先判断tag是否在数据库中存在，如果存在不创建
-        item = None
+        if isinstance(tag_names, basestring):
+            tag_names = [tag_names]
+        items = list()
         db = self.db
-        tag = db.find_one("Tag", [["name", "=", tag_name], ["status", "=", "Active"]])
-        # tag存在数据库中，但是没有在当前list中，则需要添加进来
-        if tag:
-            if tag_name not in self.tag_names:
+        for tag_name in tag_names:
+            tag = db.find_one("Tag", [["name", "=", tag_name], ["status", "=", "Active"]])
+            # tag存在数据库中，但是没有在当前list中，则需要添加进来
+            if tag:
+                if tag_name not in self.tag_names:
+                    item = TagListItem(tag)
+                    items.append(item)
+            else:
+                tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG,
+                                        "colorB": colorB, "created_by": self.user.id})
                 item = TagListItem(tag)
-        else:
-            tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG,
-                                    "colorB": colorB, "created_by": self.user.id})
-            item = TagListItem(tag)
-        # 在ui显示
-        if item:
+                items.append(item)
+            # 在ui显示
+        if items:
             source_model = self.model().sourceModel()
-            self.model().sourceModel().insertRows(source_model.rowCount(), 1, [item])
+            self.model().sourceModel().insertRows(source_model.rowCount(), len(items), items)
             self.show_delegate()
 
     def rename_tag(self, index):
@@ -336,17 +341,6 @@ class TagListView(QListView):
             menu.addAction(change_color_action)
             # menu.addAction(delete_action)
         menu.exec_(QCursor.pos())
-
-    # def mousePressEvent(self, event):
-    #     """
-    #     当鼠标点击空白处，取消全部选择
-    #     :return:
-    #     """
-    #     super(TagListView, self).mousePressEvent(event)
-    #     point = event.pos()
-    #     index = self.indexAt(point)
-    #     if index.row() < 0:
-    #         self.deselect_all()
 
 
 if __name__ == "__main__":

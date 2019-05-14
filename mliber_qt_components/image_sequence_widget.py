@@ -351,6 +351,9 @@ class ImageSequenceWidget(QToolButton):
                 painter.drawRect(x, y, playheadPosition, playheadHeight)
             painter.end()
 
+    def mousePressEvent(self, event):
+        event.ignore()
+
 
 if __name__ == '__main__':
 

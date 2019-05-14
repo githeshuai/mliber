@@ -2,6 +2,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Boolean, Enum
 from sqlalchemy.orm import relationship
+from Qt.QtGui import QColor
 from mliber_libs.sql_libs.sql import Base
 from mliber_libs.os_libs import system
 
@@ -137,12 +138,19 @@ class Tag(Base):
     created_by = Column(Integer, ForeignKey("user.id"))  # created by
     updated_by = Column(Integer, ForeignKey("user.id"))
     # color
-    colorR = Column(Integer, default=128)
-    colorG = Column(Integer, default=128)
-    colorB = Column(Integer, default=128)
+    colorR = Column(Integer, default=138)
+    colorG = Column(Integer, default=138)
+    colorB = Column(Integer, default=138)
 
     def __str__(self):
         return self.name
+
+    def color(self):
+        """
+        get color
+        :return: QColor
+        """
+        return QColor(self.colorR, self.colorG, self.colorB)
 
 
 class LiberObject(Base):
