@@ -44,6 +44,14 @@ class ImageSequence(QObject):
             self._frames = [dirname + '/' + filename for filename in os.listdir(dirname)]
             naturalSortItems(self._frames)
 
+    def centralFrame(self):
+        """
+        第一帧
+        :return:
+        """
+        if self._frames:
+            return self._frames[len(self._frames)/2]
+
     def dirname(self):
         """
         Return the location to the image sequence.
@@ -232,7 +240,7 @@ class ImageSequenceWidget(QToolButton):
         return thumbnail icon
         :return:
         """
-        image = self._view.image_server.get_image(self._imageSequence.currentFilename())
+        image = self._view.image_server.get_image(self._imageSequence.centralFrame())
         if image:
             return QIcon(QPixmap.fromImage(image))
         else:

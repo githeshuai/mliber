@@ -24,6 +24,8 @@ class CategoryTreeItem(QTreeWidgetItem):
         """
         self.category = category
         self.setText(0, category.name)
+        tooltip_str = "id: %s \n path: %s" % (str(category.id), category.path)
+        self.setToolTip(0, tooltip_str)
 
 
 class CategoryTree(QTreeWidget):

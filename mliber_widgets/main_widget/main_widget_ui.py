@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView
+from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView, QWidget, QStackedLayout
 from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
@@ -27,16 +27,26 @@ class MainWidgetUI(QDialog):
         left_splitter.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         left_splitter.setHandleWidth(2)
         left_splitter.setChildrenCollapsible(False)
-        # add category widget to left splitter
         self.category_widget = CategoryWidget(self)
         left_splitter.addWidget(self.category_widget)
-        # add tag widget to left splitter
         self.tag_widget = TagWidget(self)
         left_splitter.addWidget(self.tag_widget)
-        # add left splitter to main splitter
         self.splitter.addWidget(left_splitter)
-        # add asset list view to main splitter
+        # middle splitter
+        self.middle_splitter = QSplitter(Qt.Vertical, self)
+        self.middle_splitter.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         self.asset_widget = AssetWidget(self)
-        self.splitter.addWidget(self.asset_widget)
+        self.middle_splitter.addWidget(self.asset_widget)
+        self.splitter.addWidget(self.middle_splitter)
+        # right
+        self.right_widget = QWidget(self)
+        self.right_widget.setHidden(True)
+        self.right_stack = QStackedLayout(self.right_widget)
+        self.splitter.addWidget(self.right_widget)
+        # splitter settings
+        self.splitter.setStretchFactor(0, 0)
+        self.splitter.setStretchFactor(1, 1)
+        self.splitter.setStretchFactor(2, 0)
+        self.splitter.setSizes([250, self.width()-250, 0])
         # add main splitter to main layout
         main_layout.addWidget(self.splitter)
