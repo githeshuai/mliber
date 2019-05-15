@@ -73,7 +73,7 @@ class CreateLibraryDialog(QDialog):
         # init
         self.init()
         # set signals
-        self.set_signals()
+        self._set_signals()
 
     def init(self):
         """
@@ -82,7 +82,7 @@ class CreateLibraryDialog(QDialog):
         """
         self.type_combo.addItems(LIBRARY_TYPE)
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         :return:
         """

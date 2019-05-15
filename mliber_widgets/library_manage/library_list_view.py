@@ -57,7 +57,7 @@ class LibraryListView(QListView):
         # set style
         self.set_style()
         # set signals
-        self.set_signals()
+        self._set_signals()
         # start image cache server
         self.start_image_cache_thread()
 
@@ -96,7 +96,7 @@ class LibraryListView(QListView):
         """
         self.setStyleSheet(mliber_config.LIST_VIEW_STYLE)
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号链接
         :return:

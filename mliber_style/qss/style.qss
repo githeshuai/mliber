@@ -1,6 +1,6 @@
 *{
     color: #fff;
-    font-family:FONT_NAME;
+    font-family: FONT_NAME;
 }
 
 /*
@@ -403,7 +403,7 @@ QComboBox QAbstractItemView::item, QLineEdit QAbstractItemView::item{
 
 QMenu, QMenu QWidget {
 	font: 13*DPIpx;
-	font-family: Arial;
+	font-family: FONT_NAME;
 	font-weight: 50px;
 	color: rgb(255, 255, 255, 255);
 	background-color: MENU_COLOR;

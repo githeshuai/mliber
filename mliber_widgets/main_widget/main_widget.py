@@ -8,17 +8,19 @@ import mliber_global
 import mliber_resource
 from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
+from mliber_widgets import create_widget
 
 
 class MainWidget(MainWidgetUI):
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
+        self.right_is_shown = False
         # set style
-        self.set_style()
+        self._set_style()
         # set signals
-        self.set_signals()
+        self._set_signals()
 
-    def set_style(self):
+    def _set_style(self):
         """
         set style
         :return:
@@ -34,7 +36,18 @@ class MainWidget(MainWidgetUI):
     def library(self):
         return mliber_global.library()
 
-    def set_signals(self):
+    @property
+    def library_type(self):
+        if self.library:
+            return self.library.type
+
+    @property
+    def category(self):
+        categories = mliber_global.categories()
+        if categories and len(categories):
+            return categories[0]
+
+    def _set_signals(self):
         """
         信号连接
         :return:
@@ -45,8 +58,9 @@ class MainWidget(MainWidgetUI):
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
+        self.asset_widget.asset_btn.clicked.connect(self.show_create_widget)
 
-    def get_children_categories(self, categories):
+    def _get_children_categories(self, categories):
         """
         获取子类型，需要递归
         :param categories: <list> list of Category
@@ -136,7 +150,7 @@ class MainWidget(MainWidgetUI):
         当category选择改变的时候
         :return:
         """
-        all_categories = self.get_children_categories(categories)
+        all_categories = self._get_children_categories(categories)
         category_ids = [category.id for category in all_categories]
         category_ids = list(set(category_ids))
         assets = self.db.find("Asset", [["category_id", "in", category_ids]])
@@ -169,13 +183,13 @@ class MainWidget(MainWidgetUI):
         tags = self.tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
 
-    def _add_tag(self, tag_name):
+    def _add_tag(self, tag_names):
         """
         当资产添加tag的时候，在tag widget里添加
-        :param tag_name:
+        :param tag_names: <list>
         :return:
         """
-        self.tag_widget.tag_list_view.append_tag(tag_name)
+        self.tag_widget.tag_list_view.append_tag(tag_names)
 
     def auto_login(self):
         """
@@ -219,6 +233,45 @@ class MainWidget(MainWidgetUI):
             else:
                 app.set_value(mliber_library=None)
             self.refresh_library()
+
+    def show_create_widget(self):
+        """
+        show create widget
+        :return:
+        """
+        show_created = False
+        if self.library_type and self.category:
+            for cls_name, cls in create_widget.classes.iteritems():
+                if cls.library_type == self.library_type:
+                    widget = cls(parent=self)
+                    self.add_right_side_widget(widget)
+                    show_created = True
+                    break
+        if not show_created:
+            MessageBox.warning(self, "Warning", "No library widget found.")
+
+    def show_right(self):
+        """
+        显示右边widget
+        Returns:
+        """
+        self.right_widget.setHidden(False)
+        self.right_is_shown = True
+        self.splitter.setSizes([250, self.width()-500, 250])
+
+    def add_right_side_widget(self, widget):
+        """
+        添加右侧widget，要么是preview, 要么是create
+        Returns:
+        """
+        self.show_right()
+        count = self.right_stack.count()
+        if count == 0:
+            self.right_stack.addWidget(widget)
+        else:
+            for i in xrange(count - 1):
+                self.right_stack.takeAt(0)
+            self.right_stack.addWidget(widget)
 
     def showEvent(self, event):
         """

@@ -16,11 +16,11 @@ class LoginWidget(LoginWidgetUI):
     def __init__(self, parent=None):
         super(LoginWidget, self).__init__(parent)
         # set signals
-        self.set_signals()
+        self._set_signals()
         self.init_database()
         self.init_ui()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:

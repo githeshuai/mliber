@@ -33,9 +33,9 @@ class CategoryWidget(QWidget):
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.category_tree)
         # set signals
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:

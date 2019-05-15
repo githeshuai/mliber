@@ -45,11 +45,11 @@ class Library(object):
         """
         data = self.parse()
         if not data:
-            print "[LIBER] warning: unknown library type: %s." % self._library_type
+            print "[MLIBER] warning: unknown library type: %s." % self._library_type
             return
         action_list = data.get("create_actions")
         if not action_list:
-            print "[LIBER] warning: no create action configured."
+            print "[MLIBER] warning: no create action configured."
             return
         actions = [Action(action_dict) for action_dict in action_list]
         return actions

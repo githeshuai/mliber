@@ -69,9 +69,9 @@ class CreateTagWidget(QDialog):
         main_layout.addWidget(scroll_area)
         main_layout.addLayout(button_layout)
         # set signals
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:

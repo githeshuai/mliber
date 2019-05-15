@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-import copy
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
 from Qt.QtGui import QCursor
@@ -11,6 +10,7 @@ import mliber_global
 from mliber_libs.os_libs.path import Path
 from mliber_api.database_api import Database
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
+from mliber_conf import templates
 
 DEFAULT_ICON_SIZE = 200
 
@@ -72,11 +72,11 @@ class AssetListView(QListView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # set style
-        self.set_style()
+        self._set_style()
         # set signals
-        self.set_signals()
+        self._set_signals()
         # start image cache thread
-        self.start_image_cache_thread()
+        self._start_image_cache_thread()
 
     @property
     def db(self):
@@ -91,7 +91,7 @@ class AssetListView(QListView):
     def user(self):
         return mliber_global.user()
 
-    def start_image_cache_thread(self):
+    def _start_image_cache_thread(self):
         """
         获取刷新图片线程
         :return:
@@ -110,14 +110,14 @@ class AssetListView(QListView):
             index = source_model.index(row, 0)
             source_model.dataChanged.emit(index, index)
 
-    def set_style(self):
+    def _set_style(self):
         """
         set style sheet
         :return:
         """
         self.setStyleSheet(mliber_config.LIST_VIEW_STYLE)
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号链接
         :return:
@@ -152,8 +152,8 @@ class AssetListView(QListView):
         :return:
         """
         asset_path = self._get_asset_path(asset)
-        thumbnail_dir = Path(asset_path).join("thumbnail")
-        return thumbnail_dir
+        thumbnail_pattern = templates.THUMBNAIL_PATH.format(asset_dir=asset_path, asset_name=asset.name)
+        return Path(thumbnail_pattern).parent()
 
     def set_assets(self, assets):
         """
@@ -208,7 +208,20 @@ class AssetListView(QListView):
         for row in xrange(self.model().rowCount()):
             self.openPersistentEditor(self.model().index(row, 0))
 
-    def set_item_size(self, size):
+    def add_asset(self, asset):
+        """
+        :param asset: Asset instance
+        :return:
+        """
+        item = AssetListItem(asset)
+        icon_path = self._get_asset_icon_path(asset)
+        item.icon_path = icon_path
+        item.icon_size = self.iconSize()
+        source_model = self.model().sourceModel()
+        source_model.insertRows(source_model.rowCount(), 1, [item])
+        self.show_delegate()
+
+    def _set_item_size(self, size):
         """
         set item size
         :param size:
@@ -414,7 +427,7 @@ class AssetListView(QListView):
             if zoom_amount < self.MIN_ICON_SIZE:
                 zoom_amount = self.MIN_ICON_SIZE
             size = QSize(zoom_amount, zoom_amount)
-            self.set_item_size(size)
+            self._set_item_size(size)
         else:
             QListView.wheelEvent(self, event)
 

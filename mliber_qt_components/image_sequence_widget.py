@@ -254,8 +254,7 @@ class ImageSequenceWidget(QToolButton):
         :rtype: None
         """
         self._imageSequence.setDirname(dirname)
-        if self._imageSequence.frames():
-            self.setIcon(self.thumbnailIcon())
+        self.setIcon(self.thumbnailIcon())
 
     def enterEvent(self, event):
         """

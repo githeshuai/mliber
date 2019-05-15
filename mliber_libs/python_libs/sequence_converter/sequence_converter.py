@@ -44,9 +44,7 @@ class SequenceConverter(object):
         """
         Path(self.dst).make_parent_dir()
         files = self.file_list()
-        print files
         frames = self.frames()
-        print frames
         for index, frame in enumerate(frames):
             src_file = files[index]
             dst_file = self.dst.replace("####", str(frame).zfill(4))

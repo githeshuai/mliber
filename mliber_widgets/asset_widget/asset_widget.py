@@ -22,15 +22,14 @@ class AssetWidget(QWidget):
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.asset_list_view)
         # set signals
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         set signals
         :return:
         """
         self.search_le.text_changed.connect(self._filter)
-        self.asset_btn.clicked.connect(self.add_asset)
 
     def set_assets(self, assets):
         """
@@ -71,11 +70,3 @@ class AssetWidget(QWidget):
         if model:
             model.sourceModel().remove_all()
             self.search_le.setText("")
-
-    def add_asset(self):
-        """
-        show create asset widget
-        :return:
-        """
-        return
-

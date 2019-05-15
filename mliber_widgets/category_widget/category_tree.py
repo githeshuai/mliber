@@ -40,9 +40,9 @@ class CategoryTree(QTreeWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.items_mapping = {}
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:
@@ -135,6 +135,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         selected_categories = self.selected_categories()
+        mliber_global.app().set_value(mliber_categories=selected_categories)
         self.selection_changed.emit(selected_categories)
 
     def category_exist(self, category_name, parent_id):
@@ -360,9 +361,9 @@ class DeleteCategoryDialog(QDialog):
         main_layout.addLayout(layout)
         main_layout.addLayout(button_layout)
         # set signals
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:

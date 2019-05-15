@@ -13,9 +13,9 @@ class DragFileWidget(QWidget):
         self.file_list = FileListWidget(self)
         self.stacked_layout.addWidget(self.press_label)
         self.stacked_layout.addWidget(self.file_list)
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:

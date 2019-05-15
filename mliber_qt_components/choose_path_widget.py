@@ -17,7 +17,7 @@ class ChoosePathWidget(QWidget):
         layout.addWidget(self.le)
         layout.addWidget(self.btn)
         # set signals
-        self.set_signals()
+        self._set_signals()
 
     def set_label_text(self, text):
         """
@@ -57,7 +57,7 @@ class ChoosePathWidget(QWidget):
         """
         self.le.setText(path)
 
-    def set_signals(self):
+    def _set_signals(self):
         """
         信号连接
         :return:
