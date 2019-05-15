@@ -26,6 +26,13 @@ class LibraryListItem(object):
         self.icon_path = mliber_resource.icon_path("image.png")
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
 
+    def __getattr__(self, item):
+        """
+        :param item:
+        :return:
+        """
+        return getattr(self.library, item)
+
 
 class LibraryListView(QListView):
 
@@ -319,7 +326,7 @@ class LibraryListView(QListView):
                 "mac_path": mac_path, "description": description, "updated_by": self.user.id, "updated_at": now}
         try:
             with mliber_global.db() as db:
-                db.update("Library", selected_item.library.id, data)
+                db.update("Library", selected_item.id, data)
             library_icon_path = self._get_library_icon_path(name)
             if icon_path != library_icon_path:
                 if Path(icon_path).isfile():

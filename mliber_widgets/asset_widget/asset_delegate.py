@@ -164,7 +164,7 @@ class AssetDelegate(QStyledItemDelegate):
         # if image:
         #     editor.set_icon(QIcon(QPixmap.fromImage(image)))
         editor.set_icon(item.icon_path)
-        editor.set_name(item.asset.name)
+        editor.set_name(item.name)
         if item.has_tag:
             editor.light_tag_flag(QColor(50, 100, 255))
         if item.has_description:

@@ -1,0 +1,37 @@
+create_actions:
+  - name: Maya .ma Export
+    checked: True
+    api_arg: ma
+    icon: default
+  - name: Maya .mb Export
+    checked: False
+    api_arg: mb
+    icon: default
+  - name: Maya .abc Export
+    checked: False
+    api_arg: abc
+    icon: default
+  - name: Arnold Proxy Export
+    checked: False
+    api_arg: ass
+    icon: default
+  - name: Redshift Proxy Export
+    checked: False
+    api_arg: rs
+    icon: default
+  - name: Maya .fbx Export
+    checked: False
+    api_arg: fbx
+    icon: default
+  - name: Maya .obj Export
+    checked: False
+    api_arg: obj
+    icon: default
+  - name: Maya gpu Export
+    checked: False
+    api_arg: gpu
+    icon: default
+  - name: Xgen Archive Export
+    checked: False
+    api_arg: xarc
+    icon: default

@@ -40,6 +40,13 @@ class AssetListItem(object):
                 return True
         return False
 
+    def __getattr__(self, item):
+        """
+        :param item:
+        :return:
+        """
+        return getattr(self.asset, item)
+
 
 class AssetListView(QListView):
     MAX_ICON_SIZE = 256

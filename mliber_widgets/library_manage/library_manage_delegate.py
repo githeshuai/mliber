@@ -102,8 +102,8 @@ class LibraryManageDelegate(QStyledItemDelegate):
         image = self.__parent.image_server.get_image(item.icon_path)
         if image:
             editor.set_icon(QIcon(QPixmap.fromImage(image)))
-        editor.set_name(item.library.name)
-        editor.set_type(item.library.type)
+        editor.set_name(item.name)
+        editor.set_type(item.type)
         editor.blockSignals(False)
 
     def updateEditorGeometry(self, editor, option, index):

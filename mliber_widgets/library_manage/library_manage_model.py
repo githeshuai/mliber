@@ -81,8 +81,8 @@ class LibraryManageProxyModel(QSortFilterProxyModel):
             return True
         else:
             if self.filter_type == "type":
-                return self.regexp.exactMatch(item.library.type)
-            return self.regexp.exactMatch(item.library.name)
+                return self.regexp.exactMatch(item.type)
+            return self.regexp.exactMatch(item.name)
 
     def set_filter(self, regexp):
         """

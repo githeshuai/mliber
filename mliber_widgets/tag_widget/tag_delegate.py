@@ -56,7 +56,7 @@ class TagDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self.get_tag_item(index)
         editor.set_icon_color(item.color)
-        editor.set_text(item.text)
+        editor.set_text(item.name)
         editor.blockSignals(False)
 
     def updateEditorGeometry(self, editor, option, index):

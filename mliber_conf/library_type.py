@@ -1,2 +1,9 @@
 # -*- coding:utf-8 -*-
-LIBRARY_TYPE = ["MayaAsset", "MayaShader", "NukeAsset", "NukeNodes", "HDR", "HoudiniAsset"]
+LIBRARY_TYPE = ["MayaAsset",
+                "MayaShader",
+                "NukeAsset",
+                "NukeNodes",
+                "HDR",
+                "HoudiniAsset",
+                "ClarisseAsset"]
+

@@ -153,13 +153,13 @@ class LibraryManage(LibraryManageUI):
         self.library_widget.update.connect(self.update_library)
         if not self.user.library_permission:
             self.library_widget.exec_button.setHidden(True)
-        self.library_widget.set_name(selected_item.library.name)
-        self.library_widget.set_type(selected_item.library.type)
-        self.library_widget.set_windows_path(selected_item.library.windows_path)
-        self.library_widget.set_linux_path(selected_item.library.linux_path)
-        self.library_widget.set_mac_path(selected_item.library.mac_path)
+        self.library_widget.set_name(selected_item.name)
+        self.library_widget.set_type(selected_item.type)
+        self.library_widget.set_windows_path(selected_item.lwindows_path)
+        self.library_widget.set_linux_path(selected_item.linux_path)
+        self.library_widget.set_mac_path(selected_item.mac_path)
         self.library_widget.set_icon_path(selected_item.icon_path)
-        self.library_widget.set_description(selected_item.library.description)
+        self.library_widget.set_description(selected_item.description)
         self.library_widget.exec_()
 
     def add_library(self, args):

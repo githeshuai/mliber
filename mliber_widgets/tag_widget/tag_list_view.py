@@ -23,11 +23,10 @@ class TagListItem(object):
         :param tag: <Tag> Tag object
         """
         self.tag = tag
-        self.text = self.tag.name
         self.width = self.text_width() + 30
-        self.color = QColor(self.tag.colorR or mliber_config.TAG_COLOR_R,
-                            self.tag.colorG or mliber_config.TAG_COLOR_G,
-                            self.tag.colorB or mliber_config.TAG_COLOR_B)
+        self.color = QColor(self.colorR or mliber_config.TAG_COLOR_R,
+                            self.colorG or mliber_config.TAG_COLOR_G,
+                            self.colorB or mliber_config.TAG_COLOR_B)
 
     @staticmethod
     def font():
@@ -43,7 +42,7 @@ class TagListItem(object):
         """
         font = self.font()
         metrics = QFontMetricsF(font)
-        return metrics.boundingRect(self.text)
+        return metrics.boundingRect(self.name)
 
     def text_width(self):
         """
@@ -52,6 +51,13 @@ class TagListItem(object):
         """
         text_width = self.text_rect().width()
         return max(0, text_width)
+
+    def __getattr__(self, item):
+        """
+        :param item:
+        :return:
+        """
+        return getattr(self.tag, item)
 
 
 class TagListView(QListView):
@@ -167,7 +173,7 @@ class TagListView(QListView):
         :return:
         """
         items = self.model().sourceModel().model_data
-        return [item.tag.name for item in items]
+        return [item.name for item in items]
 
     def append_tag(self, tag_names, colorR=138, colorG=138, colorB=138):
         """
@@ -211,7 +217,7 @@ class TagListView(QListView):
         new_name, ok = QInputDialog.getText(self, "New Tag Name", "Input a new tag name")
         if new_name and ok:
             item = self.model().sourceModel().data(index)
-            tag_id = item.tag.id
+            tag_id = item.id
             with mliber_global.db() as db:
                 db.update("Tag", tag_id, {"name": new_name,
                                           "updated_by": self.user.id,

@@ -70,7 +70,7 @@ class TagProxyModel(QSortFilterProxyModel):
         if self.regexp.isEmpty():
             return True
         else:
-            return self.regexp.exactMatch(item.text)
+            return self.regexp.exactMatch(item.name)
 
     def set_filter(self, regexp):
         """
