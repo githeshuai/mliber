@@ -157,7 +157,7 @@ class LiberObject(Base):
     """
     导出的东西表
     """
-    __tablename__ = "liberobject"
+    __tablename__ = "liber_object"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(300), nullable=False)
     type = Column(String(50))

@@ -12,7 +12,7 @@ from mliber_api.database_api import Database
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
 
-DEFAULT_ICON_SIZE = 200
+DEFAULT_ICON_SIZE = 128
 
 
 class AssetListItem(object):

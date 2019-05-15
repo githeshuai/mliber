@@ -18,6 +18,7 @@ class ThumbnailWidget(QWidget):
         super(ThumbnailWidget, self).__init__(parent)
         self._current_index = 0
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         # top button layout
         self.button_layout = QHBoxLayout()
         self.btn_grp = QButtonGroup(self)

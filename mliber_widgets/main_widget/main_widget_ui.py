@@ -14,6 +14,7 @@ class MainWidgetUI(QDialog):
         self.setWindowFlags(Qt.Window)
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignTop)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         # tool bar
         self.tool_bar = Toolbar(self)
         main_layout.addWidget(self.tool_bar)

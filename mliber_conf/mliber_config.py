@@ -4,12 +4,6 @@ from Qt.QtGui import QColor
 # when get children file, ignore the files
 IGNORE_LIST = [".", "Thumbs.db", ".mayaSwatches", ".nk~", ".autosave"]
 
-# 配置视频格式
-VIDEO_EXT = [".mov", ".mp4", ".avi", ".gif"]
-
-# 配置音频格式
-AUDIO_EXT = [".wav"]
-
 # font name
 FONT_NAME = "Arial"
 # COLOR
@@ -21,7 +15,7 @@ ICON_COLOR = QColor(52, 234, 234)
 ICON_HOVER_COLOR = QColor(57, 255, 255)
 ACCENT_COLOR = "rgb(57, 255, 255)"
 
-# commnents color
+# comments color
 COMMENTS_COLOR = QColor(255, 255, 0)
 
 # BLUE COLOR
@@ -46,3 +40,16 @@ LIST_VIEW_STYLE = "QListView::item{background: #393c46;border-radius: 3px;}" \
                   "QListView::item:selected:!active {background: #29475a;}" \
                   "QListView::item:selected:active {background: #29475a;}"
 
+
+# maya texture node and attr name mapping
+TEXTURE_NODE_ATTR_DICT = {"file": "fileTextureName",
+                          "RedshiftNormalMap": "tex0",
+                          "RedshiftDomeLight": "tex0",
+                          "aiImage": "filename",
+                          "RedshiftIESLight": "profile",
+                          "RedshiftSprite": "tex0"}
+
+
+# maya color space node name and attr mapping
+COLOR_SPACE_ATTR_DICT = {"file": "cs",
+                         "aiImage": "cs"}

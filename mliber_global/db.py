@@ -5,16 +5,17 @@ from contextlib import contextmanager
 
 
 @contextmanager
-def db():
+def db(database=None):
     """
     获取db操作对象
     :return:
     """
-    database = mliber_global.app().value("mliber_database")
-    db = Database(database)
+    if not database:
+        database = mliber_global.app().value("mliber_database")
+    db_instance = Database(database)
     try:
-        yield db
+        yield db_instance
     except:
-        db.session.rollback()
+        db_instance.session.rollback()
     finally:
-        db.session.close()
+        db_instance.session.close()
