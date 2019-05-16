@@ -80,11 +80,6 @@ class AssetListView(QListView):
         self._start_image_cache_thread()
 
     @property
-    def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
-
-    @property
     def library(self):
         return mliber_global.library()
 
@@ -308,7 +303,8 @@ class AssetListView(QListView):
             model = self.model().sourceModel()
             item = model.model_data[index.row()]
             asset = item.asset
-            add_tag_of_asset(self.db, asset, tag_names)
+            with mliber_global.db() as db:
+                add_tag_of_asset(db, asset, tag_names)
             model.setData(index, ["tag", True], Qt.UserRole)
         self.add_tag_signal.emit(tag_names)
 
@@ -335,15 +331,16 @@ class AssetListView(QListView):
         :param asset_id: <int>
         :return:
         """
-        user = self.db.find_one("User", [["id", "=", user.id]])
-        assets = user.assets
-        asset_ids = [asset.id for asset in assets]
-        if asset_id in asset_ids:
-            return
-        asset_ids.append(asset_id)
-        db = self.db
-        assets = self.db.find("Asset", [["id", "in", asset_ids]])
-        db.update("User", user.id, {"assets": assets})
+        with mliber_global.db() as db:
+            user = db.find_one("User", [["id", "=", user.id]])
+            assets = user.assets
+            asset_ids = [asset.id for asset in assets]
+            if asset_id in asset_ids:
+                return
+            asset_ids.append(asset_id)
+            db = db
+            assets = db.find("Asset", [["id", "in", asset_ids]])
+            db.update("User", user.id, {"assets": assets})
 
     def _remove_asset_from_user(self, user, asset_id):
         """
@@ -352,14 +349,14 @@ class AssetListView(QListView):
         :param asset_id:
         :return:
         """
-        user = self.db.find_one("User", [["id", "=", user.id]])
-        assets = user.assets
-        asset_ids = [asset.id for asset in assets]
-        if asset_id in asset_ids:
-            db = self.db
-            asset_ids.remove(asset_id)
-            assets = db.find("Asset", [["id", "in", asset_ids]])
-            db.update("User", user.id, {"assets": assets})
+        with mliber_global.db() as db:
+            user = db.find_one("User", [["id", "=", user.id]])
+            assets = user.assets
+            asset_ids = [asset.id for asset in assets]
+            if asset_id in asset_ids:
+                asset_ids.remove(asset_id)
+                assets = db.find("Asset", [["id", "in", asset_ids]])
+                db.update("User", user.id, {"assets": assets})
 
     def _store(self, index):
         """

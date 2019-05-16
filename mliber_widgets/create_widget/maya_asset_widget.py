@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 from Qt.QtWidgets import QCheckBox, QWidget, QHBoxLayout
 from create_widget import CreateWidget
 from mliber_qt_components.input_text_edit import InputTextEdit
@@ -120,9 +121,10 @@ class MayaAssetWidget(CreateWidget):
         self.progress_bar.setValue(6)
         try:
             asset = maya_asset.create(**data)
-            self.created_signal.emit(asset)
+            self.created_signal.emit([asset])
         except Exception as e:
-            MessageBox.critical(self, "Code Error", str(e))
+            logging.error(str(e))
+            MessageBox.warning(None, "Code Error", str(e))
         finally:
             self.progress_bar.setValue(10)
             self.progress_bar.hide()

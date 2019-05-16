@@ -152,7 +152,7 @@ class CreateWidget(QScrollArea):
         self.asset_dir_te.setReadOnly(True)
         self.asset_dir_te.setFixedHeight(50)
         # tag
-        tag_label = QLabel("Tag", self)
+        tag_label = TitleLabel("Tag", False, self)
         tag_label.setAlignment(Qt.AlignRight)
         self.tag_le = QLineEdit(self)
         # 描述label

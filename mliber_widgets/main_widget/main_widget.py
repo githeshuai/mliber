@@ -28,11 +28,6 @@ class MainWidget(MainWidgetUI):
         return self.setStyleSheet(mliber_resource.style())
 
     @property
-    def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
-
-    @property
     def library(self):
         return mliber_global.library()
 
@@ -67,16 +62,15 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         all_categories = list()
-        db = self.db
 
         def get(category_list):
             category_id_list = [category.id for category in category_list]
-            children_categories = db.find("Category", [["parent_id", "in", category_id_list]])
-            if children_categories:
-                all_categories.extend(children_categories)
-                get(children_categories)
+            with mliber_global.db() as db:
+                children_categories = db.find("Category", [["parent_id", "in", category_id_list]])
+                if children_categories:
+                    all_categories.extend(children_categories)
+                    get(children_categories)
         get(categories)
-        db.close()
         all_categories.extend(categories)
         return all_categories
 
@@ -126,8 +120,9 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         filters = [["library_id", "=", library_id], ["status", "=", "Active"]]
-        assets = self.db.find("Asset", filters)
-        return assets
+        with mliber_global.db() as db:
+            assets = db.find("Asset", filters)
+            return assets
 
     def tags_of_assets(self, assets):
         """
@@ -142,7 +137,8 @@ class MainWidget(MainWidgetUI):
         if asset_tags:
             tag_names = [tag.name for tag in asset_tags]
             tag_names = list(set(tag_names))
-            tags = self.db.find("Tag", [["name", "in", tag_names]])
+            with mliber_global.db() as db:
+                tags = db.find("Tag", [["name", "in", tag_names]])
         return tags
 
     def _on_category_selection_changed(self, categories):
@@ -153,7 +149,8 @@ class MainWidget(MainWidgetUI):
         all_categories = self._get_children_categories(categories)
         category_ids = [category.id for category in all_categories]
         category_ids = list(set(category_ids))
-        assets = self.db.find("Asset", [["category_id", "in", category_ids]])
+        with mliber_global.db() as db:
+            assets = db.find("Asset", [["category_id", "in", category_ids]])
         self.asset_widget.set_assets(assets)
 
     def _on_tag_selection_changed(self, tags):
@@ -244,12 +241,28 @@ class MainWidget(MainWidgetUI):
             for cls_name, cls in create_widget.classes.iteritems():
                 if cls.library_type == self.library_type:
                     widget = cls(parent=self)
-                    # widget.created_signal.connect()
+                    widget.created_signal.connect(self.create_done)
                     self.add_right_side_widget(widget)
                     show_created = True
                     break
         if not show_created:
             MessageBox.warning(self, "Warning", "No library widget found.")
+
+    def create_done(self, assets):
+        """
+        当创建成功时，返回的已创建的assets
+        :param assets:
+        :return:
+        """
+        if not assets:
+            return
+        asset = assets[0]
+        self.asset_widget.asset_list_view.add_asset(assets[0])
+        tags = asset.tags
+        if not tags:
+            return
+        tag_names = [tag.name for tag in tags]
+        self.tag_widget.tag_list_view.append_tag(tag_names)
 
     def show_right(self):
         """

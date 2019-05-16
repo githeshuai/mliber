@@ -17,5 +17,3 @@ def db(database=None):
         yield db_instance
     except:
         db_instance.session.rollback()
-    finally:
-        db_instance.session.close()

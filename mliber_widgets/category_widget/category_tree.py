@@ -52,11 +52,6 @@ class CategoryTree(QTreeWidget):
         self.itemSelectionChanged.connect(self.on_item_selection_changed)
 
     @property
-    def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
-
-    @property
     def library(self):
         return mliber_global.library()
 
@@ -68,15 +63,15 @@ class CategoryTree(QTreeWidget):
         self.clear()
         if not self.library:
             return
-        db = self.db
-        cats = db.find("Category", [["parent_id", "is", None],
-                                    ["library_id", "=", self.library.id],
-                                    ["status", "=", "Active"]])
-        for cat in cats:
-            cat_item = CategoryTreeItem(self)
-            cat_item.set_category(cat)
-            self.items_mapping[cat.name] = cat_item
-            self.get_children(cat, cat_item)
+        with mliber_global.db() as db:
+            cats = db.find("Category", [["parent_id", "is", None],
+                                        ["library_id", "=", self.library.id],
+                                        ["status", "=", "Active"]])
+            for cat in cats:
+                cat_item = CategoryTreeItem(self)
+                cat_item.set_category(cat)
+                self.items_mapping[cat.name] = cat_item
+                self.get_children(cat, cat_item)
 
     def get_children(self, cat, parent_item):
         """
@@ -233,8 +228,9 @@ class CategoryTree(QTreeWidget):
             return
         # 在数据库里添加
         user = mliber_global.user()
-        category = self.db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
-                                               "created_by": user.id, "library_id": self.library.id})
+        with mliber_global.db() as db:
+            category = db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
+                                              "created_by": user.id, "library_id": self.library.id})
         # 在ui上显示
         tree_widget_item = CategoryTreeItem(parent_item or self)
         tree_widget_item.set_category(category)
@@ -258,7 +254,6 @@ class CategoryTree(QTreeWidget):
     def recursion_delete_category(self, category):
         """
         递归删除子类型
-        :param db: Database object
         :param category: Category instance
         :return:
         """

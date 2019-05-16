@@ -81,11 +81,6 @@ class LibraryListView(QListView):
             source_model.dataChanged.emit(index, index)
 
     @property
-    def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
-
-    @property
     def user(self):
         return mliber_global.user()
     
@@ -133,7 +128,8 @@ class LibraryListView(QListView):
         :return:
         """
         model_data = list()
-        libraries = self.db.find("Library", [["status", "=", "Active"]])
+        with mliber_global.db() as db:
+            libraries = db.find("Library", [["status", "=", "Active"]])
         for library in libraries:
             item = LibraryListItem(library)
             icon_path = self._get_library_icon_path(library.name)
@@ -358,9 +354,10 @@ class LibraryListView(QListView):
             return
         if not self.validate_path_can_be_created(windows_path, linux_path, mac_path):
             return
-        library = self.db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
-                                             "linux_path": linux_path, "mac_path": mac_path, "status": status,
-                                             "description": description, "created_by": self.user.id})
+        with mliber_global.db() as db:
+            library = db.create("Library", {"name": name, "type": typ, "windows_path": windows_path,
+                                            "linux_path": linux_path, "mac_path": mac_path, "status": status,
+                                            "description": description, "created_by": self.user.id})
         # 将icon 拷贝到 public dir
         if icon_path and Path(icon_path).isfile():
             library_icon_path = self._get_library_icon_path(name)

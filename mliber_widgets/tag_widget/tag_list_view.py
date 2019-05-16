@@ -86,11 +86,6 @@ class TagListView(QListView):
         self.setStyleSheet(LIST_VIEW_STYLE)
 
     @property
-    def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
-
-    @property
     def library(self):
         """
         :return:
@@ -188,19 +183,19 @@ class TagListView(QListView):
         if isinstance(tag_names, basestring):
             tag_names = [tag_names]
         items = list()
-        db = self.db
-        for tag_name in tag_names:
-            tag = db.find_one("Tag", [["name", "=", tag_name], ["status", "=", "Active"]])
-            # tag存在数据库中，但是没有在当前list中，则需要添加进来
-            if tag:
-                if tag_name not in self.tag_names:
+        with mliber_global.db() as db:
+            for tag_name in tag_names:
+                tag = db.find_one("Tag", [["name", "=", tag_name], ["status", "=", "Active"]])
+                # tag存在数据库中，但是没有在当前list中，则需要添加进来
+                if tag:
+                    if tag_name not in self.tag_names:
+                        item = TagListItem(tag)
+                        items.append(item)
+                else:
+                    tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG,
+                                            "colorB": colorB, "created_by": self.user.id})
                     item = TagListItem(tag)
                     items.append(item)
-            else:
-                tag = db.create("Tag", {"name": tag_name, "colorR": colorR, "colorG": colorG,
-                                        "colorB": colorB, "created_by": self.user.id})
-                item = TagListItem(tag)
-                items.append(item)
             # 在ui显示
         if items:
             source_model = self.model().sourceModel()
@@ -273,10 +268,11 @@ class TagListView(QListView):
         green = int(color.green())
         blue = int(color.blue())
         selected_tags = self.selected_tags()
-        for tag in selected_tags:
-            self.db.update("Tag", tag.id, {"colorR": red, "colorG": green, "colorB": blue,
-                                           "updated_by": self.user.id,
-                                           "updated_at": datetime.now()})
+        with mliber_global.db() as db:
+            for tag in selected_tags:
+                db.update("Tag", tag.id, {"colorR": red, "colorG": green, "colorB": blue,
+                                          "updated_by": self.user.id,
+                                          "updated_at": datetime.now()})
 
     def selected_indexes(self):
         """
