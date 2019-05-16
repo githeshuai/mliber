@@ -155,7 +155,7 @@ class LibraryManage(LibraryManageUI):
             self.library_widget.exec_button.setHidden(True)
         self.library_widget.set_name(selected_item.name)
         self.library_widget.set_type(selected_item.type)
-        self.library_widget.set_windows_path(selected_item.lwindows_path)
+        self.library_widget.set_windows_path(selected_item.windows_path)
         self.library_widget.set_linux_path(selected_item.linux_path)
         self.library_widget.set_mac_path(selected_item.mac_path)
         self.library_widget.set_icon_path(selected_item.icon_path)
