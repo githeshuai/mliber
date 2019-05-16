@@ -8,8 +8,6 @@ from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
 
 
 class MayaXgenProxy(MayaObject):
-    plugin = "xgenToolkit.mll"
-
     def __init__(self, path):
         """
         xgen operations
@@ -17,6 +15,7 @@ class MayaXgenProxy(MayaObject):
             path:
         """
         super(MayaXgenProxy, self).__init__(path)
+        self.plugin = "xgenToolkit.mll"
 
     def export(self, objects, start, end, *args, **kwargs):
         """
@@ -31,7 +30,8 @@ class MayaXgenProxy(MayaObject):
             objects = [objects]
         directory = os.path.dirname(self.path)
         name = os.path.basename(self.path).split(".")[0]
-        load_plugin(self.plugin)
+        if not self.load_plugin():
+            return
         if not objects:
             return
         select_objects(objects)
@@ -42,6 +42,7 @@ class MayaXgenProxy(MayaObject):
             hlp.processDir(name, directory, [file_name], 0, '0.0', '0.0', start, end)
         else:
             hlp.processDir(name, directory, [file_name], objects, 0, '0.0', '0.0', start, end)
+        return self.path
 
     def import_in(self, *args, **kwargs):
         """

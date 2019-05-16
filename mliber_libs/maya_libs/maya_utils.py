@@ -36,6 +36,7 @@ def load_plugin(plugin):
             mc.loadPlugin(plugin, quiet=1)
             return True
         except:
+            print "Can not load plugin: %s" % plugin
             return False
     return True
 

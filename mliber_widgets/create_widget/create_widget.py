@@ -161,6 +161,7 @@ class CreateWidget(QScrollArea):
         self.comment_tx.setMinimumHeight(60)
         blank_label = QLabel(self)
         self.overwrite_check_box = QCheckBox("Overwrite", self)
+        self.overwrite_check_box.setChecked(True)
         layout.addWidget(name_label, 1, 0, 1, 1)
         layout.addWidget(self.asset_name_le, 1, 1, 1, 4)
         layout.addWidget(path_label, 2, 0, 1, 1)

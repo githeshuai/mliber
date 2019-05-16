@@ -5,6 +5,14 @@ from mliber_libs.maya_libs import maya_utils
 class MayaObject(object):
     def __init__(self, path):
         self.path = path
+        self.plugin = None
+
+    def load_plugin(self):
+        """
+        加载插件
+        :return:
+        """
+        return maya_utils.load_plugin(self.plugin)
 
     def export(self, *args, **kwargs):
         """
@@ -26,5 +34,5 @@ class MayaObject(object):
 
     @property
     def plugin_version(self):
-        if hasattr(self, "plugin"):
+        if self.plugin:
             return maya_utils.get_plugin_version(self.plugin)

@@ -6,8 +6,6 @@ from mliber_libs.maya_libs.maya_utils import select_objects
 
 
 class MayaFbx(MayaObject):
-    plugin = "fbxmaya.mll"
-
     def __init__(self, path):
         """
         maya .obj
@@ -17,6 +15,7 @@ class MayaFbx(MayaObject):
 
         """
         super(MayaFbx, self).__init__(path)
+        self.plugin = "fbxmaya.mll"
 
     def export(self, objects, *args, **kwargs):
         """
@@ -25,12 +24,13 @@ class MayaFbx(MayaObject):
         """
         if not objects:
             return
-        select_objects(objects)
-        dir_name = os.path.dirname(self.path)
-        if not os.path.isdir(dir_name):
-            os.makedirs(dir_name)
-        mel.eval("FBXExport -f \"%s\" -s" % self.path)
-        return self.path
+        if self.load_plugin():
+            select_objects(objects)
+            dir_name = os.path.dirname(self.path)
+            if not os.path.isdir(dir_name):
+                os.makedirs(dir_name)
+            mel.eval("FBXExport -f \"%s\" -s" % self.path)
+            return self.path
 
     def import_in(self, *args, **kwargs):
         """

@@ -38,16 +38,14 @@ class MayaRedshiftProxy(MayaObject):
         """
         if not objects:
             return
-        select_objects(objects)
-        if load_plugin(self.plugin):
+        if self.load_plugin():
+            select_objects(objects)
             dir_name = os.path.dirname(self.path)
             if not os.path.isdir(dir_name):
                 os.makedirs(dir_name)
             mc.file(self.path, pr=1, es=1, force=1, typ="Redshift Proxy",
                     options="startFrame=%s;endFrame=%s;frameStep=1;exportConnectivity=0;" % (start, end))
             return self.get_rs_sequence_pattern(start, end)
-        print "[LIBER] warnning: Can not load plugin %s." % self.plugin
-        return False
 
     def import_rs(self, rs_node_name):
         """

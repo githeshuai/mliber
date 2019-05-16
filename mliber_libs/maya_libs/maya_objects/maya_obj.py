@@ -6,8 +6,6 @@ from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
 
 
 class MayaObj(MayaObject):
-    plugin = "objExport.mll"
-
     def __init__(self, path):
         """
         maya .obj
@@ -17,6 +15,7 @@ class MayaObj(MayaObject):
 
         """
         super(MayaObj, self).__init__(path)
+        self.plugin = "objExport.mll"
 
     def export(self, objects, start, end, padding=4, **kwargs):
         """
@@ -28,18 +27,19 @@ class MayaObj(MayaObject):
         """
         if not objects:
             return
-        select_objects(objects)
-        parent_dir = os.path.dirname(self.path)
-        if not os.path.isdir(parent_dir):
-            os.makedirs(parent_dir)
-        for i in range(start, end+1):
-            mc.currentTime(i)
-            prefix, suffix = os.path.splitext(self.path)
-            new_path = "%s.%s%s" % (prefix, str(i).zfill(padding), suffix)
-            mc.file(new_path, typ="OBJexport",
-                    options="groups=0;ptgroups=0;materials=0;"
-                            "smoothing=1;normals=1", pr=1, es=1, f=1)
-        return self.path
+        if self.plugin:
+            select_objects(objects)
+            parent_dir = os.path.dirname(self.path)
+            if not os.path.isdir(parent_dir):
+                os.makedirs(parent_dir)
+            for i in range(start, end+1):
+                mc.currentTime(i)
+                prefix, suffix = os.path.splitext(self.path)
+                new_path = "%s.%s%s" % (prefix, str(i).zfill(padding), suffix)
+                mc.file(new_path, typ="OBJexport",
+                        options="groups=0;ptgroups=0;materials=0;"
+                                "smoothing=1;normals=1", pr=1, es=1, f=1)
+            return self.path
 
     def import_in(self, *args, **kwargs):
         """

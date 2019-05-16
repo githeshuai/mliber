@@ -138,7 +138,7 @@ class Path(object):
         :param args:
         :return:
         """
-        path = os.path.abspath(os.path.join(self.path, *args))
+        path = os.path.join(self.path, *args)
         path = path.replace("\\", "/")
         return path
 

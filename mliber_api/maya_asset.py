@@ -8,6 +8,7 @@ from mliber_libs.maya_libs.maya_utils import get_maya_version, post_export_textu
 from mliber_libs.maya_libs.maya_texture import MayaTexture
 from mliber_libs.maya_libs.maya_object_factory import MayaObjectFactory
 from mliber_libs.python_libs.sequence_converter import Converter
+from mliber_libs.os_libs.path import Path
 
 
 @pysnooper.snoop()
@@ -73,18 +74,23 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
             liber_object_abs_path = liber_object_relative_path.format(root=library.root_path())
             maya_object_instance = MayaObjectFactory(liber_object_type).create_instance(liber_object_abs_path)
             try:
-                maya_object_instance.export(objects, start=start, end=end)
-                plugin = maya_object_instance.plugin_version
-                liber_object_name = "{}_{}".format(asset_name, liber_object_type)
-                data = {"type": liber_object_type, "software": software, "plugin": plugin,
-                        "status": "Active", "path": liber_object_relative_path, "name": liber_object_name}
-                if created_by is not None:
-                    data.update({"created_by": created_by})
-                liber_object = db.create("LiberObject", data)
-                liber_objects.append(liber_object)
-                logging.info("[MLIBER] info: Export %s done." % liber_object_type)
+                exported_path = maya_object_instance.export(objects, start=start, end=end)
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
+                continue
+            base_name = Path(exported_path).basename()
+            relative_dir = Path(liber_object_relative_path).parent()
+            path = Path(relative_dir).join(base_name)
+            plugin = maya_object_instance.plugin_version
+            liber_object_name = "{}_{}".format(asset_name, liber_object_type)
+            data = {"type": liber_object_type, "software": software, "plugin": plugin,
+                    "status": "Active", "path": path, "name": liber_object_name}
+            if created_by is not None:
+                data.update({"created_by": created_by})
+            liber_object = db.create("LiberObject", data)
+            liber_objects.append(liber_object)
+            logging.info("[MLIBER] info: Export %s done." % liber_object_type)
+
         if export_texture and recover_texture:
             try:
                 post_export_textures(texture_info_dict)
@@ -93,7 +99,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
                 logging.warning(u"[MLIBER] info: Texture can not be recovered.")
         if not liber_objects:
             return
-        # 创建asset
+        # create asset
         asset_data = {"name": asset_name, "path": asset_relative_dir, "status": "Active",
                       "library_id": library_id, "category_id": category_id, "description": description,
                       "objects": liber_objects}
@@ -104,7 +110,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         else:
             asset = db.update("Asset", asset.id, asset_data)
         logging.info("[MLIBER] info: Create Asset done.")
-        # 添加tag
+        # add tag
         if tag_names:
             add_tag_of_asset(db, asset, tag_names)
             logging.info("[MLIBER] info: Assign Tag done.")

@@ -5,8 +5,6 @@ from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
 
 
 class MayaGpuCache(MayaObject):
-    plugin = "gpuCache.mll"
-
     def __init__(self, path):
         """
         Args:
@@ -14,6 +12,7 @@ class MayaGpuCache(MayaObject):
         Returns:
         """
         super(MayaGpuCache, self).__init__(path)
+        self.plugin = "gpuCache.mll"
 
     def export(self, objects, start, end, save_multiple_files=True, **kwargs):
         """
@@ -24,11 +23,12 @@ class MayaGpuCache(MayaObject):
             save_multiple_files:
         Returns:
         """
-        directory = os.path.dirname(self.path)
-        filename = os.path.splitext(os.path.basename(self.path))[0]
-        mc.gpuCache(objects, directory=directory, fileName=filename, optimize=1, writeMaterials=1, dataFormat="ogawa",
-                    startTime=start, endTime=end, saveMultipleFiles=save_multiple_files)
-        return self.path
+        if self.load_plugin():
+            directory = os.path.dirname(self.path)
+            filename = os.path.splitext(os.path.basename(self.path))[0]
+            mc.gpuCache(objects, directory=directory, fileName=filename, optimize=1, writeMaterials=1, dataFormat="ogawa",
+                        startTime=start, endTime=end, saveMultipleFiles=save_multiple_files)
+            return self.path
 
     def import_in(self, gpu_name, node_name, *args, **kwargs):
         """

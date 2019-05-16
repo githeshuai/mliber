@@ -6,8 +6,6 @@ from mliber_libs.maya_libs.maya_utils import get_frame_padding, load_plugin, sel
 
 
 class MayaArnoldProxy(MayaObject):
-    plugin = "mtoa.mll"
-    
     def __init__(self, path):
         """
         __init__ built in
@@ -17,6 +15,7 @@ class MayaArnoldProxy(MayaObject):
         Returns:
         """
         super(MayaArnoldProxy, self).__init__(path)
+        self.plugin = "mtoa.mll"
 
     def get_ass_sequence_pattern(self, start, end):
         """
@@ -36,11 +35,11 @@ class MayaArnoldProxy(MayaObject):
         set format and load self.plugin
         Returns: <bool>
         """
-        mc.setAttr("defaultRenderGlobals.outFormatControl", 0)
-        mc.setAttr("defaultRenderGlobals.animation", 1)
-        mc.setAttr("defaultRenderGlobals.putFrameBeforeExt", 1)
-        mc.setAttr("defaultRenderGlobals.periodInExt", 1)
-        if load_plugin(self.plugin):
+        if self.load_plugin():
+            mc.setAttr("defaultRenderGlobals.outFormatControl", 0)
+            mc.setAttr("defaultRenderGlobals.animation", 1)
+            mc.setAttr("defaultRenderGlobals.putFrameBeforeExt", 1)
+            mc.setAttr("defaultRenderGlobals.periodInExt", 1)
             return True
         return False
 
@@ -63,8 +62,6 @@ class MayaArnoldProxy(MayaObject):
                             "-frameStep 1.0;-boundingBox;-startFrame %s" % (end, start),
                     typ="ASS Export", pr=1, es=1)
             return self.get_ass_sequence_pattern(start, end)
-        print "[LIBER] warnning: Can not load plugin %s." % self.plugin
-        return False
 
     def import_ass(self, ass_node_name):
         """
