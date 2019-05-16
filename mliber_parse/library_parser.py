@@ -14,13 +14,7 @@ class Library(object):
             library_type: <str> library type
         """
         self._library_type = library_type
-
-    def set_library_type(self, library_type):
-        """
-        set library
-        Returns:
-        """
-        self._library_type = library_type
+        self._data = self.parse()
 
     def library_conf_path(self):
         """
@@ -43,16 +37,23 @@ class Library(object):
         create actions
         :return:
         """
-        data = self.parse()
-        if not data:
-            print "[MLIBER] warning: unknown library type: %s." % self._library_type
-            return
-        action_list = data.get("create_actions")
+        action_list = self.create_actions
         if not action_list:
             print "[MLIBER] warning: no create action configured."
             return
         actions = [Action(action_dict) for action_dict in action_list]
         return actions
+
+    def __getattr__(self, item):
+        """
+
+        :param item:
+        :return:
+        """
+        if not self._data:
+            print "[MLIBER] warning: unknown library type: %s." % self._library_type
+            return
+        return self._data.get(item, None)
 
 
 if __name__ == "__main__":

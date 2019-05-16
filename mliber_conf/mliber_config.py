@@ -4,6 +4,9 @@ from Qt.QtGui import QColor
 # when get children file, ignore the files
 IGNORE_LIST = [".", "Thumbs.db", ".mayaSwatches", ".nk~", ".autosave"]
 
+# 配置视频格式
+VIDEO_EXT = [".mov", ".mp4", ".avi", ".gif", ".mkv"]
+
 # font name
 FONT_NAME = "Arial"
 # COLOR

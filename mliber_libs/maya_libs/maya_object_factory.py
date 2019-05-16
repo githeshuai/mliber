@@ -10,27 +10,26 @@ from mliber_libs.maya_libs.maya_objects.maya_xgen_proxy import MayaXgenProxy
 
 
 class MayaObjectFactory(object):
-    def __init__(self, typ, path):
+    def __init__(self, typ):
         self.type = typ
-        self.path = path
 
-    def create_instance(self):
+    def create_instance(self, path):
         if self.type == "abc":
-            instance = MayaAbc(self.path)
+            instance = MayaAbc(path)
         elif self.type == "ass":
-            instance = MayaArnoldProxy(self.path)
+            instance = MayaArnoldProxy(path)
         elif self.type == "fbx":
-            instance = MayaFbx(self.path)
+            instance = MayaFbx(path)
         elif self.type in ["ma", "mb"]:
-            instance = MayaFile(self.path)
+            instance = MayaFile(path)
         elif self.type == "gpu":
-            instance = MayaGpuCache(self.path)
+            instance = MayaGpuCache(path)
         elif self.type == "obj":
-            instance = MayaObj(self.path)
+            instance = MayaObj(path)
         elif self.type == "rs":
-            instance = MayaRedshiftProxy(self.path)
-        elif self.type == "xgen":
-            instance = MayaXgenProxy(self.path)
+            instance = MayaRedshiftProxy(path)
+        elif self.type == "xarc":
+            instance = MayaXgenProxy(path)
         else:
             print "[MLIBER] error: maya object type %s not supported." % self.type
             return

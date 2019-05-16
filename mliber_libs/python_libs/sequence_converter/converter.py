@@ -4,7 +4,7 @@ from video_converter import VideoConverter
 
 
 class Converter(object):
-    def __init__(self, typ):
+    def __init__(self, typ=None):
         """
         :param typ: <str>
         """
@@ -19,6 +19,9 @@ class Converter(object):
         """
         if not src_files:
             return
+        if not self.typ:
+            print "[MLIBER info]: no type !"
+            return
         if self.typ in ["image", "sequence"]:
             for index, src_file in src_files:
                 dst_file = dst_pattern.replace("####", str(index).zfill(4))
@@ -27,5 +30,3 @@ class Converter(object):
             src_file = src_files[0]
             dst_pattern = dst_pattern.replace("####", "%04d")
             VideoConverter(src_file, dst_pattern).convert()
-        else:
-            return

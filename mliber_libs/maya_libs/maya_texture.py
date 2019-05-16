@@ -143,7 +143,6 @@ class MayaTexture(object):
             temp_dict[attr] = mc.getAttr(attr)
             if cs_attr:
                 temp_dict[cs_attr] = mc.getAttr(cs_attr)
-        print texture_nodes
         for node in texture_nodes:
             try:
                 self.export_texture(node, texture_dir, True)
