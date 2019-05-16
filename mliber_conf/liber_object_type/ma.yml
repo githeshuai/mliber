@@ -3,4 +3,3 @@ apply_actions:
   maya:
     - name: "import"
       hook: "maya_ma_import"
-    - name:

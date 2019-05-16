@@ -23,7 +23,7 @@ class Converter(object):
             print "[MLIBER info]: no type !"
             return
         if self.typ in ["image", "sequence"]:
-            for index, src_file in src_files:
+            for index, src_file in enumerate(src_files):
                 dst_file = dst_pattern.replace("####", str(index).zfill(4))
                 ImageConverter(src_file, dst_file).convert()
         elif self.typ in ["video"]:

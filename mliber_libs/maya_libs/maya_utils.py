@@ -123,7 +123,8 @@ def get_maya_version():
     get maya version
     Returns: <str> maya version
     """
-    return mc.about(v=1)
+    version = mc.about(v=1)
+    return "Maya_%s" % version
 
 
 def get_plugin_version(plugin_name):

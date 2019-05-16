@@ -87,11 +87,11 @@ class ActionWidget(QWidget):
         if action_objects:
             for action_object in action_objects:
                 name = action_object.name
-                api_arg = action_object.api_arg
+                typ = action_object.type
                 checked = action_object.checked
                 check_box = QCheckBox(name, self)
                 check_box.setChecked(checked)
-                check_box.api_arg = api_arg
+                check_box.type = typ
                 checkbox_list.append(check_box)
         return checkbox_list
 
@@ -104,7 +104,7 @@ class ActionWidget(QWidget):
 
 
 class CreateWidget(QScrollArea):
-    created_signal = Signal()
+    created_signal = Signal(list)
 
     def __init__(self, library_type=None, parent=None):
         super(CreateWidget, self).__init__(parent)
@@ -120,23 +120,8 @@ class CreateWidget(QScrollArea):
         self.main_layout = QVBoxLayout(widget)
         self.main_layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        # show common
-        self.show_common()
-        # library widget
-        self.library_widget = self.create_library_widget()
-        self.main_layout.addWidget(self.library_widget)
-        # progress bar
-        self.progress_bar = QProgressBar(self)
-        self.progress_bar.hide()
-        self.progress_bar.setTextVisible(False)
-        # create button
-        self.create_btn = QPushButton("Create", self)
-        self.main_layout.addWidget(self.progress_bar)
-        self.main_layout.addWidget(self.create_btn)
-        # build connections
-        self._set_signals()
 
-    def _set_signals(self):
+    def set_signals(self):
         self.asset_name_le.textChanged.connect(self.show_asset_dir)
         self.create_btn.clicked.connect(self.on_create_btn_clicked)
 
@@ -146,7 +131,7 @@ class CreateWidget(QScrollArea):
         Returns:
         """
         self.thumbnail_widget = ThumbnailWidget(self)
-        self.main_layout.insertWidget(0, self.thumbnail_widget)
+        self.main_layout.addWidget(self.thumbnail_widget)
 
     def show_common(self):
         """
@@ -167,7 +152,8 @@ class CreateWidget(QScrollArea):
         self.asset_dir_te.setReadOnly(True)
         self.asset_dir_te.setFixedHeight(50)
         # tag
-        tag_label = TitleLabel("Tag", True, self)
+        tag_label = QLabel("Tag", self)
+        tag_label.setAlignment(Qt.AlignRight)
         self.tag_le = QLineEdit(self)
         # 描述label
         comment_label = TitleLabel("Comment", False, self)
@@ -194,15 +180,23 @@ class CreateWidget(QScrollArea):
         根据不同的library,创建不同的widget，子类需要继承重写，返回一个QWidget
         Returns:QWidget
         """
-        return QWidget(self)
+        return None
+
+    def show_library_widget(self):
+        """
+        :return:
+        """
+        library_widget = self.create_library_widget()
+        if library_widget:
+            self.main_layout.addWidget(library_widget)
 
     def show_actions(self):
         """
         从library.yml中读取信息， 创建checkbox widget
         Returns:
         """
-        actions_widget = ActionWidget(self.library_type, self)
-        self.main_layout.insertWidget(2, actions_widget)
+        self.actions_widget = ActionWidget(self.library_type, self)
+        self.main_layout.addWidget(self.actions_widget)
 
     def show_frame_range(self):
         """
@@ -228,19 +222,57 @@ class CreateWidget(QScrollArea):
         frame_range_layout.addWidget(fr_label)
         frame_range_layout.addLayout(h_layout)
         frame_range_layout.setSpacing(5)
-        self.main_layout.insertLayout(3, frame_range_layout)
+        self.main_layout.addLayout(frame_range_layout)
+
+    def show_progress_bar(self):
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.hide()
+        self.progress_bar.setTextVisible(False)
+        self.main_layout.addWidget(self.progress_bar)
+
+    def show_create_button(self):
+        """
+        显示create button
+        :return:
+        """
+        self.create_btn = QPushButton("Create", self)
+        self.main_layout.addWidget(self.create_btn)
+
+    @property
+    def database(self):
+        """
+        配置文件中database name
+        :return:
+        """
+        database = mliber_global.app().value("mliber_database")
+        return database
 
     @property
     def db(self):
-        database = mliber_global.app().value("mliber_database")
-        return Database(database)
+        return Database(self.database)
+
+    @property
+    def user(self):
+        """
+        当前用户
+        :return:
+        """
+        return mliber_global.user()
 
     @property
     def library(self):
+        """
+        全局library
+        :return:
+        """
         return mliber_global.library()
 
     @property
     def library_dir(self):
+        """
+        library路径
+        :return:
+        """
         return self.library.root_path()
 
     @property
@@ -256,15 +288,26 @@ class CreateWidget(QScrollArea):
             return category.path.format(root=self.library_dir)
 
     @property
-    def tag(self):
-        return self.tag_le.text()
+    def tags(self):
+        tag_str = self.tag_le.text()
+        if tag_str:
+            return tag_str.split(",")
+        return []
 
     @property
-    def thumbnail(self):
+    def thumbnail_files(self):
+        """
+        用户在thumbnail widget里添加的数据
+        :return:
+        """
         return self.thumbnail_widget.files()
 
     @property
     def thumbnail_path(self):
+        """
+        最终要存放的缩略图路径
+        :return:
+        """
         thumbnail_format = templates.THUMBNAIL_PATH
         return thumbnail_format.format(self.asset_dir, self.asset_name)
 
@@ -288,8 +331,26 @@ class CreateWidget(QScrollArea):
         return int(self.end_le.text())
 
     @property
+    def description(self):
+        return self.comment_tx.toPlainText()
+
+    @property
     def overwrite(self):
+        """
+        是否覆盖
+        :return:
+        """
         return self.overwrite_check_box.isChecked()
+
+    @property
+    def types(self):
+        """
+        勾选的action
+        :return:
+        """
+        checked_buttons = self.actions_widget.checked_buttons()
+        types = [checked_button.type for checked_button in checked_buttons]
+        return types
 
     def show_asset_dir(self):
         """
@@ -306,16 +367,19 @@ class CreateWidget(QScrollArea):
         self.thumbnail_widget.convert_to(self.thumbnail_path)
 
     def on_create_btn_clicked(self):
-        if all((self.asset_dir, self.asset_name, self.tag)):
+        """
+        create按钮按下的时候，执行的操作
+        :return:
+        """
+        if all((self.asset_dir, self.asset_name, self.library, self.category, self.types)):
             if self.preflight():
                 self.run()
-                self.created_signal.emit()
         else:
-            MessageBox.warning(self, "Warning", u"必填内容未填。")
+            MessageBox.warning(self, "Warning", u"必填项[library,category,asset name, actions]内容未填。")
 
     def preflight(self):
         """
-        在run之前，检查是否合法
+        在运行之前，检查是否合法
         :return:
         """
         return True

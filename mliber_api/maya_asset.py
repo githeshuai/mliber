@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
-from mliber_api.mliber.api_utils import find_library, find_category, find_asset, get_thumbnail_type, \
+import pysnooper
+from mliber_api.api_utils import find_library, find_category, find_asset, get_thumbnail_type, \
     get_asset_relative_dir, get_thumbnail_pattern, get_texture_dir, get_liber_object_relative_path, add_tag_of_asset
 import mliber_global
 from mliber_libs.maya_libs.maya_utils import get_maya_version, post_export_textures
@@ -9,6 +10,7 @@ from mliber_libs.maya_libs.maya_object_factory import MayaObjectFactory
 from mliber_libs.python_libs.sequence_converter import Converter
 
 
+@pysnooper.snoop()
 def create(database_name, library_id, category_id, asset_name, objects, types, start=1, end=1, thumbnail_files=list(),
            tag_names=list(), description="", overwrite=True, export_texture=True,
            recover_texture=True, created_by=None):
@@ -55,6 +57,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         thumbnail_pattern = get_thumbnail_pattern(asset_abs_dir, asset_name)
         thumbnail_type = get_thumbnail_type(thumbnail_files)
         Converter(thumbnail_type).convert(thumbnail_files, thumbnail_pattern)
+        print "covert image done."
         logging.info("[MLIBER] info: Convert thumbnail done.")
         # 上传贴图
         if export_texture:
@@ -76,15 +79,18 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
                 data = {"type": liber_object_type, "software": software, "plugin": plugin,
                         "status": "Active", "path": liber_object_relative_path, "name": liber_object_name}
                 if created_by is not None:
-                    data.update({"user_id": created_by})
+                    data.update({"created_by": created_by})
                 liber_object = db.create("LiberObject", data)
                 liber_objects.append(liber_object)
                 logging.info("[MLIBER] info: Export %s done." % liber_object_type)
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
         if export_texture and recover_texture:
-            post_export_textures(texture_info_dict)
-            logging.info("[MLIBER] info: Recover texture settings done.")
+            try:
+                post_export_textures(texture_info_dict)
+                logging.info("[MLIBER] info: Recover texture settings done.")
+            except:
+                logging.warning(u"[MLIBER] info: Texture can not be recovered.")
         if not liber_objects:
             return
         # 创建asset
@@ -102,6 +108,4 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         if tag_names:
             add_tag_of_asset(db, asset, tag_names)
             logging.info("[MLIBER] info: Assign Tag done.")
-
-
-
+        return asset
