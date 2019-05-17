@@ -116,7 +116,7 @@ class Asset(Base):
     created_by = Column(Integer, ForeignKey("user.id"))  # created by
     updated_by = Column(Integer, ForeignKey("user.id"))
     # relation ship
-    objects = relationship("LiberObject", backref="asset")
+    elements = relationship("Element", backref="asset")
     tags = relationship("Tag", backref="assets", secondary="asset_tag_link")
 
     def __str__(self):
@@ -153,11 +153,11 @@ class Tag(Base):
         return QColor(self.colorR, self.colorG, self.colorB)
 
 
-class LiberObject(Base):
+class Element(Base):
     """
     导出的东西表
     """
-    __tablename__ = "liber_object"
+    __tablename__ = "element"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(300), nullable=False)
     type = Column(String(50))

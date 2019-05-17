@@ -5,7 +5,7 @@ parse /mliber_conf/liber_object_type/{liber_object_type}.yml
 import mliber_utils
 
 
-class LiberObjectType(object):
+class ElementType(object):
     def __init__(self, liber_object_type=""):
         """
         init
@@ -49,5 +49,5 @@ class LiberObjectType(object):
 
 
 if __name__ == "__main__":
-    p = LiberObjectType("ma")
+    p = ElementType("ma")
     print p.parse()

@@ -115,7 +115,6 @@ class MayaAssetWidget(CreateWidget):
                     export_texture=self.export_texture,
                     recover_texture=self.recover_texture,
                     created_by=self.user.id)
-        print data
         self.progress_bar.show()
         self.progress_bar.setRange(0, 10)
         self.progress_bar.setValue(6)

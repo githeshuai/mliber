@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 from mliber_conf import mliber_config, templates
-from mliber_parse.liber_object_type_parser import LiberObjectType
+from mliber_parse.element_type_parser import ElementType
 
 
 def find_library(db, library_id):
@@ -99,34 +99,30 @@ def get_texture_dir(asset_dir):
     return texture_dir
 
 
-def get_liber_object_relative_path(asset_relative_dir, liber_object_type, asset_name):
+def get_element_relative_path(asset_relative_dir, element_type, asset_name):
     """
     获取liber object相对路径
     :param asset_relative_dir:
-    :param liber_object_type:
+    :param element_type:
     :param asset_name:
     :return:
     """
-    ext = LiberObjectType(liber_object_type).ext
-    relative_path = templates.LIBER_OBJECT_PATH.format(asset_dir=asset_relative_dir,
-                                                       liber_object_type=liber_object_type,
-                                                       asset_name=asset_name, ext=ext)
+    ext = ElementType(element_type).ext
+    relative_path = templates.ELEMENT_PATH.format(asset_dir=asset_relative_dir,
+                                                  element_type=element_type,
+                                                  asset_name=asset_name, ext=ext)
     return relative_path
 
 
-def get_liber_object_abs_path(library, asset_relative_dir, liber_object_type, asset_name):
+def get_element_abs_path(library, asset_relative_dir, element_type, asset_name):
     """
     获取liber object绝对路径
     :param library: <Library>
     :param asset_relative_dir: <str>
-    :param liber_object_type: <str>
+    :param element_type: <str>
     :param asset_name: <str>
     :return:
     """
-    relative_path = get_liber_object_relative_path(asset_relative_dir, liber_object_type, asset_name)
+    relative_path = get_element_relative_path(asset_relative_dir, element_type, asset_name)
     abs_path = relative_path.format(root=library.root_path())
     return abs_path
-
-
-
-

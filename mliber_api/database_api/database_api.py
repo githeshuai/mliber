@@ -2,7 +2,7 @@
 from contextlib import contextmanager
 from sqlalchemy.sql import and_, or_  # do not delete
 from mliber_libs.sql_libs.database_factory import DataBaseFactory
-from mliber_tables.tables import User, Library, Category, Asset, Tag, LiberObject
+from mliber_tables.tables import User, Library, Category, Asset, Tag, Element
 
 
 ENTITY_MAPPING = {"User": User,
@@ -10,7 +10,7 @@ ENTITY_MAPPING = {"User": User,
                   "Category": Category,
                   "Asset": Asset,
                   "Tag": Tag,
-                  "LiberObject": LiberObject}
+                  "Element": Element}
 
 RELATION_MAPPING = {"is": "is_",
                     "is_not": "isnot",
