@@ -273,10 +273,12 @@ class MainWidget(MainWidgetUI):
         """
         if not assets:
             return
-        asset = assets[0]
-        apply_widget = ApplyWidget(self)
-        apply_widget.set_asset(asset)
-        self._add_right_side_widget(apply_widget)
+        asset_id = assets[0].id
+        with mliber_global.db() as db:
+            asset = db.find_one("Asset", [["id", "=", asset_id]])
+            apply_widget = ApplyWidget(self)
+            apply_widget.set_asset(asset)
+            self._add_right_side_widget(apply_widget)
 
     def _show_right(self):
         """

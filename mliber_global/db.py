@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 import mliber_global
 from mliber_api.database_api import Database
 from contextlib import contextmanager
@@ -15,5 +16,6 @@ def db(database=None):
     db_instance = Database(database)
     try:
         yield db_instance
-    except:
+    except RuntimeError as e:
+        logging.error(str(e))
         db_instance.session.rollback()

@@ -46,7 +46,8 @@ class ActionWidget(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         # actions label
-        action_label = QLabel("Actions")
+        action_label = QLabel(self)
+        action_label.setText("<font color=#fff size=4><b>Actions</b></font>")
         main_layout.addWidget(action_label)
         # scroll area
         scroll_area = QScrollArea(self)
@@ -206,7 +207,8 @@ class CreateWidget(QScrollArea):
         """
         frame_range_layout = QVBoxLayout()
         frame_range_layout.setContentsMargins(0, 0, 0, 0)
-        fr_label = QLabel("Frame Range")
+        fr_label = QLabel(self)
+        fr_label.setText("<font color=#fff size=4><b>Frame Range</b></font>")
         h_layout = QHBoxLayout()
         h_layout.setContentsMargins(0, 0, 0, 0)
         start_label = QLabel("Start")

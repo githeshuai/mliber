@@ -7,6 +7,11 @@ import mliber_global
 class ApplyWidget(ApplyWidgetUI):
     def __init__(self, parent=None):
         super(ApplyWidget, self).__init__(parent)
+        self._asset = None
+        self.set_signals()
+
+    def set_signals(self):
+        self.description_widget.save_btn.clicked.connect(self._modify_description)
 
     def set_asset(self, asset):
         """
@@ -14,6 +19,7 @@ class ApplyWidget(ApplyWidgetUI):
         :param asset: <Asset>
         :return:
         """
+        self._asset = asset
         self.element_list_view.set_asset(asset)
         asset_id = asset.id
         name = asset.name
@@ -77,7 +83,7 @@ class ApplyWidget(ApplyWidgetUI):
         :return:
         """
         if description:
-            self.description_te.setText(description)
+            self.description_widget.te.setText(description)
 
     def _set_element(self, elements):
         """
@@ -86,3 +92,19 @@ class ApplyWidget(ApplyWidgetUI):
         """
         if elements:
             self.element_list_view.set_elements(elements)
+
+    def _modify_description(self):
+        """
+        修改资产描述
+        :return:
+        """
+        description = self.description_widget.te.toPlainText()
+        print description
+        print self._asset.id
+        with mliber_global.db() as db:
+            db.update("Asset", self._asset.id, {"description": description})
+
+    def resizeEvent(self, event):
+        super(ApplyWidget, self).resizeEvent(event)
+        height = event.size().height()
+        self.splitter.setSizes([height*0.45, height*0.55])

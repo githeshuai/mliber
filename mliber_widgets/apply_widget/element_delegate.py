@@ -12,6 +12,7 @@ class CellElementWidget(QWidget):
     def __init__(self, parent=None):
         super(CellElementWidget, self).__init__(parent)
         main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         self.icon_button = QToolButton(self)
         # info layout
         info_layout = QVBoxLayout()
