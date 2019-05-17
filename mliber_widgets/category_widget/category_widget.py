@@ -4,6 +4,7 @@ from Qt.QtCore import Qt
 from category_tree import CategoryTree
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.toolbutton import ToolButton
+from mliber_qt_components.indicator_button import IndicatorButton
 import mliber_global
 
 
@@ -15,8 +16,7 @@ class CategoryWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         # category button
-        self.category_btn = QPushButton("Category", self)
-        self.category_btn.setFocusPolicy(Qt.NoFocus)
+        self.category_btn = IndicatorButton("Category", self)
         # refresh button
         self.refresh_btn = ToolButton(self)
         self.refresh_btn.set_size()

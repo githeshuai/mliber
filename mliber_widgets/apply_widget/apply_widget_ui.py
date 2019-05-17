@@ -82,6 +82,7 @@ class ApplyWidgetUI(QWidget):
         info_layout.setContentsMargins(0, 0, 0, 0)
         id_label = TitleLabel("id", self)
         self.id_le = QLineEdit(self)
+        self.id_le.setReadOnly(True)
         name_label = TitleLabel("name", self)
         self.name_le = QLineEdit(self)
         self.name_le.setReadOnly(True)

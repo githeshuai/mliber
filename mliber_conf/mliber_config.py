@@ -11,7 +11,7 @@ VIDEO_EXT = [".mov", ".mp4", ".avi", ".gif", ".mkv"]
 FONT_NAME = "Arial"
 # COLOR
 BACKGROUND_COLOR = "#40444f"
-TITLE_COLOR = "rgb(90, 92, 105)"
+TITLE_COLOR = "#373b44"
 MENU_COLOR = "#2d2f37"
 # button icon color
 ICON_COLOR = QColor(52, 234, 234)

@@ -2,6 +2,7 @@
 from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from asset_list_view import AssetListView
 from mliber_qt_components.search_line_edit import SearchLineEdit
+from mliber_qt_components.indicator_button import IndicatorButton
 
 
 class AssetWidget(QWidget):
@@ -11,7 +12,7 @@ class AssetWidget(QWidget):
         main_layout = QVBoxLayout(self)
         # top layout
         top_layout = QHBoxLayout()
-        self.asset_btn = QPushButton("Asset", self)
+        self.asset_btn = IndicatorButton("Asset", self)
         self.search_le = SearchLineEdit(25, 12, self)
         top_layout.addWidget(self.asset_btn)
         top_layout.addStretch()

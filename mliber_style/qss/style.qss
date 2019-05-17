@@ -548,13 +548,7 @@ QToolTip
 */
 
 
-TitleWidget
+Toolbar
 {
     background-color: TITLE_COLOR;
-}
-
-
-NoteWidget
-{
-    background-color: #383c45;
 }

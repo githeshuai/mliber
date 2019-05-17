@@ -5,6 +5,7 @@ from tag_list_view import TagListView
 import mliber_global
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.toolbutton import ToolButton
+from mliber_qt_components.indicator_button import IndicatorButton
 
 
 class TagWidget(QWidget):
@@ -15,7 +16,7 @@ class TagWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         top_layout.setContentsMargins(0, 0, 0, 0)
-        self.tag_btn = QPushButton("Tag", self)
+        self.tag_btn = IndicatorButton("Tag", self)
         self.search_le = SearchLineEdit(22, 12, self)
         self.refresh_btn = ToolButton(self)
         self.refresh_btn.set_size()

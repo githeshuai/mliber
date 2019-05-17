@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton
+from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame
 from Qt.QtCore import QSize, Qt
 import mliber_resource
+from mliber_qt_components.indicator_button import IndicatorButton
 
 
-class ToolbarUI(QWidget):
+class ToolbarUI(QFrame):
     def __init__(self, parent=None):
         super(ToolbarUI, self).__init__(parent)
         self.setFixedHeight(50)
@@ -19,11 +20,9 @@ class ToolbarUI(QWidget):
         logo_button.setIcon(mliber_resource.icon("logo.png"))
         logo_button.setText("mliber")
         # login
-        self.login_button = QPushButton("Login", self)
-        self.login_button.setFocusPolicy(Qt.NoFocus)
+        self.login_button = IndicatorButton("Login", self)
         # settings
-        self.settings_button = QPushButton("Settings", self)
-        self.settings_button.setFocusPolicy(Qt.NoFocus)
+        self.settings_button = IndicatorButton("Settings", self)
         # button layout
         button_layout = QHBoxLayout()
         self.minimum_btn = QToolButton(self)
