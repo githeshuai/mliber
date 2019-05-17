@@ -33,7 +33,7 @@ class ChoosePathWidget(QWidget):
         :param text: <str>
         :return:
         """
-        self.le.setPlacehoderText(text)
+        self.le.setPlaceholderText(text)
 
     def set_btn_text(self, text):
         """

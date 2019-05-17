@@ -68,8 +68,8 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         elements = []
         for element_type in types:
             element_relative_path = get_element_relative_path(asset_relative_dir, element_type, asset_name)
-            element_relative_path = element_relative_path.format(root=library.root_path())
-            maya_object_instance = MayaObjectFactory(element_type).create_instance(element_relative_path)
+            element_abs_path = element_relative_path.format(root=library.root_path())
+            maya_object_instance = MayaObjectFactory(element_type).create_instance(element_abs_path)
             try:
                 exported_path = maya_object_instance.export(objects, start=start, end=end)
             except Exception as e:

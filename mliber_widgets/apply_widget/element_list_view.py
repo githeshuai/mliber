@@ -3,6 +3,7 @@ from Qt.QtWidgets import QListView, QAbstractItemView
 from Qt.QtCore import Qt
 from element_model import ElementModel
 from element_delegate import ElementDelegate
+from mliber_conf import mliber_config
 
 
 class ElementItem(object):
@@ -32,6 +33,15 @@ class ElementListView(QListView):
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        # set style
+        self.set_style()
+
+    def set_style(self):
+        """
+        set style
+        :return:
+        """
+        self.setStyleSheet(mliber_config.LIST_VIEW_STYLE)
 
     def set_asset(self, asset):
         """
@@ -79,3 +89,15 @@ class ElementListView(QListView):
         """
         for row in xrange(self.model().rowCount()):
             self.openPersistentEditor(self.model().index(row, 0))
+
+    def mousePressEvent(self, event):
+        """
+        当鼠标左键点击到空白处，取消选择
+        :param event:
+        :return:
+        """
+        super(ElementListView, self).mousePressEvent(event)
+        point = event.pos()
+        index = self.indexAt(point)
+        if index.row() < 0:
+            self.clearSelection()
