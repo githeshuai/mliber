@@ -56,23 +56,6 @@ def add_tag_of_asset(db, asset, tag_names):
     db.update("Asset", asset.id, {"tags": tags})
 
 
-def get_thumbnail_type(thumbnail_files):
-    """
-    获取thumbnail类型，不同的类型，不同的处理方式
-    :param thumbnail_files: <list> a file list.
-    :return:
-    """
-    if not thumbnail_files:
-        return
-    if len(thumbnail_files) > 1:  # 图片或序列
-        return "sequence"
-    elif len(thumbnail_files) == 1:
-        ext = os.path.splitext(thumbnail_files[0])[-1]
-        if ext in mliber_config.VIDEO_EXT:
-            return "video"
-        return "image"
-
-
 def get_asset_relative_dir(category, asset_name):
     """
     通过library, category asset name 获取asset dir相对路径

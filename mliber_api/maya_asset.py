@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 import pysnooper
-from mliber_api.api_utils import find_library, find_category, find_asset, get_thumbnail_type, \
+from mliber_api.api_utils import find_library, find_category, find_asset, \
     get_asset_relative_dir, get_thumbnail_pattern, get_texture_dir, get_liber_object_relative_path, add_tag_of_asset
 import mliber_global
 from mliber_libs.maya_libs.maya_utils import get_maya_version, post_export_textures
@@ -56,8 +56,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         asset_abs_dir = asset_relative_dir.format(root=library.root_path())
         # 转换缩略图
         thumbnail_pattern = get_thumbnail_pattern(asset_abs_dir, asset_name)
-        thumbnail_type = get_thumbnail_type(thumbnail_files)
-        Converter(thumbnail_type).convert(thumbnail_files, thumbnail_pattern)
+        Converter().convert(thumbnail_files, thumbnail_pattern)
         print "covert image done."
         logging.info("[MLIBER] info: Convert thumbnail done.")
         # 上传贴图
@@ -80,7 +79,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
                 continue
             base_name = Path(exported_path).basename()
             relative_dir = Path(liber_object_relative_path).parent()
-            path = Path(relative_dir).join(base_name)
+            path = Path(relative_dir).join(base_name)  # liber object relative path
             plugin = maya_object_instance.plugin_version
             liber_object_name = "{}_{}".format(asset_name, liber_object_type)
             data = {"type": liber_object_type, "software": software, "plugin": plugin,
