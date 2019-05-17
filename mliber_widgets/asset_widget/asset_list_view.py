@@ -54,7 +54,7 @@ class AssetListView(QListView):
     MIN_ICON_SIZE = 128
     double_clicked = Signal()
     add_tag_signal = Signal(basestring)
-    left_pressed = Signal(QModelIndex)
+    left_pressed = Signal(list)
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
@@ -120,16 +120,6 @@ class AssetListView(QListView):
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
-        self.left_pressed.connect(self.test)
-
-    def test(self, index):
-        """
-        :param index: QModelIndex
-        :return:
-        """
-        item = self.item_of_index(index)
-        asset = item.asset
-        print asset.tags
 
     def _get_asset_path(self, asset):
         """
@@ -427,4 +417,6 @@ class AssetListView(QListView):
             return
         # if event.type() == QEvent.MouseButtonPress:
         if event.button() == Qt.LeftButton:
-            self.left_pressed.emit(index)
+            item = self.item_of_index(index)
+            asset = item.asset
+            self.left_pressed.emit([asset])

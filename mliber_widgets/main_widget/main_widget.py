@@ -3,6 +3,7 @@ from main_widget_ui import MainWidgetUI
 from mliber_widgets.login_widget import LoginWidget
 from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage
+from mliber_widgets.apply_widget import ApplyWidget
 import mliber_utils
 import mliber_global
 import mliber_resource
@@ -53,7 +54,8 @@ class MainWidget(MainWidgetUI):
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
-        self.asset_widget.asset_btn.clicked.connect(self.show_create_widget)
+        self.asset_widget.asset_btn.clicked.connect(self._show_create_widget)
+        self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
 
     def _get_children_categories(self, categories):
         """
@@ -231,7 +233,7 @@ class MainWidget(MainWidgetUI):
                 app.set_value(mliber_library=None)
             self.refresh_library()
 
-    def show_create_widget(self):
+    def _show_create_widget(self):
         """
         show create widget
         :return:
@@ -241,14 +243,14 @@ class MainWidget(MainWidgetUI):
             for cls_name, cls in create_widget.classes.iteritems():
                 if cls.library_type == self.library_type:
                     widget = cls(parent=self)
-                    widget.created_signal.connect(self.create_done)
-                    self.add_right_side_widget(widget)
+                    widget.created_signal.connect(self._create_done)
+                    self._add_right_side_widget(widget)
                     show_created = True
                     break
         if not show_created:
-            MessageBox.warning(self, "Warning", "No library widget found.")
+            MessageBox.warning(self, "Warning", u"请选择类型.")
 
-    def create_done(self, assets):
+    def _create_done(self, assets):
         """
         当创建成功时，返回的已创建的assets
         :param assets:
@@ -263,8 +265,20 @@ class MainWidget(MainWidgetUI):
             return
         tag_names = [tag.name for tag in tags]
         self.tag_widget.tag_list_view.append_tag(tag_names)
+        
+    def _show_apply(self, assets):
+        """
+        显示右侧apply widget
+        :return: 
+        """
+        if not assets:
+            return
+        asset = assets[0]
+        apply_widget = ApplyWidget(self)
+        apply_widget.set_asset(asset)
+        self._add_right_side_widget(apply_widget)
 
-    def show_right(self):
+    def _show_right(self):
         """
         显示右边widget
         Returns:
@@ -273,17 +287,17 @@ class MainWidget(MainWidgetUI):
         self.right_is_shown = True
         self.splitter.setSizes([250, self.width()-500, 250])
 
-    def add_right_side_widget(self, widget):
+    def _add_right_side_widget(self, widget):
         """
         添加右侧widget，要么是preview, 要么是create
         Returns:
         """
-        self.show_right()
+        self._show_right()
         count = self.right_stack.count()
         if count == 0:
             self.right_stack.addWidget(widget)
         else:
-            for i in xrange(count - 1):
+            for i in xrange(count):
                 self.right_stack.takeAt(0)
             self.right_stack.addWidget(widget)
 
