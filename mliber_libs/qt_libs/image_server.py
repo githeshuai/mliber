@@ -140,10 +140,8 @@ class ImageCacheThreadsServer(QObject):
             thread.clear()
 
     def __del__(self):
-        print len(self.thread_pool)
         for thread in self.thread_pool:
             try:
-                thread.clear()
                 thread.terminate()
             except Exception as e:
                 pass

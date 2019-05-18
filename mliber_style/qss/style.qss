@@ -249,8 +249,8 @@ QTableView::item:hover, QTreeView::item:hover
 	background-color: BACKGROUND_COLOR;
 }
 
-QTreeView::branch:selected,
-QMenu::item:selected {
+QTreeView::branch:selected
+{
     color: rgb(255, 255, 255, 255);
     background-color: ACCENT_COLOR;
 }
@@ -410,8 +410,8 @@ QMenu, QMenu QWidget {
 }
 
 QMenu::item:selected {
-    color: BACKGROUND_COLOR;
-    background-color: ACCENT_COLOR;
+    color: ACCENT_COLOR;
+    background-color: MENU_COLOR;
 }
 
 QMenu::item {

@@ -54,7 +54,7 @@ class MainWidget(MainWidgetUI):
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
-        self.asset_widget.asset_btn.clicked.connect(self._show_create_widget)
+        self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
 
     def _get_children_categories(self, categories):
@@ -160,7 +160,17 @@ class MainWidget(MainWidgetUI):
         当tag选择改变的时候
         :return:
         """
-        print tags
+        library_assets = []
+        if tags:
+            assets = list()
+            for tag in tags:
+                assets.extend(tag.assets)
+            if assets:
+                library_assets = [asset for asset in assets if asset.library_id == self.library.id]
+        else:
+            with mliber_global.db() as db:
+                library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
+        self.asset_widget.set_assets(library_assets)
 
     def refresh_library(self):
         """
