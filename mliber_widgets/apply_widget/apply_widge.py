@@ -99,8 +99,6 @@ class ApplyWidget(ApplyWidgetUI):
         :return:
         """
         description = self.description_widget.te.toPlainText()
-        print description
-        print self._asset.id
         with mliber_global.db() as db:
             db.update("Asset", self._asset.id, {"description": description})
 
