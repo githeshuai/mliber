@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import maya.cmds as mc
 from mliber_libs.os_libs.path import Path
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 from mliber_libs.maya_libs.maya_utils import load_plugin, create_reference
 
 
@@ -64,7 +64,7 @@ class MayaAbc(MayaObject):
         import in the abc file.
         Returns:
         """
-        load_plugin(self.plugin)
+        self.load_plugin()
         mc.AbcImport(self.path)
 
     def reference(self, namespace=":"):

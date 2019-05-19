@@ -11,6 +11,7 @@ class MayaAssetWidget(CreateWidget):
 
     def __init__(self, parent=None):
         super(MayaAssetWidget, self).__init__(self.library_type, parent)
+        self.set_engine("maya")
         self.show_thumbnail()
         self.show_common()
         self.show_library_widget()

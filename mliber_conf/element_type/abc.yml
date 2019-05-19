@@ -1,3 +1,26 @@
+# ext: 代表格式，为什么要配置格式，因为不同的类型，可能格式是一样的，比如abc和gpu的格式都是abc
+# icon: 图标, 可以是绝对路径，也可以是相对路径，相对路径的话，图片要保存在mliber_icons/action_icons下
+# 对不同的软件执行的导出导入方法
+# import:
+#     name: 显示在ui上的名字，
+#     hook: 执行的hook的名字，文件保存在mliber_hook下
+#     default: 双击时是否执行此命令
+# export:
+#     name: 显示在ui上的名字，
+#     hook: 执行的hook的名字，文件保存在mliber_hook下
+#     default: ui上是否勾选。
+
 ext: ".abc"
 icon: "default.png"
-apply_actions:
+maya:
+  import:
+    - name: abc import
+      hook: maya_abc_import
+      default: False
+    - name: abc reference
+      hook: maya_abc_reference
+      default: False
+  export:
+    - name: abc export
+      hook: maya_abc_export
+      default: False

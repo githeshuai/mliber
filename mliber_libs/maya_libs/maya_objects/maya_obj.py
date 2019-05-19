@@ -2,7 +2,7 @@
 import os
 import maya.cmds as mc
 from mliber_libs.maya_libs.maya_utils import select_objects
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 
 
 class MayaObj(MayaObject):

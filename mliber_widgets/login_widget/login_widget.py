@@ -6,7 +6,7 @@ from mliber_widgets.login_widget.login_widget_ui import LoginWidgetUI
 import mliber_utils
 import mliber_resource
 import mliber_global
-from mliber_custom.database import DATABASES
+from mliber_custom import DATABASES
 from mliber_api.database_api import Database
 
 

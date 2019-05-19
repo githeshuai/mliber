@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import maya.cmds as mc
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 
 
 class MayaGpuCache(MayaObject):

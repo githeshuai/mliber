@@ -1,5 +1,17 @@
 ext: ".ma"
-apply_actions:
-  maya:
-    - name: "import"
-      hook: "maya_ma_import"
+icon: "default.png"
+maya:
+  import:
+    - name: ma import
+      hook: maya_ma_import
+      default: True
+    - name: ma reference
+      hook: maya_ma_reference
+      default: False
+    - name: ma open
+      hook: maya_ma_open
+      default: False
+  export:
+    - name: ma export
+      hook: maya_ma_export
+      default: True

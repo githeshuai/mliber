@@ -140,6 +140,14 @@ def get_plugin_version(plugin_name):
     return None
 
 
+def selected_objects():
+    """
+    获取选择的物体
+    :return:
+    """
+    return mc.ls(sl=1)
+
+
 def select_objects(objects):
     """
     选中物体

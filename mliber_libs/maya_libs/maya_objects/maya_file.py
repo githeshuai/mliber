@@ -2,7 +2,7 @@
 import os
 import maya.cmds as mc
 import pymel.core as pm
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 from mliber_libs.maya_libs.maya_utils import get_file_type, select_objects, create_reference
 
 

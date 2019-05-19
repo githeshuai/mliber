@@ -1,3 +1,8 @@
+import logging
+import imp
+import sys
+import os
+import mliber_custom
 from Qt.QtCore import QSettings
 from mliber_libs.os_libs.path import Path
 from mliber_libs.python_libs import parser
@@ -61,3 +66,51 @@ def read_history(key):
     Returns:
     """
     return settings.value(key)
+
+
+def engine():
+    """
+    :return: <str>
+    """
+    app = sys.executable
+    app_basename = os.path.basename(app)
+    app_name = os.path.splitext(app_basename)[0]
+    if "Nuke" in app_name:
+        app_name = "nuke"
+    elif "houdini" in app_name:
+        app_name = "houdini"
+    elif "maya" in app_name:
+        app_name = "maya"
+    elif "clarisse" in app_name:
+        app_name = "clarisse"
+    else:
+        app_name = "standalone"
+    return app_name
+
+
+def load_module(name, paths):
+    """
+    :param name: module name
+    :param paths:directory <str> or <list>
+    :return:
+    """
+    if isinstance(paths, basestring):
+        paths = [paths]
+    try:
+        fn_, path, desc = imp.find_module(name, paths)
+        mod = imp.load_module(name, fn_, path, desc)
+        return mod
+    except ImportError as e:
+        logging.error(str(e))
+
+
+def load_hook(name):
+    """
+    :param name: module name<str>
+    :return:
+    """
+    hook_dir = mliber_custom.HOOK_DIR
+    liber_hook_dir = package.get("liberHook")
+    hook_dir.append(liber_hook_dir)
+    mod = load_module(name, hook_dir)
+    return mod

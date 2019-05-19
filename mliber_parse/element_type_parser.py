@@ -4,16 +4,19 @@ parse /mliber_conf/element_type/{element_type}.yml
 """
 import mliber_utils
 from mliber_libs.os_libs.path import Path
+from mliber_parse.action import Action
 
 
 class ElementType(object):
-    def __init__(self, element_type=""):
+    def __init__(self, element_type="", engine=""):
         """
         init
-        :param element_type:
+        :param element_type: <str> element type
+        :param engine: <str> 当前运行的软件
         """
         self._type = element_type
         self._data = self.parse()
+        self._engine = engine
 
     def element_type_conf_path(self):
         """
@@ -28,15 +31,44 @@ class ElementType(object):
         get conf data
         :return:
         """
-
         return mliber_utils.parse(self.element_type_conf_path())
 
-    def actions(self):
+    def engine_actions(self):
         """
-        apply actions
+        当前软件的所有action, 包括import和export
+        :return: <dict>
+        """
+        if not self._data. has_key(self._engine):
+            print u"软件: %s不支持type: %s" % (self._engine, self._type)
+            return {}
+        engine_actions = self._data.get(self._engine)
+        return engine_actions
+
+    def export_actions(self):
+        """
+        export actions
+        :return: <list>
+        """
+        engine_actions = self.engine_actions()
+        if engine_actions:
+            export_action_list = engine_actions.get("export", [])
+            if export_action_list:
+                actions = [Action(action) for action in export_action_list]
+                return actions
+        return []
+
+    def import_actions(self):
+        """
+        import actions
         :return:
         """
-        return
+        engine_actions = self.engine_actions()
+        if engine_actions:
+            export_action_list = engine_actions.get("import", [])
+            if export_action_list:
+                actions = [Action(action) for action in export_action_list]
+                return actions
+        return []
 
     def __getattr__(self, item):
         """
@@ -66,4 +98,4 @@ class ElementType(object):
 
 if __name__ == "__main__":
     p = ElementType("ma")
-    print p.parse()
+    print p.icon

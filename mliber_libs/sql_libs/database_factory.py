@@ -2,7 +2,7 @@
 from mliber_libs.sql_libs.mysql import MySql
 from mliber_libs.sql_libs.postgresql import PostgreSql
 from mliber_libs.sql_libs.sqlite import Sqlite
-from mliber_custom.database import DATABASES
+from mliber_custom import DATABASES
 
 
 class DataBaseFactory(object):

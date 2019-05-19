@@ -4,7 +4,7 @@ import maya.cmds as mc
 import xgenm
 import xgenm.ui as xgui
 from mliber_libs.maya_libs.maya_utils import select_objects, get_maya_version, load_plugin, get_scene_name
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 
 
 class MayaXgenProxy(MayaObject):

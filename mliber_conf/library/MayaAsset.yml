@@ -1,28 +1,11 @@
-create_actions:
-  - name: Maya .ma Export
-    checked: True
-    type: ma
-  - name: Maya .mb Export
-    checked: False
-    type: mb
-  - name: Maya .abc Export
-    checked: False
-    type: abc
-  - name: Arnold Proxy Export
-    checked: False
-    type: ass
-  - name: Redshift Proxy Export
-    checked: False
-    type: rs
-  - name: Maya .fbx Export
-    checked: False
-    type: fbx
-  - name: Maya .obj Export
-    checked: False
-    type: obj
-  - name: Maya gpu Export
-    checked: False
-    type: gpu
-  - name: Xgen Archive Export
-    checked: False
-    type: xarc
+engine: maya
+types:
+  - ma
+  - mb
+  - abc
+  - gpu
+  - fbx
+  - obj
+  - ass
+  - rs
+  - xarc

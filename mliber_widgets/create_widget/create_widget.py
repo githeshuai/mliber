@@ -8,6 +8,7 @@ from mliber_qt_components.thumbnail_widget import ThumbnailWidget
 from mliber_qt_components.messagebox import MessageBox
 import mliber_global
 import mliber_resource
+import mliber_utils
 from mliber_api.database_api import Database
 from mliber_libs.os_libs.path import Path
 from mliber_conf import templates
@@ -39,9 +40,10 @@ class ActionWidget(QWidget):
     """
     根据配置信息显示check box
     """
-    def __init__(self, library_type, parent=None):
+    def __init__(self, library_type, engine=None, parent=None):
         super(ActionWidget, self).__init__(parent)
-        self.library_type = library_type
+        self._library_type = library_type
+        self._engine = engine
         # self settings
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -76,7 +78,7 @@ class ActionWidget(QWidget):
         get all actions from configuration file
         Returns:
         """
-        return Library(self.library_type).actions()
+        return Library(self._library_type, self._engine).export_actions()
 
     def create_checkboxes(self):
         """
@@ -88,11 +90,11 @@ class ActionWidget(QWidget):
         if action_objects:
             for action_object in action_objects:
                 name = action_object.name
-                typ = action_object.type
-                checked = action_object.checked
+                checked = action_object.default
+                hook = action_object.hook
                 check_box = QCheckBox(name, self)
                 check_box.setChecked(checked)
-                check_box.type = typ
+                check_box.hook = hook
                 checkbox_list.append(check_box)
         return checkbox_list
 
@@ -106,10 +108,11 @@ class ActionWidget(QWidget):
 
 class CreateWidget(QScrollArea):
     created_signal = Signal(list)
-
+    
     def __init__(self, library_type=None, parent=None):
         super(CreateWidget, self).__init__(parent)
-        self.library_type = library_type
+        self._library_type = library_type
+        self._engine = None
         self.setStyleSheet("border: 0px solid;")
         # main widget
         widget = QWidget(self)
@@ -125,7 +128,15 @@ class CreateWidget(QScrollArea):
     def set_signals(self):
         self.asset_name_le.textChanged.connect(self.show_asset_dir)
         self.create_btn.clicked.connect(self.on_create_btn_clicked)
-
+        
+    def set_engine(self, engine):
+        """
+        设置当前运行软件
+        :param engine:
+        :return:
+        """
+        self._engine = engine
+    
     def show_thumbnail(self):
         """
         insert thumbnail widget
@@ -197,7 +208,8 @@ class CreateWidget(QScrollArea):
         从library.yml中读取信息， 创建checkbox widget
         Returns:
         """
-        self.actions_widget = ActionWidget(self.library_type, self)
+        engine = self._engine or mliber_utils.engine()
+        self.actions_widget = ActionWidget(self._library_type, engine, self)
         self.main_layout.addWidget(self.actions_widget)
 
     def show_frame_range(self):
@@ -280,12 +292,20 @@ class CreateWidget(QScrollArea):
 
     @property
     def category(self):
+        """
+        当前选中的category
+        :return:
+        """
         categories = mliber_global.categories()
         if categories and len(categories) == 1:
             return categories[0]
 
     @property
     def category_dir(self):
+        """
+        当前category路径
+        :return:
+        """
         category = self.category
         if category:
             return category.path.format(root=self.library_dir)
@@ -316,10 +336,18 @@ class CreateWidget(QScrollArea):
 
     @property
     def asset_name(self):
+        """
+        资产名字
+        :return:
+        """
         return self.asset_name_le.text()
 
     @property
     def asset_dir(self):
+        """
+        资产路径
+        :return:
+        """
         category_dir = self.category_dir
         if category_dir:
             return Path(category_dir).join(self.asset_name)
@@ -327,14 +355,26 @@ class CreateWidget(QScrollArea):
 
     @property
     def start(self):
+        """
+        起始帧
+        :return:
+        """
         return int(self.start_le.text())
 
     @property
     def end(self):
+        """
+        结束帧
+        :return:
+        """
         return int(self.end_le.text())
 
     @property
     def description(self):
+        """
+        描述
+        :return:
+        """
         return self.comment_tx.toPlainText()
 
     @property

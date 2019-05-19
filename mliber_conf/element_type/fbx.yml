@@ -1,1 +1,11 @@
 ext: ".fbx"
+icon: "default.png"
+maya:
+  import:
+    - name: fbx import
+      hook: maya_fbx_import
+      default: False
+  export:
+    - name: fbx export
+      hook: maya_fbx_export
+      default: False

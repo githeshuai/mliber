@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import maya.mel as mel
-from mliber_libs.maya_libs.maya_objects.maya_object import MayaObject
+from mliber_libs.maya_libs.maya_objects import MayaObject
 from mliber_libs.maya_libs.maya_utils import select_objects
 
 
@@ -37,4 +37,5 @@ class MayaFbx(MayaObject):
         import maya.fbx
         Returns:
         """
-        mel.eval("FBXImport -file \"%s\";" % self.path)
+        if self.load_plugin():
+            mel.eval("FBXImport -file \"%s\";" % self.path)
