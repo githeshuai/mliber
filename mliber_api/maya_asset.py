@@ -6,9 +6,10 @@ from mliber_api.api_utils import find_library, find_category, find_asset, \
 import mliber_global
 from mliber_libs.maya_libs.maya_utils import get_maya_version, post_export_textures
 from mliber_libs.maya_libs.maya_texture import MayaTexture
-from mliber_libs.maya_libs.maya_object_factory import MayaObjectFactory
 from mliber_libs.python_libs.sequence_converter import Converter
 from mliber_libs.os_libs.path import Path
+from mliber_parse.element_type_parser import ElementType
+from mliber_utils import load_hook
 
 
 @pysnooper.snoop()
@@ -22,7 +23,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
     :param category_id: <int> category id
     :param asset_name: <str> 资产名字
     :param objects: <list> 需要导出的物体
-    :param types: <list> 需要导出哪些类型
+    :param types: <list> 需要导出的类型列表
     :param thumbnail_files: <list> 缩略图路径，
     :param start: <int> 起始帧
     :param end: <int> 结束帧
@@ -67,18 +68,23 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         # 创建asset和 elements
         elements = []
         for element_type in types:
-            element_relative_path = get_element_relative_path(asset_relative_dir, element_type, asset_name)
-            element_abs_path = element_relative_path.format(root=library.root_path())
-            maya_object_instance = MayaObjectFactory(element_type).create_instance(element_abs_path)
+            element_relative_path = get_element_relative_path(asset_relative_dir, element_type, asset_name)  #  相对路径，保存于数据库
+            element_abs_path = element_relative_path.format(root=library.root_path())  # 绝对路径，导出在磁盘上的路径
+            action = ElementType(element_type, "maya").export_action()  # 读取配置文件中，有哪些action
+            if not action:
+                logging.warning("[MLIBER] warning: No export action configured of %s" % element_type)
+                continue
             try:
-                exported_path = maya_object_instance.export(objects, start=start, end=end)
+                hook = load_hook(action.hook)
+                hook_instance = hook.Hook(element_abs_path, start, end)
+                exported_path = hook_instance.main()
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
                 continue
             base_name = Path(exported_path).basename()
             relative_dir = Path(element_relative_path).parent()
             path = Path(relative_dir).join(base_name)  # liber object relative path
-            plugin = maya_object_instance.plugin_version
+            plugin = hook_instance.plugin_version()
             element_name = "{}_{}".format(asset_name, element_type)
             data = {"type": element_type, "software": software, "plugin": plugin,
                     "status": "Active", "path": path, "name": element_name}

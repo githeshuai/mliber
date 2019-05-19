@@ -4,6 +4,7 @@ from Qt.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QGridLayout,
     QButtonGroup, QSizePolicy, QLayout, QProgressBar, QMenu, QWidgetAction
 from Qt.QtCore import Qt, Signal
 from mliber_parse.library_parser import Library
+from mliber_parse.element_type_parser import ElementType
 from mliber_qt_components.thumbnail_widget import ThumbnailWidget
 from mliber_qt_components.messagebox import MessageBox
 import mliber_global
@@ -12,6 +13,7 @@ import mliber_utils
 from mliber_api.database_api import Database
 from mliber_libs.os_libs.path import Path
 from mliber_conf import templates
+
 
 
 class TitleLabel(QLabel):
@@ -73,12 +75,12 @@ class ActionWidget(QWidget):
             self.scroll_layout.addWidget(check_box)
         main_layout.addWidget(scroll_area)
 
-    def action_objects(self):
+    def types(self):
         """
         get all actions from configuration file
         Returns:
         """
-        return Library(self._library_type, self._engine).export_actions()
+        return Library(self._library_type, self._engine).types()
 
     def create_checkboxes(self):
         """
@@ -86,15 +88,17 @@ class ActionWidget(QWidget):
         Returns:list of QCheckBox
         """
         checkbox_list = list()
-        action_objects = self.action_objects()
-        if action_objects:
-            for action_object in action_objects:
+        types = self.types()
+        if types:
+            for typ in types:
+                action_object = ElementType(typ, self._engine).export_action()
+                if not action_object:
+                    continue
                 name = action_object.name
                 checked = action_object.default
-                hook = action_object.hook
                 check_box = QCheckBox(name, self)
                 check_box.setChecked(checked)
-                check_box.hook = hook
+                check_box.type = action_object.type  # element type
                 checkbox_list.append(check_box)
         return checkbox_list
 

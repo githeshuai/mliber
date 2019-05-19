@@ -5,9 +5,9 @@ from mliber_libs.maya_libs import maya_utils
 
 
 class Hook(BaseHook):
-    def __init__(self, typ, asset_name, path, start, end):
-        super(Hook, self).__init__(typ, asset_name, path, start, end)
+    def __init__(self, path, start, end, asset_name=""):
+        super(Hook, self).__init__(path, start, end, asset_name)
 
     def execute(self, *args, **kwargs):
         objects = maya_utils.selected_objects()
-        MayaFile(self.path).export(objects)
+        return MayaFile(self.path).export(objects)

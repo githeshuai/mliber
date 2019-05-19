@@ -6,6 +6,6 @@ maya:
       hook: maya_rs_import
       default: False
   export:
-    - name: redshift prorxy export
-      hook: maya_rs_export
-      default: False
+    name: redshift prorxy export
+    hook: maya_rs_export
+    default: False

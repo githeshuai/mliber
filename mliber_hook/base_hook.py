@@ -5,20 +5,27 @@ import logging
 class BaseHook(object):
     logger = logging.getLogger("Hook")
 
-    def __init__(self, typ, asset_name, path, start, end):
+    def __init__(self, path, start, end, asset_name=""):
         """
-        :param typ: <str> Element type
-        :param asset_name: <str>
         :param path: <str> 需要导出或者导入的文件路径
         :param start: <int> 起始帧
         :param end: <int> 结束帧
+        :param asset_name: <str> 资产名字
         """
-        self.type = typ
         self.asset_name = asset_name
         self.path = path
         self.start = start
         self.end = end
+        # custom
+        self.plugin_name = ""
         self._error_list = []
+
+    def plugin_version(self):
+        """
+        获取插件方法, 默认返回插件名字，子类可重写
+        :return:
+        """
+        return self.plugin_name
 
     @property
     def error_str(self):
@@ -42,8 +49,9 @@ class BaseHook(object):
         """
         try:
             path = self.execute(*args, **kwargs)
-            return path
         except RuntimeError as e:
             self._error_list.append(str(e))
+            path = None
         if self.error_str:
             self.logger.error(self.error_str)
+        return path

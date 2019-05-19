@@ -5,9 +5,14 @@ from mliber_libs.maya_libs import maya_utils
 
 
 class Hook(BaseHook):
-    def __init__(self, typ, asset_name, path, start, end):
-        super(Hook, self).__init__(typ, asset_name, path, start, end)
+    def __init__(self, path, start, end, asset_name=""):
+        super(Hook, self).__init__(path, start, end, asset_name)
+        self.maya_object = MayaRedshiftProxy(self.path)
+        self.plugin = self.maya_object.plugin
+
+    def plugin_version(self):
+        return self.maya_object.plugin_version()
 
     def execute(self, *args, **kwargs):
         objects = maya_utils.selected_objects()
-        MayaRedshiftProxy(self.path).export(objects, start=self.start, end=self.end)
+        return self.maya_object.export(objects, start=self.start, end=self.end)

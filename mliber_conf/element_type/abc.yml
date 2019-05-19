@@ -9,6 +9,7 @@
 #     name: 显示在ui上的名字，
 #     hook: 执行的hook的名字，文件保存在mliber_hook下
 #     default: ui上是否勾选。
+# export只支持一种导出方式，如果有另外的导出方式，需要再写一种type
 
 ext: ".abc"
 icon: "default.png"
@@ -21,6 +22,6 @@ maya:
       hook: maya_abc_reference
       default: False
   export:
-    - name: abc export
-      hook: maya_abc_export
-      default: False
+    name: abc export
+    hook: maya_abc_export
+    default: False

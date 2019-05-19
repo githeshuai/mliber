@@ -110,7 +110,11 @@ def load_hook(name):
     :return:
     """
     hook_dir = mliber_custom.HOOK_DIR
-    liber_hook_dir = package.get("liberHook")
+    liber_hook_dir = package("mliber_hook")
     hook_dir.append(liber_hook_dir)
     mod = load_module(name, hook_dir)
     return mod
+
+
+if __name__ == "__main__":
+    print load_hook("maya_ma_export")

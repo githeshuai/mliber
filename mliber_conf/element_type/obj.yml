@@ -6,6 +6,6 @@ maya:
       hook: maya_obj_import
       default: False
   export:
-    - name: obj export
-      hook: maya_obj_export
-      default: False
+    name: obj export
+    hook: maya_obj_export
+    default: False

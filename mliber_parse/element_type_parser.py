@@ -44,18 +44,18 @@ class ElementType(object):
         engine_actions = self._data.get(self._engine)
         return engine_actions
 
-    def export_actions(self):
+    def export_action(self):
         """
         export actions
         :return: <list>
         """
         engine_actions = self.engine_actions()
         if engine_actions:
-            export_action_list = engine_actions.get("export", [])
-            if export_action_list:
-                actions = [Action(action) for action in export_action_list]
-                return actions
-        return []
+            action = engine_actions.get("export", {})
+            if action:
+                action.update({"type": self._type})
+                return Action(action)
+        return None
 
     def import_actions(self):
         """

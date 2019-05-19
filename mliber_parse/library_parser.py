@@ -3,7 +3,6 @@
 parse /mliber_conf/library/{library_type}.yml
 """
 import mliber_utils
-from mliber_parse.element_type_parser import ElementType
 
 
 class Library(object):
@@ -39,20 +38,8 @@ class Library(object):
         """
         return self._data.get("types", [])
 
-    def export_actions(self):
-        """
-        create actions
-        :return: <list>
-        """
-        types = self.types()
-        actions = list()
-        for typ in types:
-            type_export_actions = ElementType(typ, self._engine).export_actions()
-            actions.extend(type_export_actions)
-        return actions
-
 
 if __name__ == "__main__":
     lib = Library("MayaAsset", "maya")
-    print len(lib.export_actions())
+
 

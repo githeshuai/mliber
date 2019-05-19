@@ -32,7 +32,6 @@ class MayaObject(object):
         """
         return
 
-    @property
     def plugin_version(self):
         if self.plugin:
             return maya_utils.get_plugin_version(self.plugin)

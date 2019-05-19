@@ -6,6 +6,6 @@ maya:
       hook: maya_ass_import
       default: False
   export:
-    - name: arnold prorxy export
-      hook: maya_ass_export
-      default: False
+    name: arnold prorxy export
+    hook: maya_ass_export
+    default: False

@@ -12,6 +12,6 @@ maya:
       hook: maya_mb_open
       default: False
   export: 
-    - name: mb export
-      hook: maya_mb_export
-      default: False
+    name: mb export
+    hook: maya_mb_export
+    default: False

@@ -6,6 +6,6 @@ maya:
       hook: maya_fbx_import
       default: False
   export:
-    - name: fbx export
-      hook: maya_fbx_export
-      default: False
+    name: fbx export
+    hook: maya_fbx_export
+    default: False

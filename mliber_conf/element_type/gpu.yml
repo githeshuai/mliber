@@ -6,6 +6,6 @@ maya:
       hook: maya_gpu_import
       default: False
   export:
-    - name: gpu cache export
-      hook: maya_gpu_export
-      default: False
+    name: gpu cache export
+    hook: maya_gpu_export
+    default: False
