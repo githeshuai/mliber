@@ -8,15 +8,13 @@ from mliber_parse.action import Action
 
 
 class ElementType(object):
-    def __init__(self, element_type="", engine=""):
+    def __init__(self, element_type=""):
         """
         init
         :param element_type: <str> element type
-        :param engine: <str> 当前运行的软件
         """
         self._type = element_type
         self._data = self.parse()
-        self._engine = engine
 
     def element_type_conf_path(self):
         """
@@ -33,23 +31,23 @@ class ElementType(object):
         """
         return mliber_utils.parse(self.element_type_conf_path())
 
-    def engine_actions(self):
+    def actions_of_engine(self, engine):
         """
         当前软件的所有action, 包括import和export
         :return: <dict>
         """
-        if not self._data. has_key(self._engine):
-            print u"软件: %s不支持type: %s" % (self._engine, self._type)
+        if not self._data. has_key(engine):
+            print u"软件: %s不支持type: %s" % (engine, self._type)
             return {}
-        engine_actions = self._data.get(self._engine)
+        engine_actions = self._data.get(engine)
         return engine_actions
 
-    def export_action(self):
+    def export_action_of_engine(self, engine):
         """
         export actions
         :return: <list>
         """
-        engine_actions = self.engine_actions()
+        engine_actions = self.actions_of_engine(engine)
         if engine_actions:
             action = engine_actions.get("export", {})
             if action:
@@ -57,12 +55,12 @@ class ElementType(object):
                 return Action(action)
         return None
 
-    def import_actions(self):
+    def import_actions_of_engine(self, engine):
         """
         import actions
         :return:
         """
-        engine_actions = self.engine_actions()
+        engine_actions = self.actions_of_engine(engine)
         if engine_actions:
             export_action_list = engine_actions.get("import", [])
             if export_action_list:
@@ -97,5 +95,5 @@ class ElementType(object):
 
 
 if __name__ == "__main__":
-    p = ElementType("ma")
-    print p.icon
+    p = ElementType("ma").actions_of_engine("maya")
+    print p

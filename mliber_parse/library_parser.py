@@ -6,13 +6,11 @@ import mliber_utils
 
 
 class Library(object):
-    def __init__(self, library_type="", engine=""):
+    def __init__(self, library_type=""):
         """
         :param library_type: <str>
-        :param engine: <str>
         """
         self._library_type = library_type
-        self._engine = engine
         self._data = self.parse()
 
     def library_conf_path(self):
@@ -40,6 +38,6 @@ class Library(object):
 
 
 if __name__ == "__main__":
-    lib = Library("MayaAsset", "maya")
+    lib = Library("MayaAsset")
 
 

@@ -70,7 +70,7 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
         for element_type in types:
             element_relative_path = get_element_relative_path(asset_relative_dir, element_type, asset_name)  #  相对路径，保存于数据库
             element_abs_path = element_relative_path.format(root=library.root_path())  # 绝对路径，导出在磁盘上的路径
-            action = ElementType(element_type, "maya").export_action()  # 读取配置文件中，有哪些action
+            action = ElementType(element_type).export_action_of_engine("maya")  # 读取配置文件中，有哪些action
             if not action:
                 logging.warning("[MLIBER] warning: No export action configured of %s" % element_type)
                 continue
@@ -83,11 +83,11 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
                 continue
             base_name = Path(exported_path).basename()
             relative_dir = Path(element_relative_path).parent()
-            path = Path(relative_dir).join(base_name)  # liber object relative path
+            element_path = Path(relative_dir).join(base_name)  # liber object relative path
             plugin = hook_instance.plugin_version()
             element_name = "{}_{}".format(asset_name, element_type)
             data = {"type": element_type, "software": software, "plugin": plugin,
-                    "status": "Active", "path": path, "name": element_name}
+                    "status": "Active", "path": element_path, "name": element_name}
             if created_by is not None:
                 data.update({"created_by": created_by})
             element = db.create("Element", data)

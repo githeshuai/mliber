@@ -369,7 +369,7 @@ class AssetListView(QListView):
         显示右键菜单
         :return:
         """
-        menu = QMenu()
+        menu = QMenu(self)
         user = mliber_global.user()
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)

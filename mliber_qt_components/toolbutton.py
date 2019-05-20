@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from Qt.QtWidgets import QToolButton
 from Qt.QtCore import QSize
 
@@ -31,7 +32,10 @@ class ToolButton(QToolButton):
         :param color:
         :return:
         """
-        icon = Icon(mliber_resource.icon(name))
+        if os.path.isfile(name):
+            icon = Icon(name)
+        else:
+            icon = Icon(mliber_resource.icon(name))
         icon.set_color(color)
         self.setIcon(icon)
 

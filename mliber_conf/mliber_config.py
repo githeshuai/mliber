@@ -14,7 +14,7 @@ BACKGROUND_COLOR = "#40444f"
 TITLE_COLOR = "#373b44"
 MENU_COLOR = "#2d2f37"
 # button icon color
-ICON_COLOR = QColor(52, 234, 234)
+ICON_COLOR = QColor(160, 160, 160)
 ICON_HOVER_COLOR = QColor(57, 255, 255)
 ACCENT_COLOR = "rgb(57, 255, 255)"
 
@@ -37,9 +37,9 @@ TAG_COLOR_B = 128
 
 
 # delegate list view style
-LIST_VIEW_STYLE = "QListView::item{background: #393c46;border-radius: 3px;}" \
-                  "QListView::item:selected {background: #29475a; border: 1px solid #00b4ff; border-radius: 3px;}" \
-                  "QListView::item:hover {background: #345f71; border-radius: 3px;}"\
+LIST_VIEW_STYLE = "QListView::item{background: #393c46;border-radius: 0px;}" \
+                  "QListView::item:selected {background: #29475a; border: 1px solid #00b4ff; border-radius: 0px;}" \
+                  "QListView::item:hover {background: #345f71; border-radius: 0px;}"\
                   "QListView::item:selected:!active {background: #29475a;}" \
                   "QListView::item:selected:active {background: #29475a;}"
 

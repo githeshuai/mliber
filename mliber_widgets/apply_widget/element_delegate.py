@@ -2,6 +2,7 @@
 from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QVBoxLayout, QStyledItemDelegate
 from Qt.QtCore import Qt, QSize
 from Qt.QtGui import QIcon
+from mliber_qt_components.toolbutton import ToolButton
 from mliber_qt_components.icon_line_edit import IconLineEdit
 import mliber_resource
 from mliber_parse.element_type_parser import ElementType
@@ -16,22 +17,23 @@ class CellElementWidget(QWidget):
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        self.icon_button = QToolButton(self)
+        self.icon_button = ToolButton(self)
         self.icon_button.setStyleSheet("background: transparent; padding: 0px;")
-        self.icon_button.setFixedSize(QSize(60, 60))
-        self.icon_button.setIconSize(QSize(60, 60))
         # info layout
         info_layout = QVBoxLayout()
         style_sheet = "QLineEdit{border: 0px solid; background: transparent; padding-left: 25; color: #8A8A8A;}"
         self.software_le = IconLineEdit(mliber_resource.icon_path("software.png"), self.info_height, self.font_size, self)
+        self.software_le.setReadOnly(True)
         self.software_le.setPlaceholderText("Software")
         self.software_le.setStyleSheet(style_sheet)
         self.plugin_le = IconLineEdit(mliber_resource.icon_path("plugin.png"), self.info_height, self.font_size, self)
         self.plugin_le.setPlaceholderText("Plugin")
         self.plugin_le.setStyleSheet(style_sheet)
+        self.plugin_le.setReadOnly(True)
         self.path_le = IconLineEdit(mliber_resource.icon_path("folder.png"), self.info_height, self.font_size, self)
         self.path_le.setPlaceholderText("Path")
         self.path_le.setStyleSheet(style_sheet)
+        self.path_le.setReadOnly(True)
         info_layout.addWidget(self.software_le)
         info_layout.addWidget(self.plugin_le)
         info_layout.addWidget(self.path_le)
@@ -47,7 +49,8 @@ class CellElementWidget(QWidget):
         :return:
         """
         icon_path = ElementType(typ).icon
-        self.icon_button.setIcon(QIcon(icon_path))
+        self.icon_button.set_icon(icon_path)
+        self.icon_button.set_size(60, 60)
 
     def set_software(self, software):
         """

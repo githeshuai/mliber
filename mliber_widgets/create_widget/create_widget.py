@@ -15,7 +15,6 @@ from mliber_libs.os_libs.path import Path
 from mliber_conf import templates
 
 
-
 class TitleLabel(QLabel):
     def __init__(self, text, must=False, parent=None):
         super(TitleLabel, self).__init__(parent)
@@ -80,7 +79,7 @@ class ActionWidget(QWidget):
         get all actions from configuration file
         Returns:
         """
-        return Library(self._library_type, self._engine).types()
+        return Library(self._library_type).types()
 
     def create_checkboxes(self):
         """
@@ -91,7 +90,7 @@ class ActionWidget(QWidget):
         types = self.types()
         if types:
             for typ in types:
-                action_object = ElementType(typ, self._engine).export_action()
+                action_object = ElementType(typ).export_action_of_engine(self._engine)
                 if not action_object:
                     continue
                 name = action_object.name
