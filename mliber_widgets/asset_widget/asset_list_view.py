@@ -7,11 +7,12 @@ from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
 from mliber_conf import mliber_config
 import mliber_global
+import mliber_utils
 from mliber_libs.os_libs.path import Path
-from mliber_api.database_api import Database
 from mliber_api import add_tag_of_asset
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
+from mliber_parse.element_type_parser import ElementType
 
 DEFAULT_ICON_SIZE = 128
 
@@ -364,6 +365,26 @@ class AssetListView(QListView):
             self._remove_asset_from_user(user, asset.id)
             self.model().sourceModel().setData(index, ["store", False], Qt.UserRole)
 
+    def _single_selection_actions(self, asset):
+        """
+        选择一个资产的时候，右键菜单的action
+        :return:
+        """
+        engine = mliber_utils.engine()
+        q_actions = list()
+        elements = asset.elements
+        for element in elements:
+            actions = ElementType(element.type).import_actions_of_engine(engine)
+            for action in actions:
+                q_action = QAction(action.name, self, triggered=self._run_hook)
+                q_action.path = element.path
+                q_action.hook = action.hook
+                q_action.asset_name = asset.name
+                # q_action.start = element.start
+                # q_action.end = element.end
+                q_actions.append(q_action)
+        return q_actions
+
     def show_context_menu(self):
         """
         显示右键菜单
@@ -374,7 +395,36 @@ class AssetListView(QListView):
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
+        open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
+        menu.addAction(open_action)
+        menu.addSeparator()
+        selected_assets = self.selected_assets()
+        asset_ids = [asset.id for asset in selected_assets]
+        with mliber_global.db() as db:
+            assets = db.find("Asset", [["id", "in", asset_ids]])
+        if len(assets) == 1:
+            q_actions = self._single_selection_actions(assets[0])
+            for q_action in q_actions:
+                menu.addAction(q_action)
         menu.exec_(QCursor.pos())
+
+    def _run_hook(self):
+        """
+        :return:
+        """
+        print self.sender().hook
+
+    def _open_in_explorer(self):
+        """
+        在文件系统中打开
+        :return:
+        """
+        selected_assets = self.selected_assets()
+        if not selected_assets:
+            return
+        asset = selected_assets[0]
+        path = asset.path.format(root=self.library.root_path())
+        Path(path).open()
 
     def wheelEvent(self, event):
         """

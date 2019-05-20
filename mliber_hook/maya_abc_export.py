@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from mliber_hook.base_hook import BaseHook
-from mliber_libs.maya_libs.maya_objectects import MayaAbc
+from mliber_libs.maya_libs.maya_objects import MayaAbc
 from mliber_libs.maya_libs import maya_utils
 
 

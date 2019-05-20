@@ -5,17 +5,7 @@ maya:
     - name: redshift proxy import
       hook: maya_rs_import
       default: False
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
   export:
     name: redshift prorxy export
     hook: maya_rs_export
     default: False
-
-
-standalone:
-  import:
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True

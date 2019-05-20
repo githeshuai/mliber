@@ -16,6 +16,9 @@ class CellElementWidget(QWidget):
         super(CellElementWidget, self).__init__(parent)
         self._element_type = None
         self._path = None
+        self._start = 1
+        self._end = 1
+        self._asset_name = ""
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 2, 0, 2)
@@ -29,16 +32,16 @@ class CellElementWidget(QWidget):
         self.software_le.setReadOnly(True)
         self.software_le.setPlaceholderText("Software")
         self.software_le.setStyleSheet(style_sheet)
-        self.plugin_le = IconLineEdit(mliber_resource.icon_path("plugin.png"), self.info_height, self.font_size, self)
-        self.plugin_le.setPlaceholderText("Plugin")
-        self.plugin_le.setStyleSheet(style_sheet)
-        self.plugin_le.setReadOnly(True)
+        self.frame_range_le = IconLineEdit(mliber_resource.icon_path("plugin.png"), self.info_height, self.font_size, self)
+        self.frame_range_le.setPlaceholderText("Plugin")
+        self.frame_range_le.setStyleSheet(style_sheet)
+        self.frame_range_le.setReadOnly(True)
         self.path_le = IconLineEdit(mliber_resource.icon_path("folder.png"), self.info_height, self.font_size, self)
         self.path_le.setPlaceholderText("Path")
         self.path_le.setStyleSheet(style_sheet)
         self.path_le.setReadOnly(True)
         info_layout.addWidget(self.software_le)
-        info_layout.addWidget(self.plugin_le)
+        info_layout.addWidget(self.frame_range_le)
         info_layout.addWidget(self.path_le)
         info_layout.setSpacing(0)
         # add to main layout
@@ -66,19 +69,27 @@ class CellElementWidget(QWidget):
         self.icon_button.setFixedSize(QSize(60, 60))
         self.icon_button.setIconSize(QSize(42, 42))
 
-    def set_software(self, software):
+    def set_software(self, software, plugin):
         """
         :param software: <str>
-        :return:
-        """
-        self.software_le.setText(software)
-
-    def set_plugin(self, plugin):
-        """
         :param plugin: <str>
         :return:
         """
-        self.plugin_le.setText(plugin)
+        software_str = software if software else ""
+        plugin_str = plugin if plugin else ""
+        final_str = "%s %s" % (software_str, plugin_str)
+        self.software_le.setText(final_str)
+
+    def set_frame_range(self, start, end):
+        """
+        :return:
+        """
+        start_value = start if start else 1
+        self._start = start_value
+        end_value = end if end else 1
+        self._end = end_value
+        frame_range_str = "%s-%s" % (start_value, end_value)
+        self.frame_range_le.setText(frame_range_str)
 
     def set_path(self, path):
         """
@@ -87,6 +98,13 @@ class CellElementWidget(QWidget):
         """
         self._path = path
         self.path_le.setText(path)
+
+    def set_asset_name(self, asset_name):
+        """
+        :param asset_name: <str>
+        :return:
+        """
+        self._asset_name = asset_name
 
     def _create_action_menu(self):
         """
@@ -100,6 +118,9 @@ class CellElementWidget(QWidget):
             q_action = QAction(action.name, self, triggered=self.run_hook)
             q_action.hook = action.hook
             menu.addAction(q_action)
+        show_in_explorer_action = QAction("open in explorer", self, triggered=self.run_hook)
+        show_in_explorer_action.hook = "open_in_explorer"
+        menu.addAction(show_in_explorer_action)
         return menu
 
     def _show_action_menu(self):
@@ -119,7 +140,7 @@ class CellElementWidget(QWidget):
         """
         hook_name = self.sender().hook
         hook_module = mliber_utils.load_hook(hook_name)
-        hook_instance = hook_module.Hook(self._path)
+        hook_instance = hook_module.Hook(self._path, self._start, self._end, self._asset_name)
         hook_instance.main()
 
 
@@ -139,9 +160,10 @@ class ElementDelegate(QStyledItemDelegate):
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
         item = self._get_item(index)
+        editor.set_asset_name(item.asset_name)
         editor.set_type(item.type)
-        editor.set_software(item.software)
-        editor.set_plugin(item.plugin)
+        editor.set_software(item.software, item.plugin)
+        editor.set_frame_range(item.start, item.end)
         editor.set_path(item.path)
         editor.blockSignals(False)
 

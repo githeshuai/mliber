@@ -5,17 +5,7 @@ maya:
     - name: obj import
       hook: maya_obj_import
       default: False
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
   export:
     name: obj export
     hook: maya_obj_export
     default: False
-
-
-standalone:
-  import:
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True

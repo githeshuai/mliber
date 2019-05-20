@@ -192,13 +192,6 @@ class Database(object):
         """
         self.session.close()
 
-    def __del__(self):
-        """
-        close session
-        :return:
-        """
-        self.close()
-
 
 if __name__ == "__main__":
     db = Database("default")

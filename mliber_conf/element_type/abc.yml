@@ -21,16 +21,7 @@ maya:
     - name: abc reference
       hook: maya_abc_reference
       default: False
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
   export:
     name: abc export
     hook: maya_abc_export
     default: False
-
-standalone:
-  import:
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True

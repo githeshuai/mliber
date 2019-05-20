@@ -166,6 +166,8 @@ class Element(Base):
     description = Column(Text)
     software = Column(Text)
     plugin = Column(Text)
+    start = Column(Integer, default=1)
+    end = Column(Integer, default=1)
     path = Column(Text)
     status = Column(Enum("Active", "Disable"), default="Active")
     # foreign key

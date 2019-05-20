@@ -5,17 +5,7 @@ maya:
     - name: xgen xarc import
       hook: maya_xarc_import
       default: False
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
   export:
     name: xgen xarc export
     hook: maya_xarc_export
     default: False
-
-
-standalone:
-  import:
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True

@@ -8,11 +8,12 @@ import mliber_global
 
 
 class ElementItem(object):
-    def __init__(self, element):
+    def __init__(self, element, asset_name):
         """
         :param element: <Element>
         """
         self.element = element
+        self.asset_name = asset_name
 
     def __getattr__(self, item):
         """
@@ -62,7 +63,7 @@ class ElementListView(QListView):
         """
         model_data = list()
         for element in elements:
-            item = ElementItem(element)
+            item = ElementItem(element, self._asset.name)
             model_data.append(item)
         return model_data
 

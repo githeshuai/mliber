@@ -76,7 +76,7 @@ class CellLibrary(QWidget):
         设置名字
         :return:
         """
-        self.name_label.setText("<font size=4><b>%s</b></font>" % name)
+        self.name_label.setText("<font size=4>%s</font>" % name)
 
     def set_type(self, typ):
         """

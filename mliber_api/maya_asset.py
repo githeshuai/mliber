@@ -88,8 +88,8 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
             element_path = Path(relative_dir).join(base_name)  # element relative path
             plugin = hook_instance.plugin_version()
             element_name = "{}_{}".format(asset_name, element_type)
-            data = {"type": element_type, "software": software, "plugin": plugin,
-                    "status": "Active", "path": element_path, "name": element_name}
+            data = {"type": element_type, "software": software, "plugin": plugin, "status": "Active",
+                    "path": element_path, "name": element_name, "start": start, "end": end}
             if created_by is not None:
                 data.update({"created_by": created_by})
             element = db.create("Element", data)

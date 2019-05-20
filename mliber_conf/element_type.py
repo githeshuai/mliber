@@ -1,0 +1,16 @@
+# -*- coding:utf-8 -*-
+ELEMENT_TYPE = ["abc",
+                "fbx",
+                "ass",
+                "gpu",
+                "ma",
+                "mb",
+                "obj",
+                "rs",
+                "xarc",
+                "hdr",
+                "nk",
+                "hip",
+                "project",
+                "source",
+                ]

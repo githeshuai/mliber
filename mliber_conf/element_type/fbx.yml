@@ -5,17 +5,7 @@ maya:
     - name: fbx import
       hook: maya_fbx_import
       default: False
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
   export:
     name: fbx export
     hook: maya_fbx_export
     default: False
-
-
-standalone:
-  import:
-    - name: open in explorer
-      hook: open_in_explorer
-      default: True
