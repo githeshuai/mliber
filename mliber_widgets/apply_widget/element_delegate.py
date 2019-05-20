@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QVBoxLayout, QStyledItemDelegate
+from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QVBoxLayout, QStyledItemDelegate, QMenu, QAction
 from Qt.QtCore import Qt, QSize
-from Qt.QtGui import QIcon
 from mliber_qt_components.toolbutton import ToolButton
 from mliber_qt_components.icon_line_edit import IconLineEdit
 import mliber_resource
+import mliber_utils
 from mliber_parse.element_type_parser import ElementType
 
 
@@ -14,10 +14,13 @@ class CellElementWidget(QWidget):
 
     def __init__(self, parent=None):
         super(CellElementWidget, self).__init__(parent)
+        self._element_type = None
+        self._path = None
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         self.icon_button = ToolButton(self)
+        self.icon_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.icon_button.setStyleSheet("background: transparent; padding: 0px;")
         # info layout
         info_layout = QVBoxLayout()
@@ -42,15 +45,26 @@ class CellElementWidget(QWidget):
         main_layout.addWidget(self.icon_button)
         main_layout.addLayout(info_layout)
         main_layout.setSpacing(0)
+        # set signals
+        self.set_signals()
+
+    def set_signals(self):
+        """
+        :return:
+        """
+        self.icon_button.clicked.connect(self._show_action_menu)
 
     def set_type(self, typ):
         """
         set icon
         :return:
         """
+        self._element_type = typ
         icon_path = ElementType(typ).icon
+        self.icon_button.setText(typ)
         self.icon_button.set_icon(icon_path)
-        self.icon_button.set_size(60, 60)
+        self.icon_button.setFixedSize(QSize(60, 60))
+        self.icon_button.setIconSize(QSize(42, 42))
 
     def set_software(self, software):
         """
@@ -71,7 +85,42 @@ class CellElementWidget(QWidget):
         :param path: <str>
         :return:
         """
+        self._path = path
         self.path_le.setText(path)
+
+    def _create_action_menu(self):
+        """
+        创建action菜单
+        :return:
+        """
+        menu = QMenu(self)
+        engine = mliber_utils.engine()
+        actions = ElementType(self._element_type).import_actions_of_engine(engine)
+        for action in actions:
+            q_action = QAction(action.name, self, triggered=self.run_hook)
+            q_action.hook = action.hook
+            menu.addAction(q_action)
+        return menu
+
+    def _show_action_menu(self):
+        """
+        显示菜单
+        :return:
+        """
+        menu = self._create_action_menu()
+        point = self.icon_button.rect().bottomLeft()
+        point = self.icon_button.mapToGlobal(point)
+        menu.exec_(point)
+
+    def run_hook(self):
+        """
+        运行主函数
+        :return:
+        """
+        hook_name = self.sender().hook
+        hook_module = mliber_utils.load_hook(hook_name)
+        hook_instance = hook_module.Hook(self._path)
+        hook_instance.main()
 
 
 class ElementDelegate(QStyledItemDelegate):

@@ -4,6 +4,7 @@ from Qt.QtCore import Qt
 from element_model import ElementModel
 from element_delegate import ElementDelegate
 from mliber_conf import mliber_config
+import mliber_global
 
 
 class ElementItem(object):
@@ -18,6 +19,10 @@ class ElementItem(object):
         :param item:
         :return:
         """
+        if item == "path":
+            library = mliber_global.library()
+            root_path = library.root_path()
+            return self.element.path.format(root=root_path)
         return getattr(self.element, item)
 
 

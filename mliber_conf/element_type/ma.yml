@@ -15,3 +15,10 @@ maya:
     name: ma export
     hook: maya_ma_export
     default: True
+
+
+standalone:
+  import:
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True

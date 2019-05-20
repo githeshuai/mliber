@@ -48,10 +48,10 @@ class BaseHook(object):
         :return:
         """
         try:
-            path = self.execute(*args, **kwargs)
+            result = self.execute(*args, **kwargs)
         except RuntimeError as e:
             self._error_list.append(str(e))
-            path = None
+            result = None
         if self.error_str:
             self.logger.error(self.error_str)
-        return path
+        return result

@@ -81,15 +81,15 @@ class ElementType(object):
             icon = self._data.get("icon")
             icon_dir = mliber_utils.package("mliber_icons")
             if not icon:
-                return Path(icon_dir).join("action_icons/default.png")
+                return Path(icon_dir).join("element_type_icons/default.png")
             if Path(icon).isfile():
                 return icon
             if icon == "default":
-                icon = Path(icon_dir).join("action_icons/default.png")
+                icon = Path(icon_dir).join("element_type_icons/default.png")
             else:
                 icon = Path(icon_dir).join(icon)
             if not Path(icon).isfile():
-                icon = Path(icon_dir).join("action_icons/default.png")
+                icon = Path(icon_dir).join("element_type_icons/default.png")
             return icon
         return self._data.get(item, None)
 
