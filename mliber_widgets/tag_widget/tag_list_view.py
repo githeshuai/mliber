@@ -8,7 +8,7 @@ from tag_model import TagModel, TagProxyModel
 from tag_delegate import TagDelegate
 from mliber_conf import mliber_config
 import mliber_global
-from mliber_api.database_api import Database
+
 
 LIST_VIEW_STYLE = "QListView::item{background: #393c46; border-radius: 10px; border: 0px solid;}" \
                   "QListView::item:selected {background: #29475a;}" \

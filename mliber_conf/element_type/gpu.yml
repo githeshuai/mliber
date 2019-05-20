@@ -5,7 +5,17 @@ maya:
     - name: gpu cache import
       hook: maya_gpu_import
       default: False
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True
   export:
     name: gpu cache export
     hook: maya_gpu_export
     default: False
+
+
+standalone:
+  import:
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True

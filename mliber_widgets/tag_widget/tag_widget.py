@@ -18,13 +18,9 @@ class TagWidget(QWidget):
         top_layout.setContentsMargins(0, 0, 0, 0)
         self.tag_btn = IndicatorButton("Tag", self)
         self.search_le = SearchLineEdit(22, 12, self)
-        self.refresh_btn = ToolButton(self)
-        self.refresh_btn.set_size()
-        self.refresh_btn.set_icon("refresh.png")
         top_layout.addWidget(self.tag_btn)
         top_layout.addStretch()
         top_layout.addWidget(self.search_le)
-        top_layout.addWidget(self.refresh_btn)
         # tag list view
         self.tag_list_view = TagListView(self)
         # add to main layout

@@ -81,9 +81,11 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
                 continue
+            if not exported_path:
+                continue
             base_name = Path(exported_path).basename()
             relative_dir = Path(element_relative_path).parent()
-            element_path = Path(relative_dir).join(base_name)  # liber object relative path
+            element_path = Path(relative_dir).join(base_name)  # element relative path
             plugin = hook_instance.plugin_version()
             element_name = "{}_{}".format(asset_name, element_type)
             data = {"type": element_type, "software": software, "plugin": plugin,

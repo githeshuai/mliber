@@ -5,7 +5,16 @@ maya:
     - name: arnold proxy import
       hook: maya_ass_import
       default: False
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True
   export:
     name: arnold prorxy export
     hook: maya_ass_export
     default: False
+
+standalone:
+  import:
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True

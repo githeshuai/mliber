@@ -115,7 +115,7 @@ class CellAssetWidget(QWidget):
         set text
         :return:
         """
-        self.name_label.setText(text)
+        self.name_label.setText("<font size=4><b>%s</b></font>" % text)
 
     def set_icon(self, icon_path):
         """

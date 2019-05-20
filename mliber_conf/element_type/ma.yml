@@ -11,6 +11,9 @@ maya:
     - name: ma open
       hook: maya_ma_open
       default: False
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True
   export:
     name: ma export
     hook: maya_ma_export

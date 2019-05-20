@@ -161,21 +161,21 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         library_assets = []
-        if tags:
-            all_assets = list()
-            for tag in tags:
-                all_assets.extend(tag.assets)
-            if all_assets:
-                temp_dict = dict()
-                for asset in all_assets:
-                    asset_id = asset.id
-                    temp_dict[asset_id] = asset
-                assets = temp_dict.values()
-                library_assets = [asset for asset in assets if asset.library_id == self.library.id]
-        else:
-            with mliber_global.db() as db:
-                library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
-        self.asset_widget.set_assets(library_assets)
+        with mliber_global.db() as db:
+            if tags:
+                all_assets = list()
+                for tag in tags:
+                    all_assets.extend(tag.assets)
+                if all_assets:
+                    temp_dict = dict()
+                    for asset in all_assets:
+                        asset_id = asset.id
+                        temp_dict[asset_id] = asset
+                    assets = temp_dict.values()
+                    library_assets = [asset for asset in assets if asset.library_id == self.library.id]
+            else:
+                    library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
+            self.asset_widget.set_assets(library_assets)
 
     def refresh_library(self):
         """

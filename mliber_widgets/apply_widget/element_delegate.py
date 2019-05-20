@@ -18,10 +18,10 @@ class CellElementWidget(QWidget):
         self._path = None
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setContentsMargins(0, 2, 0, 2)
         self.icon_button = ToolButton(self)
         self.icon_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.icon_button.setStyleSheet("background: transparent; padding: 0px;")
+        self.icon_button.setStyleSheet("background: transparent; padding: 0px; font: bold;")
         # info layout
         info_layout = QVBoxLayout()
         style_sheet = "QLineEdit{border: 0px solid; background: transparent; padding-left: 25; color: #8A8A8A;}"
@@ -149,7 +149,7 @@ class ElementDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect)
 
     def sizeHint(self, option, index):
-        return QSize(200, 60)
+        return QSize(200, 64)
 
     def _get_item(self, index):
         """

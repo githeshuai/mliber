@@ -11,7 +11,16 @@ maya:
     - name: mb open
       hook: maya_mb_open
       default: False
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True
   export: 
     name: mb export
     hook: maya_mb_export
     default: False
+
+standalone:
+  import:
+    - name: open in explorer
+      hook: open_in_explorer
+      default: True
