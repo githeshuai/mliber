@@ -162,10 +162,15 @@ class MainWidget(MainWidgetUI):
         """
         library_assets = []
         if tags:
-            assets = list()
+            all_assets = list()
             for tag in tags:
-                assets.extend(tag.assets)
-            if assets:
+                all_assets.extend(tag.assets)
+            if all_assets:
+                temp_dict = dict()
+                for asset in all_assets:
+                    asset_id = asset.id
+                    temp_dict[asset_id] = asset
+                assets = temp_dict.values()
                 library_assets = [asset for asset in assets if asset.library_id == self.library.id]
         else:
             with mliber_global.db() as db:
