@@ -12,7 +12,7 @@
 # export只支持一种导出方式，如果有另外的导出方式，需要再写一种type
 
 ext: ".abc"
-icon: "default.png"
+icon: "abc.png"
 maya:
   import:
     - name: abc import

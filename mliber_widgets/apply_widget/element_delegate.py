@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QVBoxLayout, QStyledItemDelegate, QMenu, QAction
+from Qt.QtGui import QIcon
 from Qt.QtCore import Qt, QSize
-from mliber_qt_components.toolbutton import ToolButton
 from mliber_qt_components.icon_line_edit import IconLineEdit
 import mliber_resource
 import mliber_utils
@@ -22,7 +22,7 @@ class CellElementWidget(QWidget):
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 2, 0, 2)
-        self.icon_button = ToolButton(self)
+        self.icon_button = QToolButton(self)
         self.icon_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.icon_button.setStyleSheet("background: transparent; padding: 0px; font: bold;")
         # info layout
@@ -65,7 +65,7 @@ class CellElementWidget(QWidget):
         self._element_type = typ
         icon_path = ElementType(typ).icon
         self.icon_button.setText(typ)
-        self.icon_button.set_icon(icon_path)
+        self.icon_button.setIcon(QIcon(icon_path))
         self.icon_button.setFixedSize(QSize(60, 60))
         self.icon_button.setIconSize(QSize(42, 42))
 

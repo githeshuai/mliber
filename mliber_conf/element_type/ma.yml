@@ -1,5 +1,5 @@
 ext: ".ma"
-icon: "default.png"
+icon: "maya.png"
 maya:
   import:
     - name: ma import

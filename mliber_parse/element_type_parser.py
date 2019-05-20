@@ -84,10 +84,7 @@ class ElementType(object):
                 return Path(icon_dir).join("element_type_icons/default.png")
             if Path(icon).isfile():
                 return icon
-            if icon == "default":
-                icon = Path(icon_dir).join("element_type_icons/default.png")
-            else:
-                icon = Path(icon_dir).join(icon)
+            icon = Path(icon_dir).join("element_type_icons/%s" % icon)
             if not Path(icon).isfile():
                 icon = Path(icon_dir).join("element_type_icons/default.png")
             return icon

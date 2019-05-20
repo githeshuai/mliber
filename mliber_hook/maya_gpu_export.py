@@ -11,7 +11,7 @@ class Hook(BaseHook):
         self.plugin = self.maya_object.plugin
 
     def plugin_version(self):
-        return self.maya_object.plugin
+        return self.maya_object.plugin_version()
 
     def execute(self, *args, **kwargs):
         objects = maya_utils.selected_objects()
