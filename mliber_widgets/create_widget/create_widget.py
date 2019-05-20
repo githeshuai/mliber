@@ -417,11 +417,11 @@ class CreateWidget(QScrollArea):
         create按钮按下的时候，执行的操作
         :return:
         """
-        if all((self.asset_dir, self.asset_name, self.library, self.category, self.types)):
+        if all((self.thumbnail_files, self.asset_dir, self.asset_name, self.library, self.category, self.types)):
             if self.preflight():
                 self.run()
         else:
-            MessageBox.warning(self, "Warning", u"必填项[library,category,asset name, actions]内容未填。")
+            MessageBox.warning(self, "Warning", u"必填项[thumbnail, library, category, asset name, actions]内容未填。")
 
     def preflight(self):
         """

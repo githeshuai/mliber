@@ -46,7 +46,10 @@ class ThumbnailWidget(QWidget):
         """
         current_type = self.current_type()
         if current_type == "screen":
-            return [self.screen_shot_widget.get_thumbnail_path()]
+            thumbnail_path = self.screen_shot_widget.get_thumbnail_path()
+            if thumbnail_path:
+                return [self.screen_shot_widget.get_thumbnail_path()]
+            return []
         else:
             return self.file_widget.item_texts()
 
