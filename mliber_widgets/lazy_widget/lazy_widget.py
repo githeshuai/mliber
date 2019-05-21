@@ -84,7 +84,7 @@ class LazyWidget(QScrollArea):
         description_layout.addWidget(self.description_te)
         # progress bar
         self.progress_bar = QProgressBar(self)
-        self.progress_bar.hide()
+        self.progress_bar.setHidden(True)
         self.progress_bar.setTextVisible(False)
         # create button
         self.create_button = QPushButton("Create", self)
@@ -238,12 +238,25 @@ class LazyWidget(QScrollArea):
         category_id = self.category.id
         created_by = self.user.id
         if self.batch_check.isChecked():
-            for source_file in self.files:
-                self._current_files = [source_file]
-                asset_info = asset.create(database, library_id, category_id, self.asset_name, [source_file],
-                                          self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
-                if asset_info:
-                    self.create_signal.emit([asset_info])
+            self._batch_create(database, library_id, category_id, created_by)
+
+    def _batch_create(self, database, library_id, category_id, created_by):
+        """
+        :param database: <str>
+        :param library_id: <int>
+        :param category_id: <int>
+        :param created_by: <int>
+        :return:
+        """
+        self.progress_bar.setHidden(False)
+        self.progress_bar.setRange(0, len(self.files))
+        for index, source_file in self.files:
+            self._current_files = [source_file]
+            asset_info = asset.create(database, library_id, category_id, self.asset_name, [source_file],
+                                      self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
+            if asset_info:
+                self.create_signal.emit([asset_info])
+            self.progress_bar.setValue(index + 1)
 
 
 if __name__ == "__main__":
