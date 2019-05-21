@@ -49,8 +49,8 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
             logging.error("[MLIBER] error: Category not exist.")
             return
         # 判断资产是否存在
-        asset = find_asset(db, asset_name, library_id, category_id)
-        if asset and not overwrite:  # 如果资产存在，并且不允许覆盖
+        asset_info = find_asset(db, asset_name, library_id, category_id)
+        if asset_info and not overwrite:  # 如果资产存在，并且不允许覆盖
             logging.error("[MLIBER] error: Asset already exist.")
             return
         # 获取asset相对路径和绝对路径，相对路径存于数据库，绝对路径用来存放导出的东西
@@ -109,13 +109,14 @@ def create(database_name, library_id, category_id, asset_name, objects, types, s
                       "elements": elements}
         if created_by is not None:
             asset_data.update({"created_by": created_by})
-        if not asset:
+        if not asset_info:
             asset = db.create("Asset", asset_data)
         else:
-            asset = db.update("Asset", asset.id, asset_data)
+            asset = db.update("Asset", asset_info.id, asset_data)
         logging.info("[MLIBER] info: Create Asset done.")
         # add tag
         if tag_names:
             add_tag_of_asset(db, asset, tag_names)
             logging.info("[MLIBER] info: Assign Tag done.")
-        return asset
+        if not asset_info:
+            return asset

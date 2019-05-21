@@ -3,6 +3,7 @@ import os
 import shutil
 import filecmp
 from distutils.dir_util import copy_tree
+from mliber_custom.path_opt import PathOperator
 
 
 def copy(src, dst):
@@ -33,6 +34,7 @@ def copy_file(src, dst):
             print "%s and %s is the same." % (src, dst)
             return True
     if not os.path.isdir(dst_dir):
+        PathOperator(dst_dir).pre_create()
         os.makedirs(dst_dir)
     shutil.copyfile(src, dst)
     return True

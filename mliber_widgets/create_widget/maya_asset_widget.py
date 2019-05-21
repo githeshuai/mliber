@@ -121,7 +121,8 @@ class MayaAssetWidget(CreateWidget):
         self.progress_bar.setValue(6)
         try:
             asset = maya_asset.create(**data)
-            self.created_signal.emit([asset])
+            if asset:
+                self.created_signal.emit([asset])
         except Exception as e:
             logging.error(str(e))
             MessageBox.warning(None, "Code Error", str(e))

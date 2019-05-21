@@ -4,6 +4,7 @@ from mliber_widgets.login_widget import LoginWidget
 from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage
 from mliber_widgets.apply_widget import ApplyWidget
+from mliber_widgets.lazy_widget import LazyWidget
 import mliber_utils
 import mliber_global
 import mliber_resource
@@ -55,6 +56,7 @@ class MainWidget(MainWidgetUI):
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
         self.asset_widget.export_from_software.connect(self._show_create_widget)
+        self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
 
     def _get_children_categories(self, categories):
@@ -267,6 +269,15 @@ class MainWidget(MainWidgetUI):
                     break
         if not show_created:
             MessageBox.warning(self, "Warning", u"请选择类型.")
+
+    def _show_lazy_widget(self):
+        """
+        显示从外部导入的widget
+        :return:
+        """
+        lazy_widget = LazyWidget(self)
+        lazy_widget.create_signal.connect(self._create_done)
+        self._add_right_side_widget(lazy_widget)
 
     def _create_done(self, assets):
         """
