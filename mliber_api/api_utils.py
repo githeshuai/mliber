@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import os
-from mliber_conf import mliber_config, templates
+from mliber_conf import templates
 from mliber_parse.element_type_parser import ElementType
 
 

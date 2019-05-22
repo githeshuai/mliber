@@ -5,6 +5,7 @@ from Qt.QtCore import Qt, QSize
 from mliber_qt_components.icon_line_edit import IconLineEdit
 import mliber_resource
 import mliber_utils
+from mliber_libs.dcc import Dcc
 from mliber_parse.element_type_parser import ElementType
 
 
@@ -112,7 +113,7 @@ class CellElementWidget(QWidget):
         :return:
         """
         menu = QMenu(self)
-        engine = mliber_utils.engine()
+        engine = Dcc.engine()
         actions = ElementType(self._element_type).import_actions_of_engine(engine)
         for action in actions:
             q_action = QAction(action.name, self, triggered=self.run_hook)

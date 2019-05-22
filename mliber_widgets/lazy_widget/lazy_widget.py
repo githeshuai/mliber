@@ -5,7 +5,7 @@ import mliber_global
 from lazy_widget_ui import LazyWidgetUI
 from mliber_libs.os_libs.path import Path
 from mliber_qt_components.messagebox import MessageBox
-from mliber_api import asset
+from mliber_api import AssetUploader
 
 
 class LazyWidget(LazyWidgetUI):
@@ -180,9 +180,10 @@ class LazyWidget(LazyWidgetUI):
         self.progress_bar.setHidden(False)
         self.progress_bar.setRange(0, 10)
         self.progress_bar.setValue(4)
-        asset_instance = asset.Asset(database, library_id, category_id, self.asset_name, files,
-                                     self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
-        asset_info = asset_instance.create()
+        asset_uploader = AssetUploader(database, library_id, category_id, self.asset_name, files,
+                                       thumbnail_files=self.thumbnail_files, tag_names=self.tags,
+                                       description=self.description, overwrite=self.overwrite, created_by=created_by)
+        asset_info = asset_uploader.upload()
         if asset_info:
             self.create_signal.emit([asset_info])
         self.progress_bar.setValue(10)
@@ -200,9 +201,11 @@ class LazyWidget(LazyWidgetUI):
         self.progress_bar.setRange(0, len(self.files))
         for index, source_file in self.files:
             self._current_files = [source_file]  # 获取缩略图的时候会用到
-            asset_instance = asset.Asset(database, library_id, category_id, self.asset_name, [source_file],
-                                         self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
-            asset_info = asset_instance.create()
+            asset_uploader = AssetUploader(database, library_id, category_id, self.asset_name, [source_file],
+                                           thumbnail_files=self.thumbnail_files, tag_names=self.tags,
+                                           description=self.description, overwrite=self.overwrite,
+                                           created_by=created_by)
+            asset_info = asset_uploader.upload()
             if asset_info:
                 self.create_signal.emit([asset_info])
             self.progress_bar.setValue(index + 1)

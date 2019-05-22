@@ -9,7 +9,7 @@ from mliber_qt_components.thumbnail_widget import ThumbnailWidget
 from mliber_qt_components.messagebox import MessageBox
 import mliber_global
 import mliber_resource
-import mliber_utils
+from mliber_libs.dcc import Dcc
 from mliber_api.database_api import Database
 from mliber_libs.os_libs.path import Path
 from mliber_conf import templates
@@ -211,7 +211,7 @@ class CreateWidget(QScrollArea):
         从library.yml中读取信息， 创建checkbox widget
         Returns:
         """
-        engine = self._engine or mliber_utils.engine()
+        engine = self._engine or Dcc.engine()
         self.actions_widget = ActionWidget(self._library_type, engine, self)
         self.main_layout.addWidget(self.actions_widget)
 

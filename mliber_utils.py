@@ -68,26 +68,6 @@ def read_history(key):
     return settings.value(key)
 
 
-def engine():
-    """
-    :return: <str>
-    """
-    app = sys.executable
-    app_basename = os.path.basename(app)
-    app_name = os.path.splitext(app_basename)[0]
-    if "Nuke" in app_name:
-        app_name = "nuke"
-    elif "houdini" in app_name:
-        app_name = "houdini"
-    elif "maya" in app_name:
-        app_name = "maya"
-    elif "clarisse" in app_name:
-        app_name = "clarisse"
-    else:
-        app_name = "standalone"
-    return app_name
-
-
 def load_module(name, paths):
     """
     :param name: module name

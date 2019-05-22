@@ -97,10 +97,10 @@ class MayaAssetWidget(CreateWidget):
         if not objects:
             MessageBox.warning(self, "Warning", "No objects selected.")
             return
-        from mliber_api import maya_asset
-        # database_name, library_id, category_id, asset_name, objects, types, start=1, end=1, thumbnail_files=list(),
-        #            tag_names=list(), description="", overwrite=True, export_texture=True,
-        #            recover_texture=True, created_by=None
+        from mliber_api.maya_asset_maker import MayaAssetMaker
+        # database_name, library_id, category_id, asset_name, objects, types = list(), start = 1, end = 1,
+        # thumbnail_files = list(), tag_names = list(), description = "", overwrite = True, created_by = None,
+        # export_texture = True, recover_texture = True
         data = dict(database_name=self.database,
                     library_id=self.library.id,
                     category_id=self.category.id,
@@ -113,14 +113,15 @@ class MayaAssetWidget(CreateWidget):
                     tag_names=self.tags,
                     description=self.description,
                     overwrite=self.overwrite,
+                    created_by=self.user.id,
                     export_texture=self.export_texture,
-                    recover_texture=self.recover_texture,
-                    created_by=self.user.id)
+                    recover_texture=self.recover_texture)
         self.progress_bar.show()
         self.progress_bar.setRange(0, 10)
         self.progress_bar.setValue(6)
         try:
-            asset = maya_asset.create(**data)
+            maya_asset_maker = MayaAssetMaker(**data)
+            asset = maya_asset_maker.make()
             if asset:
                 self.created_signal.emit([asset])
         except Exception as e:

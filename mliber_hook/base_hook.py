@@ -5,14 +5,16 @@ import logging
 class BaseHook(object):
     logger = logging.getLogger("Hook")
 
-    def __init__(self, path, start, end, asset_name=""):
+    def __init__(self, path, objects, start, end, asset_name=""):
         """
         :param path: <str> 需要导出或者导入的文件路径
+        :param objects: <list> 需要导出的物体
         :param start: <int> 起始帧
         :param end: <int> 结束帧
         :param asset_name: <str> 资产名字
         """
         self.asset_name = asset_name
+        self.objects = objects
         self.path = path
         self.start = start
         self.end = end

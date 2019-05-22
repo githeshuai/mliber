@@ -7,9 +7,9 @@ from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
 from mliber_conf import mliber_config
 import mliber_global
-import mliber_utils
+from mliber_libs.dcc import Dcc
 from mliber_libs.os_libs.path import Path
-from mliber_api import add_tag_of_asset
+from mliber_api.api_utils import add_tag_of_asset
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
 from mliber_parse.element_type_parser import ElementType
@@ -373,7 +373,7 @@ class AssetListView(QListView):
         选择一个资产的时候，右键菜单的action
         :return:
         """
-        engine = mliber_utils.engine()
+        engine = Dcc.engine()
         q_actions = list()
         elements = asset.elements
         for element in elements:
