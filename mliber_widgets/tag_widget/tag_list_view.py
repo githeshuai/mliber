@@ -9,12 +9,11 @@ from tag_delegate import TagDelegate
 from mliber_conf import mliber_config
 import mliber_global
 
-
-LIST_VIEW_STYLE = "QListView::item{background: #393c46; border-radius: 10px; border: 0px solid;}" \
-                  "QListView::item:selected {background: #29475a;}" \
-                  "QListView::item:hover {background: #345f71;}"\
-                  "QListView::item:selected:!active {background: #0f0;}" \
-                  "QListView::item:selected:active {background: #0f0;}"
+LIST_VIEW_STYLE = "QListView::item{background: #33333e;border-radius: 11px;}" \
+                  "QListView::item:selected {background: #29475a; border: 1px solid #00b4ff; border-radius: 11px;}" \
+                  "QListView::item:hover {background: #345f71; border-radius: 11px;}"\
+                  "QListView::item:selected:!active {background: #29475a;}" \
+                  "QListView::item:selected:active {background: #29475a;}"
 
 
 class TagListItem(object):
@@ -124,9 +123,6 @@ class TagListView(QListView):
         proxy_model = TagProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
-        # selection model
-        selection_model = self.selectionModel()
-        selection_model.selectionChanged.connect(self._emit_selection_changed)
 
     def _emit_selection_changed(self):
         """
@@ -321,6 +317,18 @@ class TagListView(QListView):
         :return:
         """
         self.clearSelection()
+
+    def mouseReleaseEvent(self, event):
+        """
+        当鼠标弹起的时候，发送selection changed
+        :param event:
+        :return:
+        """
+        super(TagListView, self).mouseReleaseEvent(event)
+        if event.button() == Qt.LeftButton:
+            index = self.indexAt(event.pos())
+            if index.row() >= 0:
+                self._emit_selection_changed()
 
     def contextMenuEvent(self, event):
         """

@@ -48,7 +48,7 @@ class TagWidget(QWidget):
         """
         menu = QMenu(self)
         select_all_action = QAction("Select All", self, triggered=self._select_all)
-        deselect_all_action = QAction("Deselect All", self, triggered=self._deselect_all)
+        deselect_all_action = QAction("Deselect All", self, triggered=self.deselect_all)
         menu.addSeparator()
         menu.addAction(select_all_action)
         menu.addAction(deselect_all_action)
@@ -83,7 +83,7 @@ class TagWidget(QWidget):
         """
         self.tag_list_view.select_all()
 
-    def _deselect_all(self):
+    def deselect_all(self):
         """
         取消选择
         :return:

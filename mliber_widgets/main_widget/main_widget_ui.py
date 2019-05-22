@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView, QWidget, QStackedLayout
+from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView, QWidget, QStackedLayout, QSizeGrip
 from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
@@ -51,3 +51,7 @@ class MainWidgetUI(QDialog):
         self.splitter.setSizes([250, self.width()-250, 0])
         # add main splitter to main layout
         main_layout.addWidget(self.splitter)
+
+        size_grip = QSizeGrip(self)
+        main_layout.addWidget(size_grip, 0, Qt.AlignBottom | Qt.AlignRight)
+        main_layout.setSpacing(0)

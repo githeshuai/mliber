@@ -5,7 +5,7 @@ import mliber_resource
 from mliber_qt_components.icon import Icon
 
 
-TAG_HEIGHT = 20
+TAG_HEIGHT = 22
 
 
 class CellTag(QToolButton):
@@ -14,8 +14,8 @@ class CellTag(QToolButton):
         self.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.setFixedHeight(TAG_HEIGHT)
         self.setAutoFillBackground(True)
-        self.setStyleSheet("background: transparent; border: 0px solid; padding: 0px; "
-                           "border-radius: 10px; color: #000;")
+        self.setStyleSheet("background: transparent; border: 0px solid; padding: 0px; font-size: 12px;"
+                           "border-radius: 10px; color: #000; color: rgb(255, 255, 255, 180);")
         self.setFocusPolicy(Qt.NoFocus)
 
     def set_icon_color(self, color):

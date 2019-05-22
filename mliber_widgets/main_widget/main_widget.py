@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
 from mliber_widgets.login_widget import LoginWidget
 from mliber_widgets.user_manage import UserManage
@@ -16,7 +17,12 @@ from mliber_widgets import create_widget
 class MainWidget(MainWidgetUI):
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
-        self.right_is_shown = False
+        self._is_maximum = False
+        self._right_is_shown = False
+        self._drag_position = None
+        # 无边框设置
+        self.setMouseTracking(True)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         # set style
         self._set_style()
         # set signals
@@ -52,12 +58,35 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.login_button.clicked.connect(self.show_login)
         self.tool_bar.user_manage_action_triggered.connect(self.show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self.show_library_manager)
+        self.tool_bar.minimum_btn.clicked.connect(self._minimum)
+        self.tool_bar.maximum_btn.clicked.connect(self._maximum)
+        self.tool_bar.close_btn.clicked.connect(self.close)
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
+        
+    def _minimum(self):
+        """
+        最小化
+        Returns:
+        """
+        self.showMinimized()
+        
+    def _maximum(self):
+        """
+        最大化
+        Returns:
+        """
+        if self._is_maximum:
+            self.tool_bar.maximum_btn.setIcon(mliber_resource.icon("max.png"))
+            self.showNormal()
+        else:
+            self.tool_bar.maximum_btn.setIcon(mliber_resource.icon("normal.png"))
+            self.showMaximized()
+        self._is_maximum = not self._is_maximum
 
     def _get_children_categories(self, categories):
         """
@@ -156,12 +185,15 @@ class MainWidget(MainWidgetUI):
         with mliber_global.db() as db:
             assets = db.find("Asset", [["category_id", "in", category_ids]])
         self.asset_widget.set_assets(assets)
+        self.tag_widget.deselect_all()
 
     def _on_tag_selection_changed(self, tags):
         """
         当tag选择改变的时候
         :return:
         """
+        # category tree取消选择
+        self.category_widget.category_tree.clearSelection()
         library_assets = []
         if tags:
             tag_ids = [tag.id for tag in tags]
@@ -315,7 +347,7 @@ class MainWidget(MainWidgetUI):
         Returns:
         """
         self.right_widget.setHidden(False)
-        self.right_is_shown = True
+        self._right_is_shown = True
         self.splitter.setSizes([250, self.width()-500, 250])
 
     def _add_right_side_widget(self, widget):
@@ -340,6 +372,21 @@ class MainWidget(MainWidgetUI):
         # 自动登录
         if self.auto_login():
             self.set_global_library_from_history()
+
+    def mousePressEvent(self, event):
+        super(MainWidget, self).mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            self._drag_position = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        super(MainWidget, self).mouseMoveEvent(event)
+        if event.buttons() == Qt.LeftButton:
+            self.move(event.globalPos() - self._drag_position)
+            event.accept()
+
+    def mouseDoubleClickEvent(self, event):
+        self._maximum()
 
 
 if __name__ == "__main__":

@@ -7,7 +7,6 @@ import mliber_global
 import mliber_resource
 from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.os_libs.path import Path
-from mliber_api.database_api import Database
 
 
 class CategoryTreeItem(QTreeWidgetItem):
@@ -51,7 +50,7 @@ class CategoryTree(QTreeWidget):
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
-        self.itemSelectionChanged.connect(self.on_item_selection_changed)
+        self.itemPressed.connect(self._on_item_selection_changed)
 
     @property
     def library(self):
@@ -126,7 +125,7 @@ class CategoryTree(QTreeWidget):
         categories = [item.category for item in selected_items]
         return categories
 
-    def on_item_selection_changed(self):
+    def _on_item_selection_changed(self):
         """
         当item 选择改变的时候
         :return:
@@ -316,6 +315,14 @@ class CategoryTree(QTreeWidget):
         if item:
             index = self.indexFromItem(item)
             self.scrollTo(index)
+
+    # def mouseReleaseEvent(self, event):
+    #     """
+    #     当鼠标右键弹起的时候，发送selection changed信息
+    #     :return:
+    #     """
+    #     super(CategoryTree, self).mouseReleaseEvent(event)
+    #     self._on_item_selection_changed()
 
 
 class DeleteCategoryDialog(QDialog):

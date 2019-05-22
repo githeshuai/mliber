@@ -68,6 +68,10 @@ class AssetProxyModel(QSortFilterProxyModel):
     def __init__(self, parent=None):
         super(AssetProxyModel, self).__init__(parent)
         self.regexp = QRegExp()
+        self.setDynamicSortFilter(True)
+        self.setFilterKeyColumn(0)
+        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.regexp.setCaseSensitivity(Qt.CaseInsensitive)
         self.regexp.setPatternSyntax(QRegExp.RegExp)
 

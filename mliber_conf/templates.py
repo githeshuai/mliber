@@ -9,7 +9,7 @@ ELEMENT_DIR = "{asset_dir}/{element_type}"
 ELEMENT_PATH = "{asset_dir}/{element_type}/{asset_name}{ext}"
 
 # element sequence path
-ELEMENT_SEQUENCE_PATH = "{asset_dir}/{element_type}/{asset_name}.####.{ext}"
+ELEMENT_SEQUENCE_PATH = "{asset_dir}/{element_type}/{asset_name}.####{ext}"
 
 
 # 贴图路径，例如maya资产，导出的时候需要导出贴图

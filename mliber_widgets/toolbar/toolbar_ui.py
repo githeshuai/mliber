@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame
+from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame, QSpacerItem, QSizePolicy
 from Qt.QtCore import QSize, Qt
 import mliber_resource
 from mliber_qt_components.indicator_button import IndicatorButton
@@ -8,17 +8,20 @@ from mliber_qt_components.indicator_button import IndicatorButton
 class ToolbarUI(QFrame):
     def __init__(self, parent=None):
         super(ToolbarUI, self).__init__(parent)
-        self.setFixedHeight(50)
+        self.setFixedHeight(45)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         # logo button
         logo_button = QToolButton(self)
         # logo_button.setMinimumHeight(40)
-        logo_button.setIconSize(QSize(40, 40))
-        logo_button.setStyleSheet("font: 20px; border: 0x; background: transparent; padding: 0px;")
+        logo_button.setIconSize(QSize(27, 27))
+        logo_button.setStyleSheet("font: bold; font-size: 13px; border: 0x; background: transparent; "
+                                  "padding: 0px; color: #fff;")
         logo_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         logo_button.setIcon(mliber_resource.icon("logo.png"))
-        logo_button.setText("mliber")
+        logo_button.setText("M-Liber")
+        # spacer item
+        space_item = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # login
         self.login_button = IndicatorButton("Login", self)
         # settings
@@ -45,6 +48,7 @@ class ToolbarUI(QFrame):
         button_layout.addWidget(self.close_btn)
         # add to main layout
         main_layout.addWidget(logo_button)
+        main_layout.addItem(space_item)
         main_layout.addWidget(self.login_button)
         main_layout.addWidget(self.settings_button)
         main_layout.addStretch()
