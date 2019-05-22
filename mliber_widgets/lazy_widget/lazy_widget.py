@@ -1,104 +1,18 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QButtonGroup, QCheckBox, \
-    QPushButton, QLabel, QLineEdit, QStackedWidget, QAbstractButton, QTextEdit, QScrollArea, QProgressBar
-from Qt.QtCore import Qt, Signal
+from Qt.QtWidgets import QAbstractButton
+from Qt.QtCore import Signal
 import mliber_global
+from lazy_widget_ui import LazyWidgetUI
 from mliber_libs.os_libs.path import Path
-from mliber_qt_components.thumbnail_widget import ThumbnailWidget
-from mliber_qt_components.drag_file_widget import DragFileWidget
 from mliber_qt_components.messagebox import MessageBox
 from mliber_api import asset
 
 
-class LazyWidget(QScrollArea):
+class LazyWidget(LazyWidgetUI):
     create_signal = Signal(list)
 
     def __init__(self, parent=None):
         super(LazyWidget, self).__init__(parent)
-        self._current_files = []  # 当前正要上传的文件
-        widget = QWidget(self)
-        self.setWidget(widget)
-        self.setWidgetResizable(True)
-        self.setFocusPolicy(Qt.NoFocus)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        main_layout = QVBoxLayout(widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        # drag file widget
-        self.files_widget = DragFileWidget(self)
-        # overwrite
-        self.overwrite_check = QCheckBox("overwrite", self)
-        self.overwrite_check.setChecked(True)
-        # tag layout
-        tag_layout = QHBoxLayout()
-        tag_layout.setContentsMargins(0, 0, 0, 0)
-        tag_label = QLabel("Tag", self)
-        tag_label.setMaximumWidth(35)
-        self.tag_le = QLineEdit(self)
-        tag_layout.addWidget(tag_label)
-        tag_layout.addWidget(self.tag_le)
-        # thumbnail check
-        thumbnail_layout = QHBoxLayout()
-        self.thumbnail_btn_grp = QButtonGroup()
-        self.gen_thumbnail_from_file_check = QCheckBox(u"从文件中生成缩略图", self)
-        self.gen_thumbnail_from_file_check.setChecked(True)
-        self.upload_thumbnail_check = QCheckBox(u"上传缩略图", self)
-        self.thumbnail_btn_grp.addButton(self.gen_thumbnail_from_file_check)
-        self.thumbnail_btn_grp.addButton(self.upload_thumbnail_check)
-        thumbnail_layout.addWidget(self.gen_thumbnail_from_file_check)
-        thumbnail_layout.addWidget(self.upload_thumbnail_check)
-        # thumbnail widget
-        self.thumbnail_widget = ThumbnailWidget(self)
-        self.thumbnail_widget.setHidden(True)
-        # stacked widget
-        self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.setMaximumHeight(30)
-        # asset name widget
-        self.asset_name_widget = QWidget(self)
-        asset_name_layout = QHBoxLayout(self.asset_name_widget)
-        asset_name_layout.setContentsMargins(0, 0, 0, 0)
-        asset_name_label = QLabel("name", self)
-        asset_name_label.setMaximumWidth(35)
-        self.asset_name_le = QLineEdit(self)
-        asset_name_layout.addWidget(asset_name_label)
-        asset_name_layout.addWidget(self.asset_name_le)
-        # add to stacked
-        self.stacked_widget.addWidget(self.asset_name_widget)
-        self.batch_description_label = QLabel(self)
-        self.batch_description_label.setWordWrap(True)
-        self.batch_description_label.setText(u"<font color=#ff8c00>批量创建的时候，文件列表中每个文件都会视为一个单独的资产，"
-                                             u"且资产名字为文件名。</font>")
-        self.stacked_widget.addWidget(self.batch_description_label)
-        self.stacked_widget.setMinimumHeight(36)
-        # single or batch
-        self.batch_check = QCheckBox(u"批量创建", self)
-        # description layout
-        description_layout = QHBoxLayout()
-        description_layout.setContentsMargins(0, 0, 0, 0)
-        description_label = QLabel(u"descri\nption", self)
-        description_label.setWordWrap(True)
-        description_label.setMaximumWidth(33)
-        description_label.setAlignment(Qt.AlignTop)
-        self.description_te = QTextEdit(self)
-        self.description_te.setMaximumHeight(150)
-        description_layout.addWidget(description_label)
-        description_layout.addWidget(self.description_te)
-        # progress bar
-        self.progress_bar = QProgressBar(self)
-        self.progress_bar.setHidden(True)
-        self.progress_bar.setTextVisible(False)
-        # create button
-        self.create_button = QPushButton("Create", self)
-        # add to main layout
-        main_layout.addWidget(self.files_widget)
-        main_layout.addWidget(self.overwrite_check)
-        main_layout.addLayout(tag_layout)
-        main_layout.addLayout(thumbnail_layout)
-        main_layout.addWidget(self.thumbnail_widget)
-        main_layout.addWidget(self.batch_check)
-        main_layout.addWidget(self.stacked_widget)
-        main_layout.addLayout(description_layout)
-        main_layout.addWidget(self.progress_bar)
-        main_layout.addWidget(self.create_button)
         # set signals
         self.set_signals()
 
@@ -218,6 +132,9 @@ class LazyWidget(QScrollArea):
         create按钮按下的时候，执行的操作
         :return:
         """
+        if not self.user.asset_permission:
+            MessageBox.warning(self, "Warning", u"你没有权限创建资产")
+            return False
         if not all((self.library, self.category)):
             MessageBox.warning(self, "Warning", u"请先选择类型")
             return False
@@ -239,6 +156,37 @@ class LazyWidget(QScrollArea):
         created_by = self.user.id
         if self.batch_check.isChecked():
             self._batch_create(database, library_id, category_id, created_by)
+        else:
+            self._single_create(database, library_id, category_id, created_by)
+
+    def _single_create(self, database, library_id, category_id, created_by):
+        """
+        :param database: <str>
+        :param library_id: <int>
+        :param category_id: <int>
+        :param created_by: <int>
+        :return:
+        """
+        files = self.files
+        self._current_files = files  # 获取缩略图的时候会用到
+        if not self.asset_name:
+            MessageBox.warning(self, "Warning", u"请填入资产名字")
+            return
+        ext_list = [Path(f).ext() for f in files]
+        ext_list = list(set(ext_list))
+        if len(ext_list) > 1:
+            MessageBox.warning(self, "Warning", u"只支持相同的格式")
+            return
+        self.progress_bar.setHidden(False)
+        self.progress_bar.setRange(0, 10)
+        self.progress_bar.setValue(4)
+        asset_instance = asset.Asset(database, library_id, category_id, self.asset_name, files,
+                                     self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
+        asset_info = asset_instance.create()
+        if asset_info:
+            self.create_signal.emit([asset_info])
+        self.progress_bar.setValue(10)
+        self.progress_bar.setHidden(True)
 
     def _batch_create(self, database, library_id, category_id, created_by):
         """
@@ -251,12 +199,14 @@ class LazyWidget(QScrollArea):
         self.progress_bar.setHidden(False)
         self.progress_bar.setRange(0, len(self.files))
         for index, source_file in self.files:
-            self._current_files = [source_file]
-            asset_info = asset.create(database, library_id, category_id, self.asset_name, [source_file],
-                                      self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
+            self._current_files = [source_file]  # 获取缩略图的时候会用到
+            asset_instance = asset.Asset(database, library_id, category_id, self.asset_name, [source_file],
+                                         self.overwrite, self.description, self.tags, self.thumbnail_files, created_by)
+            asset_info = asset_instance.create()
             if asset_info:
                 self.create_signal.emit([asset_info])
             self.progress_bar.setValue(index + 1)
+        self.progress_bar.setHidden(True)
 
 
 if __name__ == "__main__":

@@ -200,6 +200,8 @@ class AssetListView(QListView):
         :param asset: Asset instance
         :return:
         """
+        if asset.id in [a.id for a in self.assets]:
+            return
         item = AssetListItem(asset)
         icon_path = self._get_asset_icon_path(asset)
         item.icon_path = icon_path
@@ -278,8 +280,9 @@ class AssetListView(QListView):
         :param index: <QModelIndex>
         :return:
         """
-        model = self.model().sourceModel()
-        item = model.model_data[index.row()]
+        src_index = self.model().mapToSource(index)
+        source_model = self.model().sourceModel()
+        item = source_model.model_data[src_index.row()]
         return item
         
     def _add_tag(self, tag_names):
