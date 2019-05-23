@@ -74,6 +74,7 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
+        self.asset_widget.refresh_btn.clicked.connect(self._refresh_library)
 
     def _change_password(self):
         """
@@ -244,6 +245,7 @@ class MainWidget(MainWidgetUI):
         if not self.library:
             self.category_widget.clear()
             self.tag_widget.clear()
+            self.asset_widget.clear()
             return
         # 列出所有的category
         self.category_widget.refresh_ui()
@@ -345,9 +347,12 @@ class MainWidget(MainWidgetUI):
         显示从外部导入的widget
         :return:
         """
-        lazy_widget = LazyWidget(self)
-        lazy_widget.create_signal.connect(self._create_done)
-        self._add_right_side_widget(lazy_widget)
+        if self.library_type and self.category:
+            lazy_widget = LazyWidget(self)
+            lazy_widget.create_signal.connect(self._create_done)
+            self._add_right_side_widget(lazy_widget)
+        else:
+            MessageBox.warning(self, "Warning", u"请选择类型.")
 
     def _create_done(self, assets):
         """

@@ -4,7 +4,9 @@ from Qt.QtCore import Signal
 from asset_list_view import AssetListView
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.toolbutton import ToolButton
 import mliber_global
+import mliber_resource
 
 
 class AssetWidget(QWidget):
@@ -18,11 +20,16 @@ class AssetWidget(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         # top layout
         top_layout = QHBoxLayout()
+        top_layout.setSpacing(0)
         self.asset_btn = IndicatorButton("Asset", self)
         self.search_le = SearchLineEdit(25, 12, self)
+        self.refresh_btn = ToolButton(self)
+        self.refresh_btn.set_size(27, 27)
+        self.refresh_btn.set_icon("refresh.png")
         top_layout.addWidget(self.asset_btn)
         top_layout.addStretch()
         top_layout.addWidget(self.search_le)
+        top_layout.addWidget(self.refresh_btn)
         # asset list view
         self.asset_list_view = AssetListView(self)
         # add to main layout

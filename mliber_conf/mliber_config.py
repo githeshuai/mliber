@@ -5,7 +5,9 @@ from Qt.QtGui import QColor
 IGNORE_LIST = [".", "Thumbs.db", ".mayaSwatches", ".nk~", ".autosave"]
 
 # 配置视频格式
-VIDEO_EXT = [".mov", ".mp4", ".avi", ".gif", ".mkv"]
+VIDEO_EXT = [".mov", ".mp4", ".avi", ".gif", ".mkv", ".wmv", ".flv", ".f4v", ".f4p", ".mpeg",
+             ".mpg", ".mp2", ".mpe", ".mpv", ".m2v", ".m4v", ".3gp", ".webm", ".vob", ".ogv",
+             ".ogg", ".rm", ".amv"]
 
 # font name
 FONT_NAME = "Arial"

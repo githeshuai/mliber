@@ -321,7 +321,7 @@ class ImageSequenceWidget(QToolButton):
         sequence 图标的尺寸
         :return:
         """
-        return 25
+        return 20
 
     def sequencePixMap(self):
         """

@@ -19,7 +19,7 @@ class CategoryWidget(QWidget):
         self.category_btn = IndicatorButton("Category", self)
         # refresh button
         self.refresh_btn = ToolButton(self)
-        self.refresh_btn.set_size()
+        self.refresh_btn.set_size(25, 25)
         self.refresh_btn.set_icon("refresh.png")
         # search le
         self.search_le = SearchLineEdit(22, 12, self)

@@ -132,12 +132,6 @@ class LazyWidget(LazyWidgetUI):
         create按钮按下的时候，执行的操作
         :return:
         """
-        if not self.user.asset_permission:
-            MessageBox.warning(self, "Warning", u"你没有权限创建资产")
-            return False
-        if not all((self.library, self.category)):
-            MessageBox.warning(self, "Warning", u"请先选择类型")
-            return False
         if not self.files:
             MessageBox.warning(self, "Warning", u"没有文件可以上传")
             return False
