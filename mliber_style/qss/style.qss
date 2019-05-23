@@ -107,11 +107,11 @@ QMessageBox QPushButton, QDialog QPushButton, QWidget QPushButton {
 */
 
 QScrollBar:vertical {
-	width: 6*DPIpx;
+	width: 3*DPIpx;
 }
 
 QScrollBar:horizontal {
-	height: 6*DPIpx;
+	height: 3*DPIpx;
 }
 
 QScrollBar:vertical,

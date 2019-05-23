@@ -64,7 +64,7 @@ class AssetListView(QListView):
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
         self.setMouseTracking(True)
-        self.setSpacing(4)
+        self.setSpacing(8)
         self.setSelectionRectVisible(True)
         self.setFocusPolicy(Qt.NoFocus)
         self.setViewMode(QListView.IconMode)
