@@ -14,6 +14,7 @@ class CreateTagWidget(QDialog):
 
     def __init__(self, parent=None):
         super(CreateTagWidget, self).__init__(parent)
+        self.setWindowTitle("Add Tag")
         self.setFixedWidth(400)
         self.setMinimumHeight(350)
         # setup ui

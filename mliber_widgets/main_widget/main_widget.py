@@ -6,6 +6,7 @@ from mliber_widgets.user_manage import UserManage
 from mliber_widgets.library_manage import LibraryManage
 from mliber_widgets.apply_widget import ApplyWidget
 from mliber_widgets.lazy_widget import LazyWidget
+from mliber_widgets.password_widget import PasswordWidget
 import mliber_utils
 import mliber_global
 import mliber_resource
@@ -45,6 +46,10 @@ class MainWidget(MainWidgetUI):
             return self.library.type
 
     @property
+    def user(self):
+        return mliber_global.user()
+
+    @property
     def category(self):
         categories = mliber_global.categories()
         if categories and len(categories):
@@ -55,9 +60,11 @@ class MainWidget(MainWidgetUI):
         信号连接
         :return:
         """
-        self.tool_bar.login_button.clicked.connect(self.show_login)
-        self.tool_bar.user_manage_action_triggered.connect(self.show_user_manager)
-        self.tool_bar.library_manage_action_triggered.connect(self.show_library_manager)
+        self.tool_bar.login_button.clicked.connect(self._show_login)
+        self.tool_bar.user_manage_action_triggered.connect(self._show_user_manager)
+        self.tool_bar.library_manage_action_triggered.connect(self._show_library_manager)
+        self.tool_bar.change_password_action_triggered.connect(self._change_password)
+        self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
@@ -67,6 +74,13 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
+
+    def _change_password(self):
+        """
+        :return:
+        """
+        pw = PasswordWidget(self)
+        pw.exec_()
         
     def _minimum(self):
         """
@@ -88,7 +102,8 @@ class MainWidget(MainWidgetUI):
             self.showMaximized()
         self._is_maximum = not self._is_maximum
 
-    def _get_children_categories(self, categories):
+    @staticmethod
+    def _get_children_categories(categories):
         """
         获取子类型，需要递归
         :param categories: <list> list of Category
@@ -107,28 +122,31 @@ class MainWidget(MainWidgetUI):
         all_categories.extend(categories)
         return all_categories
 
-    def show_login(self):
+    def _show_login(self):
         """
         显示login ui
         :return:
         """
         login_widget = LoginWidget(self)
-        login_widget.login_succeed.connect(self.clear)
+        login_widget.login_succeed.connect(self._on_login_succeed)
         login_widget.move_to_center()
         login_widget.exec_()
 
-    def clear(self):
+    def _on_login_succeed(self, user_name):
         """
         刷新界面，必须重新选择library
         :return:
         """
+        # user button显示当前用户的名字
+        self.tool_bar.set_user(user_name)
+        # 清空所有
         self.category_widget.clear()
         self.tag_widget.clear()
         self.asset_widget.clear()
         # set library
         mliber_global.app().set_value(mliber_library=None)
 
-    def show_user_manager(self):
+    def _show_user_manager(self):
         """
         显示user manager
         :return:
@@ -136,17 +154,18 @@ class MainWidget(MainWidgetUI):
         user_manage_ui = UserManage(self)
         user_manage_ui.exec_()
 
-    def show_library_manager(self):
+    def _show_library_manager(self):
         """
         显示library manager
         :return:
         """
         library_manage_ui = LibraryManage(self)
         library_manage_ui.refresh_ui()
-        library_manage_ui.library_double_clicked.connect(self.refresh_library)
+        library_manage_ui.library_double_clicked.connect(self._refresh_library)
         library_manage_ui.exec_()
-
-    def assets_of_library(self, library_id):
+    
+    @staticmethod
+    def _assets_of_library(library_id):
         """
         获取该library下所有的资产
         :param library_id:
@@ -156,8 +175,9 @@ class MainWidget(MainWidgetUI):
         with mliber_global.db() as db:
             assets = db.find("Asset", filters)
             return assets
-
-    def tags_of_assets(self, assets):
+    
+    @staticmethod
+    def _tags_of_assets(assets):
         """
         获取该library下所有资产的tag
         :param assets: <list> Asset instance list
@@ -214,7 +234,7 @@ class MainWidget(MainWidgetUI):
                 library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
         self.asset_widget.set_assets(library_assets)
 
-    def refresh_library(self):
+    def _refresh_library(self):
         """
         刷新library, 切换library的时候，
         获取所有的category和所有的assets，列出当前类别下所有的tag
@@ -228,10 +248,10 @@ class MainWidget(MainWidgetUI):
         # 列出所有的category
         self.category_widget.refresh_ui()
         # 求出所有资产
-        assets = self.assets_of_library(self.library.id)
+        assets = self._assets_of_library(self.library.id)
         self.asset_widget.set_assets(assets)
         # 列出所有的tag
-        tags = self.tags_of_assets(assets)
+        tags = self._tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
 
     def _add_tag(self, tag_names):
@@ -241,6 +261,24 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         self.tag_widget.tag_list_view.append_tag(tag_names)
+        
+    def _show_my_favorites(self):
+        """
+        显示我的收藏
+        :return: 
+        """
+        filters = [["library_id", "=", self.library.id]]
+        with mliber_global.db() as db:
+            library_assets = db.find("Asset", filters)
+            assets = list()
+            for asset in library_assets:
+                users = asset.master
+                for user in users:
+                    if user.id == self.user.id:
+                        assets.append(asset)
+            self.asset_widget.set_assets(assets)
+        self.tag_widget.deselect_all()
+        self.category_widget.category_tree.clearSelection()
 
     def auto_login(self):
         """
@@ -256,11 +294,11 @@ class MainWidget(MainWidgetUI):
                 user_name = mliber_utils.read_history("user")
                 password = mliber_utils.read_history("password")
                 db = Database(database)
-                db.create_admin()
                 app.set_value(mliber_database=database)
                 user = db.find_one("User", [["name", "=", user_name], ["status", "=", "Active"]])
                 if user and user.password == password:
                     app.set_value(mliber_user=user)
+                    self.tool_bar.set_user(user_name)
                 return True
             except RuntimeError as e:
                 MessageBox.critical(self, "Login Failed", str(e))
@@ -283,7 +321,7 @@ class MainWidget(MainWidgetUI):
                 app.set_value(mliber_library=library)
             else:
                 app.set_value(mliber_library=None)
-            self.refresh_library()
+            self._refresh_library()
 
     def _show_create_widget(self):
         """

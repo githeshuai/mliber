@@ -1,21 +1,27 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLineEdit, QHBoxLayout, QToolButton, QCheckBox, \
-    QPushButton, QSizePolicy
-from Qt.QtCore import Qt
+    QPushButton, QSizePolicy, QDialog, QLabel
+from Qt.QtCore import Qt, QSize
 import mliber_resource
 from mliber_qt_components.icon_line_edit import IconLineEdit
-from mliber_qt_components.frameless_widget import FramelessWidget
 
 
-class LoginWidgetUI(FramelessWidget):
+class LoginWidgetUI(QDialog):
     def __init__(self, parent=None):
         super(LoginWidgetUI, self).__init__(parent)
-        self.resize(320, 290)
-        central_widget = QWidget()
+        self.setWindowTitle("Login")
+        self.resize(350, 300)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.set_central_widget(central_widget)
-        self.set_window_flag("dialog")
-        main_layout = QVBoxLayout(central_widget)
+        top_layout = QVBoxLayout(self)
+        top_layout.setContentsMargins(0, 0, 0, 0)
+        top_layout.setSpacing(15)
+        self.title = QPushButton("    M-Liber", self)
+        self.title.setMinimumHeight(50)
+        self.title.setIcon(mliber_resource.icon("logo.png"))
+        self.title.setIconSize(QSize(20, 20))
+        self.title.setStyleSheet("background: #2d2f37; padding: 0px; color: #FFF; font: bold; font-size: 16px;")
+        # main layout
+        main_layout = QVBoxLayout()
         main_layout.setContentsMargins(20, 10, 20, 10)
         self.database_combo = QComboBox(self)
         self.database_combo.setItemIcon(0, mliber_resource.icon("database.png"))
@@ -54,3 +60,6 @@ class LoginWidgetUI(FramelessWidget):
         main_layout.addWidget(self.login_btn)
         main_layout.addLayout(info_layout)
         main_layout.setSpacing(20)
+        # add to top
+        top_layout.addWidget(self.title)
+        top_layout.addLayout(main_layout)

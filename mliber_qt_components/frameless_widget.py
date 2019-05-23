@@ -161,7 +161,6 @@ class FramelessWidget(QDialog):
         """
         self.image = QImage()
         self.image.load(image_path)
-
         self.setAutoFillBackground(True)
         palette = QPalette()
         palette.setBrush(QPalette.Background,
@@ -196,5 +195,5 @@ if __name__ == "__main__":
     from mliber_libs.qt_libs import render_ui
     with render_ui.render_ui():
         f = FramelessWidget()
-        f.set_background_color(r"E:\mliber\mliber_icons\login_background.png")
+        f.set_background_color(r"E:\mliber\mliber_icons\login.png")
         f.show()

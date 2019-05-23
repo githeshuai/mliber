@@ -10,7 +10,7 @@ from mliber_widgets.asset_widget import AssetWidget
 class MainWidgetUI(QDialog):
     def __init__(self, parent=None):
         super(MainWidgetUI, self).__init__(parent)
-        self.resize(1000, 800)
+        self.resize(1000, 900)
         self.setWindowFlags(Qt.Window)
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignTop)

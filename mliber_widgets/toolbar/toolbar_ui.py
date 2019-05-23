@@ -3,6 +3,7 @@ from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame,
 from Qt.QtCore import QSize, Qt
 import mliber_resource
 from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.toolbutton import ToolButton
 
 
 class ToolbarUI(QFrame):
@@ -21,11 +22,16 @@ class ToolbarUI(QFrame):
         logo_button.setIcon(mliber_resource.icon("logo.png"))
         logo_button.setText("M-Liber")
         # spacer item
-        space_item = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
+        space_item_1 = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # login
         self.login_button = IndicatorButton("Login", self)
         # settings
         self.settings_button = IndicatorButton("Settings", self)
+        # user
+        self.user_button = ToolButton(self)
+        self.user_button.set_icon("user_fill.png")
+        self.user_button.setText("User")
+        space_item_2 = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # button layout
         button_layout = QHBoxLayout()
         self.minimum_btn = QToolButton(self)
@@ -48,10 +54,12 @@ class ToolbarUI(QFrame):
         button_layout.addWidget(self.close_btn)
         # add to main layout
         main_layout.addWidget(logo_button)
-        main_layout.addItem(space_item)
+        main_layout.addItem(space_item_1)
         main_layout.addWidget(self.login_button)
         main_layout.addWidget(self.settings_button)
         main_layout.addStretch()
+        main_layout.addWidget(self.user_button)
+        main_layout.addItem(space_item_2)
         main_layout.addLayout(button_layout)
 
 

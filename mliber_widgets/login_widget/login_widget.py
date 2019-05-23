@@ -11,14 +11,14 @@ from mliber_api.database_api import Database
 
 
 class LoginWidget(LoginWidgetUI):
-    login_succeed = Signal()
+    login_succeed = Signal(basestring)
 
     def __init__(self, parent=None):
         super(LoginWidget, self).__init__(parent)
         # set signals
         self._set_signals()
-        self.init_database()
-        self.init_ui()
+        self._init_database()
+        self._init_ui()
 
     def _set_signals(self):
         """
@@ -27,7 +27,7 @@ class LoginWidget(LoginWidgetUI):
         """
         self.login_btn.clicked.connect(self.login)
 
-    def init_ui(self):
+    def _init_ui(self):
         """
         初始化ui
         :return:
@@ -43,7 +43,7 @@ class LoginWidget(LoginWidgetUI):
         if auto_login:
             self.auto_login_check.setChecked(True)
 
-    def init_database(self):
+    def _init_database(self):
         """
         :return:
         """
@@ -146,13 +146,13 @@ class LoginWidget(LoginWidgetUI):
             logging.critical(str(e))
             self.connect_failed()
             return
-        self.login_succeed.emit()
         app = mliber_global.app()
         app.set_value(mliber_database=self.database)
         user = db.find_one("User", [["name", "=", self.user]])
         if user and user.password == self.password and user.status == "Active":
             app.set_value(mliber_user=user)
             self.write_history()
+            self.login_succeed.emit(self.user)
         else:
             self.login_failed()
 

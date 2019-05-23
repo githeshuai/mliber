@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from Qt.QtWidgets import QToolButton
-from Qt.QtCore import QSize
+from Qt.QtCore import QSize, Qt
 
 from icon import Icon
 from mliber_conf import mliber_config
@@ -12,8 +12,9 @@ class ToolButton(QToolButton):
     def __init__(self, parent=None):
         super(ToolButton, self).__init__(parent)
         self.setMouseTracking(True)
-        self.setStyleSheet("QToolButton{border: 0px; padding: 0px; background:transparent} "
-                           "QToolButton::hover{background:transparent}")
+        self.setStyleSheet("QToolButton{border: 0px; padding: 0px; background:transparent; color: #FFF; font: bold;}"
+                           "QToolButton::hover{background:transparent; color: rgb(57, 255, 255);}")
+        self.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
     def set_size(self, width=30, height=30):
         """
