@@ -174,6 +174,7 @@ class MainWidget(MainWidgetUI):
         library_manage_ui = LibraryManage(self)
         library_manage_ui.refresh_ui()
         library_manage_ui.library_double_clicked.connect(self._refresh_library)
+        library_manage_ui.deleted.connect(self._refresh_library)
         library_manage_ui.exec_()
     
     @staticmethod
@@ -215,7 +216,7 @@ class MainWidget(MainWidgetUI):
         category_ids = [category.id for category in all_categories]
         category_ids = list(set(category_ids))
         with mliber_global.db() as db:
-            assets = db.find("Asset", [["category_id", "in", category_ids]])
+            assets = db.find("Asset", [["category_id", "in", category_ids], ["status", "=", "Active"]])
         self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         # status bar info
@@ -242,10 +243,12 @@ class MainWidget(MainWidgetUI):
                     asset_id = asset.id
                     temp_dict[asset_id] = asset
                 assets = temp_dict.values()
-                library_assets = [asset for asset in assets if asset.library_id == self.library.id]
+                library_assets = [asset for asset in assets
+                                  if asset.library_id == self.library.id and
+                                  asset.status == "Active"]
         else:
             with mliber_global.db() as db:
-                library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
+                library_assets = db.find("Asset", [["library_id", "=", self.library.id], ["status", "=", "Active"]])
         self.asset_widget.set_assets(library_assets)
         # status bar show info
         self.status_bar.info("%s assets found." % len(library_assets))

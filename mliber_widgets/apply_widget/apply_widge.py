@@ -27,7 +27,7 @@ class ApplyWidget(ApplyWidgetUI):
         created_at = asset.created_at
         tag_names = [tag.name for tag in asset.tags]
         description = asset.description
-        elements = asset.elements
+        elements = [element for element in asset.elements if element.status == "Active"]
         self._set_id(asset_id)
         self._set_name(name)
         self._set_created_by(created_by)

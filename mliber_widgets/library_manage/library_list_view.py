@@ -96,9 +96,9 @@ class LibraryListView(QListView):
         信号链接
         :return:
         """
-        self.doubleClicked.connect(self.set_global_library)
+        self.doubleClicked.connect(self._set_global_library)
 
-    def set_global_library(self):
+    def _set_global_library(self):
         """
         set global library
         :return:
@@ -192,7 +192,7 @@ class LibraryListView(QListView):
             index = source_model.index(row, 0)
             source_model.setData(index, size, Qt.UserRole)
 
-    def _selected_rows(self):
+    def selected_rows(self):
         """
         获取选择的行
         :return:
@@ -207,7 +207,7 @@ class LibraryListView(QListView):
         获取选择的library
         :return:
         """
-        selected_rows = self._selected_rows()
+        selected_rows = self.selected_rows()
         if not selected_rows:
             return
         row = selected_rows[0]

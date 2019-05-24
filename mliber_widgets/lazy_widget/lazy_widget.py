@@ -193,7 +193,7 @@ class LazyWidget(LazyWidgetUI):
         """
         self.progress_bar.setHidden(False)
         self.progress_bar.setRange(0, len(self.files))
-        for index, source_file in self.files:
+        for index, source_file in enumerate(self.files):
             self._current_files = [source_file]  # 获取缩略图的时候会用到
             asset_uploader = AssetUploader(database, library_id, category_id, self.asset_name, [source_file],
                                            thumbnail_files=self.thumbnail_files, tag_names=self.tags,

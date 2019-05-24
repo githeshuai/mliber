@@ -8,12 +8,14 @@ from create_library_dialog import CreateLibraryDialog
 import mliber_resource
 import mliber_global
 from mliber_conf.library_type import LIBRARY_TYPE
-from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
+from mliber_qt_components.delete_widget import DeleteWidget
+from mliber_libs.os_libs.path import Path
 
 
 class LibraryManage(LibraryManageUI):
     library_double_clicked = Signal()
+    deleted = Signal()
 
     def __init__(self, parent=None):
         super(LibraryManage, self).__init__(parent)
@@ -21,7 +23,7 @@ class LibraryManage(LibraryManageUI):
         self._set_signals()
         # 右键菜单
         self.library_list_view.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.library_list_view.customContextMenuRequested.connect(self.show_context_menu)
+        self.library_list_view.customContextMenuRequested.connect(self._show_context_menu)
 
     def refresh_ui(self):
         """
@@ -41,7 +43,7 @@ class LibraryManage(LibraryManageUI):
         信号链接
         :return:
         """
-        self.search_btngrp.buttonClicked.connect(self.switch_search_type)
+        self.search_btngrp.buttonClicked.connect(self._switch_search_type)
         self.search_le.return_pressed.connect(self._filter)
         self.type_combo.currentIndexChanged.connect(self._filter)
         self.menu_bar.clicked.connect(self.add_menu)
@@ -67,7 +69,7 @@ class LibraryManage(LibraryManageUI):
         """
         menu = QMenu(self)
         if self.user.library_permission:
-            add_action = QAction("Add", self, triggered=self.show_create_library_dialog)
+            add_action = QAction("Add", self, triggered=self._show_create_library_dialog)
             menu.addAction(add_action)
         exit_action = QAction("exit", self, triggered=self.close)
         menu.addAction(exit_action)
@@ -75,26 +77,28 @@ class LibraryManage(LibraryManageUI):
         point = self.menu_bar.mapToGlobal(point)
         menu.exec_(point)
 
-    def show_context_menu(self):
+    def _show_context_menu(self):
         """
         显示右键菜单
         :return:
         """
-        selected_library = self.library_list_view.selected_item()
+        selected_item = self.library_list_view.selected_item()
         menu = QMenu(self)
-        if selected_library:
+        if selected_item:
             action_text = "Edit" if self.user.library_permission else "Detail"
-            edit_action = QAction(action_text, menu, triggered=self.show_edit_library_dialog)
+            edit_action = QAction(action_text, menu, triggered=self._show_edit_library_dialog)
             menu.addAction(edit_action)
+            menu.addSeparator()
             if self.user.library_permission:
-                delete_action = QAction("Delete", menu, triggered=self.delete_library)
+                delete_action = QAction(mliber_resource.icon("delete.png"), "Delete", menu,
+                                        triggered=self._show_delete_widget)
                 menu.addAction(delete_action)
         else:
             refresh_action = QAction("Refresh", menu, triggered=self.refresh_ui)
             menu.addAction(refresh_action)
         menu.exec_(QCursor.pos())
 
-    def switch_search_type(self, button):
+    def _switch_search_type(self, button):
         """
         切换搜索类型
         :return:
@@ -134,16 +138,16 @@ class LibraryManage(LibraryManageUI):
         self.library_list_view.model().set_filter(self.filter_value)
         self.library_list_view.show_delegate()
 
-    def show_create_library_dialog(self):
+    def _show_create_library_dialog(self):
         """
         添加library
         :return:
         """
         self.library_widget = CreateLibraryDialog(mode="create", parent=self)
-        self.library_widget.create.connect(self.add_library)
+        self.library_widget.create.connect(self._add_library)
         self.library_widget.exec_()
 
-    def show_edit_library_dialog(self):
+    def _show_edit_library_dialog(self):
         """
         edit current selected library
         :return:
@@ -162,7 +166,7 @@ class LibraryManage(LibraryManageUI):
         self.library_widget.set_description(selected_item.description)
         self.library_widget.exec_()
 
-    def add_library(self, args):
+    def _add_library(self, args):
         """
         add library
         :param args:
@@ -182,22 +186,38 @@ class LibraryManage(LibraryManageUI):
             self.refresh_ui()
             self.library_widget.accept()
 
-    def delete_library(self):
+    def _show_delete_widget(self):
+        """
+        显示删除窗口
+        :return:
+        """
+        delete_widget = DeleteWidget(self)
+        delete_widget.accept_signal.connect(self._delete_library)
+        delete_widget.exec_()
+
+    def _delete_library(self, delete_source):
         """
         delete current library
         :return:
         """
         # 输入密码验证
-        password, ok = QInputDialog.getText(self, "Password", "Input Password", echo=QLineEdit.Password)
-        if password and ok:
-            if password != self.user.password:
-                MessageBox.critical(self, "Wrong Password", u"密码错误")
-                return
-        selected_library = self.library_list_view.selected_library()
-        db = Database(mliber_global.app().value("mliber_database"))
-        db.update("Library", selected_library.id, {"status": "Disable",
-                                                   "updated_at": datetime.now(),
-                                                   "updated_by": self.user.id})
+        source_model = self.library_list_view.model().sourceModel()
+        selected_rows = self.library_list_view.selected_rows()
+        row = selected_rows[0]
+        selected_library = source_model.model_data[row].library
+        with mliber_global.db() as db:
+            db.update("Library", selected_library.id, {"status": "Disable",
+                                                       "updated_at": datetime.now(),
+                                                       "updated_by": self.user.id})
         if mliber_global.library() == selected_library:
             mliber_global.app().set_value(mliber_library=None)
-        self.refresh_ui()
+            self.deleted.emit()
+        # remove from list view
+        source_model.removeRows(row, 1)
+        # delete source
+        if delete_source:
+            try:
+                Path(selected_library.root_path()).remove()
+            except WindowsError as e:
+                print str(e)
+                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")

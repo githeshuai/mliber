@@ -7,6 +7,7 @@ import mliber_global
 import mliber_resource
 from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.os_libs.path import Path
+from mliber_qt_components.delete_widget import DeleteWidget
 
 
 class CategoryTreeItem(QTreeWidgetItem):
@@ -49,7 +50,7 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.show_context_menu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
         self.itemPressed.connect(self._on_item_selection_changed)
 
     @property
@@ -92,7 +93,7 @@ class CategoryTree(QTreeWidget):
                 self.items_mapping[child.name] = child_item
                 self.get_children(child, child_item)
 
-    def show_context_menu(self):
+    def _show_context_menu(self):
         """
         显示右键菜单
         :return:
@@ -103,8 +104,9 @@ class CategoryTree(QTreeWidget):
         user = mliber_global.user()
         if user.category_permission:
             add_category_action = QAction(u"添加子类型", self, triggered=self.add_category)
-            delete_action = QAction(u"删除", self, triggered=self.delete_category)
+            delete_action = QAction(mliber_resource.icon("delete.png"), u"删除", self, triggered=self.delete_category)
             menu.addAction(add_category_action)
+            menu.addSeparator()
             menu.addAction(delete_action)
         menu.exec_(QCursor.pos())
 
@@ -274,7 +276,7 @@ class CategoryTree(QTreeWidget):
         selected_items = self.selected_items()
         if not selected_items:
             return
-        dialog = DeleteCategoryDialog(self)
+        dialog = DeleteWidget(self)
         dialog.accept_signal.connect(self._delete_category)
         dialog.exec_()
 
@@ -323,112 +325,6 @@ class CategoryTree(QTreeWidget):
     #     """
     #     super(CategoryTree, self).mouseReleaseEvent(event)
     #     self._on_item_selection_changed()
-
-
-class DeleteCategoryDialog(QDialog):
-    accept_signal = Signal(bool)
-
-    def __init__(self, parent=None):
-        super(DeleteCategoryDialog, self).__init__(parent)
-        self.resize(300, 180)
-        main_layout = QVBoxLayout(self)
-        main_layout.setAlignment(Qt.AlignTop)
-        main_layout.setSpacing(20)
-        self.setWindowTitle("Delete Category")
-        self.text_label = QLabel(self)
-        self.text_label.setFixedHeight(20)
-        self.text_label.setText(u"请输入密码")
-        self.password_le = QLineEdit(self)
-        self.password_le.setEchoMode(QLineEdit.Password)
-        # layout include checkbox and info label
-        layout = QHBoxLayout()
-        layout.setAlignment(Qt.AlignLeft)
-        self.check = QCheckBox(u"同时删除源文件", self)
-        self.info_label = QToolButton(self)
-        self.info_label.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.info_label.setStyleSheet("border: 0px; padding: 0px; background: transparent;"
-                                      "color: #F00; font: bold; font-size: 12px; height: 22px; font-family: Arial")
-        self.info_label.setHidden(True)
-        layout.addWidget(self.check)
-        layout.addStretch()
-        layout.addWidget(self.info_label)
-        # button layout
-        button_layout = QHBoxLayout()
-        self.ok_btn = QPushButton("Ok", self)
-        self.close_btn = QPushButton("Cancel", self)
-        button_layout.addStretch()
-        button_layout.addWidget(self.ok_btn)
-        button_layout.addWidget(self.close_btn)
-        # add to main layout
-        main_layout.addWidget(self.text_label)
-        main_layout.addWidget(self.password_le)
-        main_layout.addLayout(layout)
-        main_layout.addLayout(button_layout)
-        # set signals
-        self._set_signals()
-
-    def _set_signals(self):
-        """
-        信号连接
-        :return:
-        """
-        self.ok_btn.clicked.connect(self.on_ok_button_clicked)
-        self.close_btn.clicked.connect(self._close)
-
-    @property
-    def password(self):
-        """
-        密码
-        :return:
-        """
-        return self.password_le.text()
-
-    @property
-    def delete_source(self):
-        """
-        是否删除源文件
-        :return: <bool>
-        """
-        return self.check.isChecked()
-
-    def _login_failed(self):
-        """
-        show error information
-        Returns:
-        """
-        self.info_label.setHidden(False)
-        self.info_label.setIcon(mliber_resource.icon("error.png"))
-        self.info_label.setText(u"密码错误！")
-
-    def validate_password(self):
-        """
-        检查密码是否正确
-        :return:
-        """
-        user = mliber_global.user()
-        password = user.password
-        if self.password == password:
-            return True
-        return False
-
-    def on_ok_button_clicked(self):
-        """
-        当ok按钮按下的时候
-        :return:
-        """
-        if self.validate_password():
-            self.accept_signal.emit(self.delete_source)
-            self._close()
-        else:
-            self._login_failed()
-            
-    def _close(self):
-        """
-        
-        :return: 
-        """
-        self.close()
-        self.deleteLater()
 
 
 if __name__ == "__main__":

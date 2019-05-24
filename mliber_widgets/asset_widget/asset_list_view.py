@@ -7,12 +7,15 @@ from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
 from mliber_conf import mliber_config
 import mliber_global
+import mliber_resource
 from mliber_libs.dcc import Dcc
 from mliber_libs.os_libs.path import Path
 from mliber_api.api_utils import add_tag_of_asset
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
 from mliber_parse.element_type_parser import ElementType
+from mliber_qt_components.delete_widget import DeleteWidget
+from mliber_qt_components.messagebox import MessageBox
 
 DEFAULT_ICON_SIZE = 128
 
@@ -121,7 +124,7 @@ class AssetListView(QListView):
         :return:
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.show_context_menu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
 
     def _on_selection_changed(self):
         """
@@ -399,16 +402,22 @@ class AssetListView(QListView):
                 q_actions.append(q_action)
         return q_actions
 
-    def show_context_menu(self):
+    def _show_context_menu(self):
         """
         显示右键菜单
         :return:
         """
+        selected_assets = self.selected_assets()
+        if not selected_assets:
+            return
         menu = QMenu(self)
         user = mliber_global.user()
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
+            delete_action = QAction(mliber_resource.icon("delete.png"), "Delete", self,
+                                    triggered=self._show_delete_widget)
+            menu.addAction(delete_action)
         open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
         menu.addAction(open_action)
         menu.addSeparator()
@@ -427,6 +436,40 @@ class AssetListView(QListView):
         :return:
         """
         print self.sender().hook
+
+    def _show_delete_widget(self):
+        """
+        显示delete widget
+        """
+        delete_widget = DeleteWidget(self)
+        delete_widget.accept_signal.connect(self._delete_asset)
+        delete_widget.exec_()
+        
+    def _delete_asset(self, delete_source):
+        """
+        删除资产
+        :param delete_source: 是否删除源文件
+        :return: 
+        """
+        source_model = self.model().sourceModel()
+        with mliber_global.db() as db:
+            deleted = True
+            for index, row in enumerate(self._selected_rows()):
+                asset = source_model.model_data[row]
+                db.update("Asset", asset.id, {"status": "disable"})
+                source_model.removeRows(row - index, 1)
+                elements = asset.elements
+                for element in elements:
+                    db.update("Element", element.id, {"status": "Active"})
+                if delete_source:
+                    asset_path = asset.path.format(root=self.library.root_path())
+                    try:
+                        Path(asset_path).remove()
+                    except WindowsError as e:
+                        print str(e)
+                        deleted = False
+            if not deleted:
+                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
 
     def _open_in_explorer(self):
         """
