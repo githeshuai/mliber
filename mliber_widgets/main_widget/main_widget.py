@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QMenu, QAction, QApplication
+from Qt.QtWidgets import QMenu, QAction, QApplication, QInputDialog, QLineEdit
 from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
 from mliber_widgets.login_widget import LoginWidget
@@ -14,6 +14,7 @@ import mliber_resource
 from mliber_api.database_api import Database
 from mliber_qt_components.messagebox import MessageBox
 from mliber_widgets import create_widget
+from mliber_qt_components.delete_widget import DeleteWidget
 
 
 class MainWidget(MainWidgetUI):
@@ -66,6 +67,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.window_button.clicked.connect(self._show_window_menu)
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
+        self.tool_bar.clear_trash_action_triggered.connect(self._clear_trash)
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
@@ -301,6 +303,27 @@ class MainWidget(MainWidgetUI):
             self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         self.category_widget.category_tree.clearSelection()
+
+    def _clear_trash(self):
+        """
+        清空回收站
+        :return:
+        """
+        password, ok = QInputDialog.getText(self, "Password", "Input admin Password", QLineEdit.Password)
+        if password and ok:
+            if password == self.user.password:
+                with mliber_global.db() as db:
+                    disable_libraries = db.find("Library", [["status", "=", "Disable"]])
+                    disable_categories = db.find("Category", [["status", "=", "Disable"]])
+                    disable_tags = db.find("Tag", [["status", "=", "Disable"]])
+                    disable_assets = db.find("Asset", [["status", "=", "Disable"]])
+                    disable_elements = db.find("Element", [["status", "=", "Disable"]])
+                    entities = disable_libraries + disable_categories + disable_tags + disable_assets + disable_elements
+                    for entity in entities:
+                        db.delete(entity)
+                    MessageBox.information(self, "Information", "Delete Done.")
+            else:
+                MessageBox.critical(self, "Error", "Password Wrong.")
 
     def _auto_login(self):
         """

@@ -90,7 +90,7 @@ class LibraryManage(LibraryManageUI):
             menu.addAction(edit_action)
             menu.addSeparator()
             if self.user.library_permission:
-                delete_action = QAction(mliber_resource.icon("delete.png"), "Delete", menu,
+                delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", menu,
                                         triggered=self._show_delete_widget)
                 menu.addAction(delete_action)
         else:
@@ -206,9 +206,7 @@ class LibraryManage(LibraryManageUI):
         row = selected_rows[0]
         selected_library = source_model.model_data[row].library
         with mliber_global.db() as db:
-            db.update("Library", selected_library.id, {"status": "Disable",
-                                                       "updated_at": datetime.now(),
-                                                       "updated_by": self.user.id})
+            self._delete(db, selected_library.id)
         if mliber_global.library() == selected_library:
             mliber_global.app().set_value(mliber_library=None)
             self.deleted.emit()
@@ -221,3 +219,20 @@ class LibraryManage(LibraryManageUI):
             except WindowsError as e:
                 print str(e)
                 MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+
+    def _delete(self, db, library_id):
+        """
+        删除library下的category和asset
+        :param db:
+        :param library_id:
+        :return:
+        """
+        db.update("Library", library_id, {"status": "Disable",
+                                          "updated_at": datetime.now(),
+                                          "updated_by": self.user.id})
+        categories = db.find("Category", [["library_id", "=", library_id]])
+        for category in categories:
+            db.update("Category", category.id, {"status": "Disable", "updated_by": self.user.id})
+        assets = db.find("Asset", [["library_id", "=", library_id]])
+        for asset in assets:
+            db.update("Asset", asset.id, {"status": "Disable", "updated_by": self.user.id})

@@ -3,6 +3,7 @@ from Qt.QtWidgets import QMenu, QAction
 from Qt.QtCore import Signal
 from mliber_widgets.toolbar.toolbar_ui import ToolbarUI
 import mliber_global
+import mliber_resource
 
 
 class Toolbar(ToolbarUI):
@@ -10,6 +11,7 @@ class Toolbar(ToolbarUI):
     library_manage_action_triggered = Signal()
     change_password_action_triggered = Signal()
     my_favorites_action_triggered = Signal()
+    clear_trash_action_triggered = Signal()
 
     def __init__(self, parent=None):
         super(Toolbar, self).__init__(parent)
@@ -75,20 +77,27 @@ class Toolbar(ToolbarUI):
         创建用户menu
         :return:
         """
-        menu = QMenu(self)
-        change_password_action = QAction("Change Password", self, triggered=self._change_password)
-        my_favorite_action = QAction("My Favorites", self, triggered=self._show_my_favorites)
-        menu.addAction(change_password_action)
-        menu.addAction(my_favorite_action)
-        return menu
+        user = mliber_global.user()
+        if user:
+            menu = QMenu(self)
+            change_password_action = QAction("Change Password", self, triggered=self._change_password)
+            my_favorite_action = QAction("My Favorites", self, triggered=self._show_my_favorites)
+            menu.addAction(change_password_action)
+            menu.addAction(my_favorite_action)
+            menu.addSeparator()
+            if user.name == "admin":
+                clear_trash_action = QAction(mliber_resource.icon("delete.png"), "Clear Trash", self,
+                                             triggered=self._clear_trash)
+                menu.addAction(clear_trash_action)
+            return menu
 
     def _show_user_menu(self):
         """
         显示用户menu
         :return:
         """
-        if mliber_global.user():
-            menu = self._create_user_menu()
+        menu = self._create_user_menu()
+        if menu:
             point = self.user_button.rect().bottomLeft()
             point = self.user_button.mapToGlobal(point)
             menu.exec_(point)
@@ -104,6 +113,12 @@ class Toolbar(ToolbarUI):
         :return:
         """
         self.my_favorites_action_triggered.emit()
+
+    def _clear_trash(self):
+        """
+        :return:
+        """
+        self.clear_trash_action_triggered.emit()
 
 
 if __name__ == "__main__":

@@ -50,6 +50,10 @@ class AssetListItem(object):
         :param item:
         :return:
         """
+        if item == "path":
+            library = mliber_global.library()
+            root_path = library.root_path()
+            return self.asset.path.format(root=root_path)
         return getattr(self.asset, item)
 
 
@@ -415,7 +419,7 @@ class AssetListView(QListView):
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
-            delete_action = QAction(mliber_resource.icon("delete.png"), "Delete", self,
+            delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self,
                                     triggered=self._show_delete_widget)
             menu.addAction(delete_action)
         open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
@@ -452,35 +456,35 @@ class AssetListView(QListView):
         :return: 
         """
         source_model = self.model().sourceModel()
-        with mliber_global.db() as db:
-            deleted = True
-            for index, row in enumerate(self._selected_rows()):
-                asset = source_model.model_data[row]
+        deleted = True
+        for index, row in enumerate(self._selected_rows()):
+            asset = source_model.model_data[row]
+            with mliber_global.db() as db:
                 db.update("Asset", asset.id, {"status": "disable"})
-                source_model.removeRows(row - index, 1)
-                elements = asset.elements
-                for element in elements:
-                    db.update("Element", element.id, {"status": "Active"})
-                if delete_source:
-                    asset_path = asset.path.format(root=self.library.root_path())
-                    try:
-                        Path(asset_path).remove()
-                    except WindowsError as e:
-                        print str(e)
-                        deleted = False
-            if not deleted:
-                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+            source_model.removeRows(row - index, 1)
+            elements = asset.elements
+            for element in elements:
+                db.update("Element", element.id, {"status": "Active"})
+            if delete_source:
+                asset_path = asset.path.format(root=self.library.root_path())
+                try:
+                    Path(asset_path).remove()
+                except WindowsError as e:
+                    print str(e)
+                    deleted = False
+        if not deleted:
+            MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
 
     def _open_in_explorer(self):
         """
         在文件系统中打开
         :return:
         """
-        selected_assets = self.selected_assets()
-        if not selected_assets:
+        selected_items = self.selected_items()
+        if not selected_items:
             return
-        asset = selected_assets[0]
-        path = asset.path.format(root=self.library.root_path())
+        item = selected_items[0]
+        path = item.path
         Path(path).open()
 
     def wheelEvent(self, event):

@@ -35,7 +35,7 @@ class CategoryTree(QTreeWidget):
 
     def __init__(self, parent=None):
         super(CategoryTree, self).__init__(parent)
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(self.SingleSelection)
         self.setFocusPolicy(Qt.NoFocus)
         self.setHeaderHidden(True)
         self.setFrameShape(QFrame.NoFrame)
@@ -73,9 +73,9 @@ class CategoryTree(QTreeWidget):
                 cat_item = CategoryTreeItem(self)
                 cat_item.set_category(cat)
                 self.items_mapping[cat.name] = cat_item
-                self.get_children(cat, cat_item)
+                self._create_children_item(cat, cat_item)
 
-    def get_children(self, cat, parent_item):
+    def _create_children_item(self, cat, parent_item):
         """
         递归获取子类型
         :param cat: Category对象
@@ -91,7 +91,7 @@ class CategoryTree(QTreeWidget):
                 child_item = CategoryTreeItem(parent_item)
                 child_item.set_category(child)
                 self.items_mapping[child.name] = child_item
-                self.get_children(child, child_item)
+                self._create_children_item(child, child_item)
 
     def _show_context_menu(self):
         """
@@ -136,7 +136,7 @@ class CategoryTree(QTreeWidget):
         mliber_global.app().set_value(mliber_categories=selected_categories)
         self.selection_changed.emit(selected_categories)
 
-    def category_exist(self, category_name, parent_id):
+    def _category_exist(self, category_name, parent_id):
         """
         检查category是否存在
         :param category_name: <str>
@@ -152,7 +152,7 @@ class CategoryTree(QTreeWidget):
         return False
 
     @staticmethod
-    def get_relative_path(category_name, parent_path):
+    def _get_relative_path(category_name, parent_path):
         """
         创建category相对路径路径
         :param category_name: <str>
@@ -169,7 +169,7 @@ class CategoryTree(QTreeWidget):
         """
         获取绝对路径
         :param relative_path: <str> 相对路径 {root}/...
-        :return: 
+        :return:
         """
         root_path = self.library.root_path()
         return relative_path.format(root=root_path)
@@ -190,7 +190,7 @@ class CategoryTree(QTreeWidget):
             MessageBox.warning(self, "Warning", u"请先选择library")
             return False
         return True
-        
+
     def add_category(self):
         """
         添加category
@@ -217,12 +217,12 @@ class CategoryTree(QTreeWidget):
         if isinstance(parent_item, QTreeWidgetItem):
             parent_id = parent_item.category.id
             parent_path = parent_item.category.path
-        category_exist = self.category_exist(name, parent_id)  # 检查category 是否存在
+        category_exist = self._category_exist(name, parent_id)  # 检查category 是否存在
         if category_exist:
             MessageBox.warning(self, "Warning", u"Category: %s 已存在，不能重复创建." % name)
             return
         # 创建文件夹
-        category_relative_path = self.get_relative_path(name, parent_path)
+        category_relative_path = self._get_relative_path(name, parent_path)
         category_abs_path = self.get_abs_path(category_relative_path)
         try:
             Path(category_abs_path).makedirs()
@@ -253,8 +253,8 @@ class CategoryTree(QTreeWidget):
         else:
             path = self.library.root_path()
         Path(path).open()
-
-    def recursion_delete_category(self, category):
+    
+    def _recursion_delete_category(self, category):
         """
         递归删除子类型
         :param category: Category instance
@@ -266,7 +266,7 @@ class CategoryTree(QTreeWidget):
             children = db.find("Category", [["parent_id", "=", category_id], ["status", "=", "Active"]])
             if children:
                 for child in children:
-                    self.recursion_delete_category(child)
+                    self._recursion_delete_category(child)
 
     def delete_category(self):
         """
@@ -290,7 +290,9 @@ class CategoryTree(QTreeWidget):
         category_relative_path = selected_item.category.path
         category_abs_path = self.get_abs_path(category_relative_path)
         # 先删除数据库记录, 如果有子类别一并删除
-        self.recursion_delete_category(selected_item.category)
+        self._recursion_delete_category(selected_item.category)
+        # 资产一并删除
+        
         # 从tree widget中移除
         parent = selected_item.father
         if parent is self:

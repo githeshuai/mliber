@@ -1,10 +1,15 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QListView, QAbstractItemView
+from Qt.QtWidgets import QListView, QAbstractItemView, QMenu, QAction
 from Qt.QtCore import Qt
+from Qt.QtGui import QCursor
 from element_model import ElementModel
 from element_delegate import ElementDelegate
 from mliber_conf import mliber_config
 import mliber_global
+import mliber_resource
+from mliber_libs.os_libs.path import Path
+from mliber_qt_components.delete_widget import DeleteWidget
+from mliber_qt_components.messagebox import MessageBox
 
 
 class ElementItem(object):
@@ -37,12 +42,23 @@ class ElementListView(QListView):
         self.setFocusPolicy(Qt.NoFocus)
         self.setResizeMode(QListView.Adjust)
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # set style
-        self.set_style()
+        self._set_style()
+        # set signals
+        self._set_signals()
 
-    def set_style(self):
+    def _set_signals(self):
+        """
+        信号连接
+        :return:
+        """
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
+
+    def _set_style(self):
         """
         set style
         :return:
@@ -55,6 +71,62 @@ class ElementListView(QListView):
         :return:
         """
         self._asset = asset
+
+    def _selected_indexes(self):
+        """
+        获取选择的index
+        :return:
+        """
+        selected_indexes = self.selectedIndexes()
+        return selected_indexes
+
+    def _selected_rows(self):
+        """
+        获取选择的行
+        :return:
+        """
+        selected_indexes = self._selected_indexes()
+        rows = list(set([index.row() for index in selected_indexes]))
+        return rows
+
+    def _show_context_menu(self):
+        """
+        显示右键菜单
+        :return:
+        """
+        rows = self._selected_rows()
+        if not rows:
+            return
+        menu = QMenu(self)
+        delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self, triggered=self._show_delete_widget)
+        menu.addAction(delete_action)
+        menu.exec_(QCursor.pos())
+
+    def _show_delete_widget(self):
+        """
+        :return:
+        """
+        delete_widget = DeleteWidget(self)
+        delete_widget.accept_signal.connect(self._delete_element)
+        delete_widget.exec_()
+
+    def _delete_element(self, delete_source):
+        """
+        删除element
+        :return:
+        """
+        row = self._selected_rows()[0]
+        item = self.model().model_data[row]
+        element = item.element
+        with mliber_global.db() as db:
+            db.update("Element", element.id, {"status": "Disable"})
+        self.model().removeRows(row, 1)
+        if delete_source:
+            try:
+                Path(item.path).remove()
+            except WindowsError as e:
+                print str(e)
+                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
 
     def _get_model_data(self, elements):
         """
