@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QMenu, QAction
+from Qt.QtWidgets import QMenu, QAction, QApplication
 from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
 from mliber_widgets.login_widget import LoginWidget
@@ -75,38 +75,15 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
+        self.asset_widget.asset_list_view.selection_changed.connect(self._show_selection_info)
         self.asset_widget.refresh_btn.clicked.connect(self._refresh_library)
 
-    def _is_left_shown(self):
+    def _show_selection_info(self, num):
         """
-        左边是否显示
+        显示选中资产个数
         :return:
         """
-        return not self.left_splitter.isHidden()
-
-    def _is_right_shown(self):
-        """
-        左边是否显示
-        :return:
-        """
-        return not self.right_widget.isHidden()
-
-    def _show_window_menu(self):
-        """
-        :return:
-        """
-        menu = QMenu(self)
-        show_left_action = QAction("Show Left", self, triggered=self._show_left)
-        show_left_action.setCheckable(True)
-        show_left_action.setChecked(self._is_left_shown())
-        show_right_action = QAction("Show Right", self, triggered=self._show_right)
-        show_right_action.setCheckable(True)
-        show_right_action.setChecked(self._is_right_shown())
-        menu.addAction(show_left_action)
-        menu.addAction(show_right_action)
-        point = self.tool_bar.window_button.rect().bottomLeft()
-        point = self.tool_bar.window_button.mapToGlobal(point)
-        menu.exec_(point)
+        self.status_bar.info("%s asset(s) selected." % num)
 
     def _change_password(self):
         """
@@ -178,6 +155,8 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.clear()
         # set library
         mliber_global.app().set_value(mliber_library=None)
+        # status bar 显示信息
+        self.status_bar.info("Hi: %s, welcome and enjoy" % user_name)
 
     def _show_user_manager(self):
         """
@@ -239,6 +218,8 @@ class MainWidget(MainWidgetUI):
             assets = db.find("Asset", [["category_id", "in", category_ids]])
         self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
+        # status bar info
+        self.status_bar.info("%s assets found." % (len(assets)))
 
     def _on_tag_selection_changed(self, tags):
         """
@@ -266,6 +247,8 @@ class MainWidget(MainWidgetUI):
             with mliber_global.db() as db:
                 library_assets = db.find("Asset", [["library_id", "=", self.library.id]])
         self.asset_widget.set_assets(library_assets)
+        # status bar show info
+        self.status_bar.info("%s assets found." % len(library_assets))
 
     def _refresh_library(self):
         """
@@ -287,6 +270,8 @@ class MainWidget(MainWidgetUI):
         # 列出所有的tag
         tags = self._tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
+        # status bar
+        self.status_bar.info("%s assets found." % len(assets))
 
     def _add_tag(self, tag_names):
         """
@@ -332,7 +317,7 @@ class MainWidget(MainWidgetUI):
                 user = db.find_one("User", [["name", "=", user_name], ["status", "=", "Active"]])
                 if user and user.password == password:
                     app.set_value(mliber_user=user)
-                    self.tool_bar.set_user(user_name)
+                    self._on_login_succeed(user_name)
                 return True
             except RuntimeError as e:
                 MessageBox.critical(self, "Login Failed", str(e))
@@ -441,6 +426,50 @@ class MainWidget(MainWidgetUI):
                 self.right_stack.takeAt(0)
             self.right_stack.addWidget(widget)
 
+    def _show_window_menu(self):
+        """
+        :return:
+        """
+        menu = QMenu(self)
+        show_left_action = QAction("Show Left", self, triggered=self._show_left, shortcut="Alt+1")
+        show_left_action.setCheckable(True)
+        show_left_action.setChecked(self._is_left_shown())
+        show_right_action = QAction("Show Right", self, triggered=self._show_right, shortcut="Alt+2")
+        show_right_action.setCheckable(True)
+        show_right_action.setChecked(self._is_right_shown())
+        full_screen_action = QAction("Full Screen", self, triggered=self._full_screen, shortcut="Alt+F")
+        full_screen_action.setCheckable(True)
+        full_screen_action.setChecked(self._is_full_screen())
+        menu.addAction(show_left_action)
+        menu.addAction(show_right_action)
+        menu.addAction(full_screen_action)
+        point = self.tool_bar.window_button.rect().bottomLeft()
+        point = self.tool_bar.window_button.mapToGlobal(point)
+        menu.exec_(point)
+
+    def _is_left_shown(self):
+        """
+        左边是否显示
+        :return:
+        """
+        return not self.left_splitter.isHidden()
+
+    def _is_right_shown(self):
+        """
+        左边是否显示
+        :return:
+        """
+        return not self.right_widget.isHidden()
+
+    def _is_full_screen(self):
+        """
+        是否全屏
+        :return:
+        """
+        if self._is_left_shown() or self._is_right_shown():
+            return False
+        return True
+
     def _show_right(self):
         self.right_widget.setHidden(self._is_right_shown())
         if self._is_right_shown():
@@ -470,6 +499,14 @@ class MainWidget(MainWidgetUI):
             else:
                 self.splitter.setSizes([0, self.width(), 0])
 
+    def _full_screen(self):
+        """
+        :return:
+        """
+        self.left_splitter.setHidden(True)
+        self.right_widget.setHidden(True)
+        self.splitter.setSizes([0, self.width(), 0])
+
     def showEvent(self, event):
         """
         在显示之前，获取历史记录，自动登录
@@ -478,6 +515,17 @@ class MainWidget(MainWidgetUI):
         # 自动登录
         if self._auto_login():
             self._set_global_library_from_history()
+
+    def keyPressEvent(self, event):
+        super(MainWidget, self).keyPressEvent(event)
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == Qt.AltModifier:
+            if event.key() == Qt.Key_1:
+                self._show_left()
+            if event.key() == Qt.Key_2:
+                self._show_right()
+            if event.key() == Qt.Key_F:
+                self._full_screen()
 
     def mousePressEvent(self, event):
         super(MainWidget, self).mousePressEvent(event)

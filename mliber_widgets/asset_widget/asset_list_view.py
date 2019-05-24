@@ -56,6 +56,7 @@ class AssetListView(QListView):
     double_clicked = Signal()
     add_tag_signal = Signal(basestring)
     left_pressed = Signal(list)
+    selection_changed = Signal(int)
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
@@ -122,6 +123,13 @@ class AssetListView(QListView):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
 
+    def _on_selection_changed(self):
+        """
+        :return:
+        """
+        num = len(self._selected_rows())
+        self.selection_changed.emit(num)
+
     def _get_asset_path(self, asset):
         """
         获取asset的绝对路径
@@ -176,6 +184,9 @@ class AssetListView(QListView):
         proxy_model = AssetProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
+        # selection changed
+        selection_model = self.selectionModel()
+        selection_model.selectionChanged.connect(self._on_selection_changed)
 
     def _set_delegate(self):
         """

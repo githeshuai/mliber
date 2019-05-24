@@ -5,6 +5,7 @@ import mliber_global
 import mliber_resource
 from mliber_qt_components.messagebox import MessageBox
 from mliber_qt_components.icon_line_edit import IconLineEdit
+from mliber_qt_components.title_widget import TitleWidget
 
 
 class PasswordWidget(QDialog):
@@ -13,7 +14,15 @@ class PasswordWidget(QDialog):
         self.resize(320, 200)
         self.setWindowTitle("Change password")
         self.setFocusPolicy(Qt.NoFocus)
-        main_layout = QVBoxLayout(self)
+        top_layout = QVBoxLayout(self)
+        top_layout.setContentsMargins(0, 0, 0, 0)
+        title_widget = TitleWidget()
+        top_layout.addWidget(title_widget)
+        # main
+        main_layout = QVBoxLayout()
+        main_layout.setSpacing(15)
+        top_layout.addLayout(main_layout)
+        main_layout.setContentsMargins(5, 5, 5, 10)
         # old password
         password_layout = QGridLayout()
         old_password_label = QLabel(u"旧密码", self)
@@ -31,11 +40,11 @@ class PasswordWidget(QDialog):
         self.repeat_password_le = IconLineEdit(mliber_resource.icon_path("password.png"), 30, 14, self)
         self.repeat_password_le.setEchoMode(QLineEdit.Password)
         password_layout.addWidget(old_password_label, 0, 0, 1, 1)
-        password_layout.addWidget(self.old_password_le, 0, 1, 1, 5)
+        password_layout.addWidget(self.old_password_le, 0, 1, 1, 6)
         password_layout.addWidget(new_password_label, 1, 0, 1, 1)
-        password_layout.addWidget(self.new_password_le, 1, 1, 1, 5)
+        password_layout.addWidget(self.new_password_le, 1, 1, 1, 6)
         password_layout.addWidget(repeat_password_label, 2, 0, 1, 1)
-        password_layout.addWidget(self.repeat_password_le, 2, 1, 1, 5)
+        password_layout.addWidget(self.repeat_password_le, 2, 1, 1, 6)
         password_layout.setVerticalSpacing(15)
         # button layout
         button_layout = QHBoxLayout()

@@ -4,6 +4,7 @@ from Qt.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLineEdit, QHBoxLayout
 from Qt.QtCore import Qt, QSize
 import mliber_resource
 from mliber_qt_components.icon_line_edit import IconLineEdit
+from mliber_qt_components.title_widget import TitleWidget
 
 
 class LoginWidgetUI(QDialog):
@@ -15,11 +16,7 @@ class LoginWidgetUI(QDialog):
         top_layout = QVBoxLayout(self)
         top_layout.setContentsMargins(0, 0, 0, 0)
         top_layout.setSpacing(15)
-        self.title = QPushButton("    M-Liber", self)
-        self.title.setMinimumHeight(50)
-        self.title.setIcon(mliber_resource.icon("logo.png"))
-        self.title.setIconSize(QSize(20, 20))
-        self.title.setStyleSheet("background: #2d2f37; padding: 0px; color: #FFF; font: bold; font-size: 16px;")
+        self.title = TitleWidget(self)
         # main layout
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(20, 10, 20, 10)
