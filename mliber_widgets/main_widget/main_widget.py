@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from Qt.QtWidgets import QMenu, QAction
 from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
 from mliber_widgets.login_widget import LoginWidget
@@ -19,7 +20,6 @@ class MainWidget(MainWidgetUI):
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
         self._is_maximum = False
-        self._right_is_shown = False
         self._drag_position = None
         # 无边框设置
         self.setMouseTracking(True)
@@ -63,6 +63,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.login_button.clicked.connect(self._show_login)
         self.tool_bar.user_manage_action_triggered.connect(self._show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self._show_library_manager)
+        self.tool_bar.window_button.clicked.connect(self._show_window_menu)
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
@@ -75,6 +76,37 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
         self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
         self.asset_widget.refresh_btn.clicked.connect(self._refresh_library)
+
+    def _is_left_shown(self):
+        """
+        左边是否显示
+        :return:
+        """
+        return not self.left_splitter.isHidden()
+
+    def _is_right_shown(self):
+        """
+        左边是否显示
+        :return:
+        """
+        return not self.right_widget.isHidden()
+
+    def _show_window_menu(self):
+        """
+        :return:
+        """
+        menu = QMenu(self)
+        show_left_action = QAction("Show Left", self, triggered=self._show_left)
+        show_left_action.setCheckable(True)
+        show_left_action.setChecked(self._is_left_shown())
+        show_right_action = QAction("Show Right", self, triggered=self._show_right)
+        show_right_action.setCheckable(True)
+        show_right_action.setChecked(self._is_right_shown())
+        menu.addAction(show_left_action)
+        menu.addAction(show_right_action)
+        point = self.tool_bar.window_button.rect().bottomLeft()
+        point = self.tool_bar.window_button.mapToGlobal(point)
+        menu.exec_(point)
 
     def _change_password(self):
         """
@@ -282,7 +314,7 @@ class MainWidget(MainWidgetUI):
         self.tag_widget.deselect_all()
         self.category_widget.category_tree.clearSelection()
 
-    def auto_login(self):
+    def _auto_login(self):
         """
         自动登录
         :return:
@@ -307,7 +339,7 @@ class MainWidget(MainWidgetUI):
                 return False
         return False
 
-    def set_global_library_from_history(self):
+    def _set_global_library_from_history(self):
         """
         根据历史记录获取library，并设置全局
         :return:
@@ -384,21 +416,23 @@ class MainWidget(MainWidgetUI):
             apply_widget.set_asset(asset)
             self._add_right_side_widget(apply_widget)
 
-    def _show_right(self):
+    def _pre_add_right(self):
         """
         显示右边widget
         Returns:
         """
         self.right_widget.setHidden(False)
-        self._right_is_shown = True
-        self.splitter.setSizes([250, self.width()-500, 250])
+        if self._is_left_shown():
+            self.splitter.setSizes([250, self.width()-500, 250])
+        else:
+            self.splitter.setSizes([0, self.width() - 250, 250])
 
     def _add_right_side_widget(self, widget):
         """
         添加右侧widget，要么是preview, 要么是create
         Returns:
         """
-        self._show_right()
+        self._pre_add_right()
         count = self.right_stack.count()
         if count == 0:
             self.right_stack.addWidget(widget)
@@ -407,14 +441,43 @@ class MainWidget(MainWidgetUI):
                 self.right_stack.takeAt(0)
             self.right_stack.addWidget(widget)
 
+    def _show_right(self):
+        self.right_widget.setHidden(self._is_right_shown())
+        if self._is_right_shown():
+            if self._is_left_shown():
+                self.splitter.setSizes([250, self.width() - 500, 250])
+            else:
+                self.splitter.setSizes([0, self.width() - 250, 250])
+        else:
+            if self._is_left_shown():
+                self.splitter.setSizes([250, self.width() - 250, 0])
+            else:
+                self.splitter.setSizes([0, self.width(), 0])
+
+    def _show_left(self):
+        """
+        :return:
+        """
+        self.left_splitter.setHidden(self._is_left_shown())
+        if self._is_left_shown():
+            if self._is_right_shown():
+                self.splitter.setSizes([250, self.width() - 500, 250])
+            else:
+                self.splitter.setSizes([250, self.width() - 250, 0])
+        else:
+            if self._is_right_shown():
+                self.splitter.setSizes([0, self.width() - 250, 250])
+            else:
+                self.splitter.setSizes([0, self.width(), 0])
+
     def showEvent(self, event):
         """
         在显示之前，获取历史记录，自动登录
         :return:
         """
         # 自动登录
-        if self.auto_login():
-            self.set_global_library_from_history()
+        if self._auto_login():
+            self._set_global_library_from_history()
 
     def mousePressEvent(self, event):
         super(MainWidget, self).mousePressEvent(event)

@@ -27,6 +27,8 @@ class ToolbarUI(QFrame):
         self.login_button = IndicatorButton("Login", self)
         # settings
         self.settings_button = IndicatorButton("Settings", self)
+        # window
+        self.window_button = IndicatorButton("Window", self)
         # user
         self.user_button = ToolButton(self)
         self.user_button.set_icon("user_fill.png")
@@ -57,6 +59,7 @@ class ToolbarUI(QFrame):
         main_layout.addItem(space_item_1)
         main_layout.addWidget(self.login_button)
         main_layout.addWidget(self.settings_button)
+        main_layout.addWidget(self.window_button)
         main_layout.addStretch()
         main_layout.addWidget(self.user_button)
         main_layout.addItem(space_item_2)
