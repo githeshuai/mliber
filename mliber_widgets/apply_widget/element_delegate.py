@@ -146,7 +146,6 @@ class CellElementWidget(QWidget):
             if not hook_module:
                 logging.error("Hook: %s not found." % hook_name)
                 return
-            reload(hook_module)
             hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name)
             hook_instance.main()
         except Exception as e:
