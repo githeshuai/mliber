@@ -9,4 +9,4 @@ class Hook(BaseHook):
         self.maya_object = MayaAbc(self.path)
 
     def execute(self, *args, **kwargs):
-        return self.maya_object.import_in()
+        return self.maya_object.reference(namespace=self.asset_name)

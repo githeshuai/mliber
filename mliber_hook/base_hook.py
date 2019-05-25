@@ -15,7 +15,7 @@ class BaseHook(object):
         """
         self.asset_name = asset_name
         self.objects = objects
-        self.path = path
+        self.path = path.replace("\\", "/")
         self.start = start
         self.end = end
         # custom
@@ -28,6 +28,13 @@ class BaseHook(object):
         :return:
         """
         return self.plugin_name
+
+    def frames(self):
+        """
+        帧数
+        :return:
+        """
+        return self.end - self.start
 
     @property
     def error_str(self):
