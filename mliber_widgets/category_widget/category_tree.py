@@ -190,12 +190,12 @@ class CategoryTree(QTreeWidget):
         # 检查是否选择了多个category
         selected_items = self.selected_items()
         if len(selected_items) > 1:
-            MessageBox.warning(self, "Warning", "只支持在一个类型下创建子类型")
+            MessageBox.warning(self, "Warning", "Only support one category selected.")
             return False
         # 检查是否选择了library
         library = self.library
         if not library:
-            MessageBox.warning(self, "Warning", u"请先选择library")
+            MessageBox.warning(self, "Warning", "Select library first.")
             return False
         return True
 
@@ -227,7 +227,7 @@ class CategoryTree(QTreeWidget):
             parent_path = parent_item.category.path
         category_exist = self._category_exist(name, parent_id)  # 检查category 是否存在
         if category_exist:
-            MessageBox.warning(self, "Warning", u"Category: %s 已存在，不能重复创建." % name)
+            MessageBox.warning(self, "Warning", "Category: %s exist，Can not create again." % name)
             return
         # 创建文件夹
         category_relative_path = self._get_relative_path(name, parent_path)
@@ -337,7 +337,7 @@ class CategoryTree(QTreeWidget):
                 Path(category_abs_path).remove()
             except WindowsError as e:
                 logging.error(str(e))
-                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+                MessageBox.warning(self, "Warning", "Storage files delete Failed，Please delete it manual.")
 
     def search_item(self, item_text):
         """

@@ -24,8 +24,8 @@ class ThumbnailWidget(QWidget):
         # drag file widget
         self.file_widget = DragFileWidget(self)
         # add to tab widget
-        self.tab_widget.addTab(screen_widget, mliber_resource.icon("screen.png"), u"截图")
-        self.tab_widget.addTab(self.file_widget, mliber_resource.icon("picture.png"), u"文件")
+        self.tab_widget.addTab(screen_widget, mliber_resource.icon("screen.png"), "screen shot")
+        self.tab_widget.addTab(self.file_widget, mliber_resource.icon("picture.png"), "local file")
         # add to main layout
         main_layout.addWidget(self.tab_widget)
 

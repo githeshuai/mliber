@@ -33,9 +33,9 @@ class LazyWidgetUI(QScrollArea):
         # thumbnail check
         thumbnail_layout = QHBoxLayout()
         self.thumbnail_btn_grp = QButtonGroup()
-        self.gen_thumbnail_from_file_check = QCheckBox(u"从文件中生成缩略图", self)
+        self.gen_thumbnail_from_file_check = QCheckBox(u"thumbnail from file", self)
         self.gen_thumbnail_from_file_check.setChecked(True)
-        self.upload_thumbnail_check = QCheckBox(u"上传缩略图", self)
+        self.upload_thumbnail_check = QCheckBox(u"Upload thumbnail", self)
         self.thumbnail_btn_grp.addButton(self.gen_thumbnail_from_file_check)
         self.thumbnail_btn_grp.addButton(self.upload_thumbnail_check)
         thumbnail_layout.addWidget(self.gen_thumbnail_from_file_check)
@@ -64,11 +64,11 @@ class LazyWidgetUI(QScrollArea):
         self.stacked_widget.addWidget(self.batch_description_label)
         self.stacked_widget.setMinimumHeight(36)
         # single or batch
-        self.batch_check = QCheckBox(u"批量创建", self)
+        self.batch_check = QCheckBox(u"Batch create", self)
         # description layout
         description_layout = QHBoxLayout()
         description_layout.setContentsMargins(0, 0, 0, 0)
-        description_label = QLabel(u"descri\nption", self)
+        description_label = QLabel("descri\nption", self)
         description_label.setWordWrap(True)
         description_label.setMaximumWidth(33)
         description_label.setAlignment(Qt.AlignTop)

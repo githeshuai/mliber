@@ -125,7 +125,7 @@ class FileListWidget(QListWidget):
         选择本地文件添加
         :return:
         """
-        files, ok = QFileDialog.getOpenFileNames(self, u"选择文件")
+        files, ok = QFileDialog.getOpenFileNames(self, u"Choose files")
         if ok:
             for f in files:
                 self.add_file_item(f)

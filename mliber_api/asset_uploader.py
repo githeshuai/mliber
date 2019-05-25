@@ -100,7 +100,7 @@ class AssetUploader(AssetMaker):
                 self.start = frames[0]
                 self.end = frames[-1]
                 if missing:
-                    logging.warning(u"有丢失的帧：%s" % ",".join(missing))
+                    logging.warning("Has missing frames：%s" % ",".join(missing))
                 for index, frame in enumerate(frames):
                     dst_file = dst_path.replace("####", str(frame).zfill(4))
                     src_file = source_files[index]

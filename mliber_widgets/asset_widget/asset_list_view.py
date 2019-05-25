@@ -478,7 +478,7 @@ class AssetListView(QListView):
                     print str(e)
                     deleted = False
         if not deleted:
-            MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+            MessageBox.warning(self, "Warning", "Storage files delete Failed，Please delete it manual.")
 
     def _open_in_explorer(self):
         """

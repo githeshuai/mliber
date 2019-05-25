@@ -43,10 +43,11 @@ class CreateLibraryDialog(QDialog):
         # path widget
         self.path_widget = PathWidget(self)
         self.choose_path_widget = ChoosePathWidget(self)
-        self.choose_path_widget.set_label_text(u"图标")
+        self.choose_path_widget.set_label_text(u"icon")
         # description
         description_layout = QHBoxLayout()
-        description_label = QLabel(u"描述", self)
+        description_label = QLabel("descr\niption", self)
+        description_label.setWordWrap(True)
         description_label.setMinimumWidth(31)
         description_label.setAlignment(Qt.AlignTop)
         self.description_te = QTextEdit(self)
@@ -206,7 +207,7 @@ class CreateLibraryDialog(QDialog):
         :return:
         """
         if not all((self.name, self.type)):
-            MessageBox.warning(self, "Warning", u"请填入必填项")
+            MessageBox.warning(self, "Warning", u"name and type is necessary")
             return
         data = [self.name, self.type, self.windows_path, self.linux_path,
                 self.mac_path, self.icon_path, self.description]

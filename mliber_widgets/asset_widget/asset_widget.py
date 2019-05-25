@@ -92,7 +92,7 @@ class AssetWidget(QWidget):
         :return:
         """
         menu = QMenu(self)
-        export_from_software_action = QAction(u"Export from software", self, triggered=self._export_from_software)
+        export_from_software_action = QAction("Export from software", self, triggered=self._export_from_software)
         create_from_local = QAction("Create from local", self, triggered=self._create_from_local)
         menu.addAction(export_from_software_action)
         menu.addAction(create_from_local)

@@ -22,7 +22,7 @@ class PressLabel(QLabel):
     def mousePressEvent(self, event):
         super(PressLabel, self).mousePressEvent(event)
         if event.button() == Qt.LeftButton:
-            files, ok = QFileDialog.getOpenFileNames(self, u"选择文件")
+            files, ok = QFileDialog.getOpenFileNames(self, "Choose files")
             if ok:
                 self.clicked.emit(files)
 

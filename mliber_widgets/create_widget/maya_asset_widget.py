@@ -70,7 +70,7 @@ class MayaAssetWidget(CreateWidget):
         :return:
         """
         if not self.thumbnail_files:
-            MessageBox.warning(self, "Warning", u"没有缩略图")
+            MessageBox.warning(self, "Warning", "No thumbnail")
             return False
         return True
 

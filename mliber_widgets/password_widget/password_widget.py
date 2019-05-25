@@ -25,17 +25,17 @@ class PasswordWidget(QDialog):
         main_layout.setContentsMargins(5, 5, 5, 10)
         # old password
         password_layout = QGridLayout()
-        old_password_label = QLabel(u"旧密码", self)
+        old_password_label = QLabel("old", self)
         old_password_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.old_password_le = IconLineEdit(mliber_resource.icon_path("password.png"), 30, 14, self)
         self.old_password_le.setEchoMode(QLineEdit.Password)
         # new password
-        new_password_label = QLabel(u"新密码", self)
+        new_password_label = QLabel("new", self)
         new_password_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.new_password_le = IconLineEdit(mliber_resource.icon_path("password.png"), 30, 14, self)
         self.new_password_le.setEchoMode(QLineEdit.Password)
         # repeat password
-        repeat_password_label = QLabel(u"新密码", self)
+        repeat_password_label = QLabel("new", self)
         repeat_password_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.repeat_password_le = IconLineEdit(mliber_resource.icon_path("password.png"), 30, 14, self)
         self.repeat_password_le.setEchoMode(QLineEdit.Password)
@@ -93,10 +93,10 @@ class PasswordWidget(QDialog):
         if user:
             old_password = user.password
             if old_password != self.old_password:
-                MessageBox.critical(self, "Error", u"旧密码错误")
+                MessageBox.critical(self, "Error", "wrong old password ")
                 return
             if self.new_password != self.repeat_new_password:
-                MessageBox.critical(self, "Error", u"两次输入的新密码不一样")
+                MessageBox.critical(self, "Error", "new password is not same")
                 return
             with mliber_global.db() as db:
                 db.update("User", user.id, {"password": self.new_password})

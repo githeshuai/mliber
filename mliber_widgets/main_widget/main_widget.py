@@ -374,7 +374,7 @@ class MainWidget(MainWidgetUI):
                     show_created = True
                     break
         if not show_created:
-            MessageBox.warning(self, "Warning", u"请选择类型.")
+            MessageBox.warning(self, "Warning", "Choose category first.")
 
     def _show_lazy_widget(self):
         """
@@ -386,7 +386,7 @@ class MainWidget(MainWidgetUI):
             lazy_widget.create_signal.connect(self._create_done)
             self._add_right_side_widget(lazy_widget)
         else:
-            MessageBox.warning(self, "Warning", u"请选择类型.")
+            MessageBox.warning(self, "Warning", "Choose category first.")
 
     def _create_done(self, assets):
         """

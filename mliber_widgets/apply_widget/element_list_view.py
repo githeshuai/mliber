@@ -126,7 +126,7 @@ class ElementListView(QListView):
                 Path(item.path).remove()
             except WindowsError as e:
                 print str(e)
-                MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
+                MessageBox.warning(self, "Warning", "Storage files delete Failed，Please delete it manual.")
 
     def _get_model_data(self, elements):
         """

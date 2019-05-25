@@ -157,7 +157,7 @@ class CreateWidget(QScrollArea):
         name_label = TitleLabel("Name", True, parent=self)
         # asset name line edit
         self.asset_name_le = QLineEdit(self)
-        self.asset_name_le.setPlaceholderText(u"资产名字，不要有特殊字符。")
+        self.asset_name_le.setPlaceholderText("asset name")
         # 显示路径的label
         path_label = QLabel(self)
         path_label.setPixmap(mliber_resource.pixmap("info.png"))
@@ -421,7 +421,7 @@ class CreateWidget(QScrollArea):
             if self.preflight():
                 self.run()
         else:
-            MessageBox.warning(self, "Warning", u"必填项[thumbnail, library, category, asset name, actions]内容未填。")
+            MessageBox.warning(self, "Warning", u"[thumbnail, library, category, asset name, actions] necessary。")
 
     def preflight(self):
         """

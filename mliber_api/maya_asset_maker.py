@@ -40,5 +40,5 @@ class MayaAssetMaker(AssetMaker):
                 post_export_textures(self._texture_info_dict)
                 logging.info("[MLIBER] info: Recover texture settings done.")
             except:
-                logging.warning(u"[MLIBER] info: Texture can not be recovered.")
+                logging.warning("[MLIBER] info: Texture can not be recovered.")
         return True

@@ -276,7 +276,7 @@ class LibraryListView(QListView):
         if windows_path in exist_paths.get("windows") or \
                 linux_path in exist_paths.get("linux") or \
                 mac_path in exist_paths.get("mac"):
-            MessageBox.warning(self, "warning", u"path exist !")
+            MessageBox.warning(self, "warning", "path exist !")
             return False
         return True
 

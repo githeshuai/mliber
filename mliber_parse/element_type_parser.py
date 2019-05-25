@@ -37,7 +37,7 @@ class ElementType(object):
         :return: <dict>
         """
         if not self._data. has_key(engine):
-            print u"软件: %s不支持type: %s" % (engine, self._type)
+            print u"Software: %s not support type: %s" % (engine, self._type)
             return {}
         engine_actions = self._data.get(engine)
         return engine_actions

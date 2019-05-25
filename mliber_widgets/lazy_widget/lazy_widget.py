@@ -133,7 +133,7 @@ class LazyWidget(LazyWidgetUI):
         :return:
         """
         if not self.files:
-            MessageBox.warning(self, "Warning", u"没有文件可以上传")
+            MessageBox.warning(self, "Warning", "No file upload.")
             return False
         return True
 
@@ -164,12 +164,12 @@ class LazyWidget(LazyWidgetUI):
         files = self.files
         self._current_files = files  # 获取缩略图的时候会用到
         if not self.asset_name:
-            MessageBox.warning(self, "Warning", u"请填入资产名字")
+            MessageBox.warning(self, "Warning", "Asset name is necessary")
             return
         ext_list = [Path(f).ext() for f in files]
         ext_list = list(set(ext_list))
         if len(ext_list) > 1:
-            MessageBox.warning(self, "Warning", u"只支持相同的格式")
+            MessageBox.warning(self, "Warning", "Only support same extension")
             return
         self.progress_bar.setHidden(False)
         self.progress_bar.setRange(0, 10)

@@ -32,7 +32,7 @@ class DeleteWidget(QDialog):
         password_layout = QVBoxLayout()
         text_label = QLabel(self)
         text_label.setFixedHeight(20)
-        text_label.setText(u"请输入密码")
+        text_label.setText(u"Please input password")
         self.password_le = QLineEdit(self)
         self.password_le.setEchoMode(QLineEdit.Password)
         password_layout.addWidget(text_label)
@@ -41,7 +41,7 @@ class DeleteWidget(QDialog):
         # layout include checkbox and info label
         layout = QHBoxLayout()
         layout.setAlignment(Qt.AlignLeft)
-        self.check = QCheckBox(u"同时删除源文件", self)
+        self.check = QCheckBox("Delete storage files", self)
         self.info_label = QToolButton(self)
         self.info_label.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.info_label.setStyleSheet("border: 0px; padding: 0px; background: transparent;"
