@@ -1,0 +1,7 @@
+
+types:
+  - source
+
+double_clicked:
+  type: source
+  hook: open_in_explorer

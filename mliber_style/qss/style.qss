@@ -482,7 +482,7 @@ QSizeGrip
 {
 
     width: 10px;
-    height: 10px;
+    height: 5px;
     border: none;
     background-color: transparent;
     image: url(IMG_DIR/resize_bottom_right.png);

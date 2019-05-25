@@ -4,7 +4,6 @@ maya:
   import:
     - name: redshift proxy import
       hook: maya_rs_import
-      default: False
   export:
     name: redshift prorxy export
     hook: maya_rs_export

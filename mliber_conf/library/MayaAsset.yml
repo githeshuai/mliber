@@ -9,3 +9,7 @@ types:
   - ass
   - rs
   - xarc
+
+double_clicked:
+  type: ma
+  hook: maya_ma_import

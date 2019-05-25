@@ -4,7 +4,6 @@ maya:
   import:
     - name: xgen xarc import
       hook: maya_xarc_import
-      default: False
   export:
     name: xgen xarc export
     hook: maya_xarc_export

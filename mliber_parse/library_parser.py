@@ -6,12 +6,24 @@ import mliber_utils
 
 
 class Library(object):
+    pool = dict()
+    __init = False
+
+    def __new__(cls, library_type=""):
+        obj = cls.pool.get(library_type, None)
+        if not obj:
+            obj = object.__new__(cls)
+            cls.pool[library_type] = obj
+        return obj
+
     def __init__(self, library_type=""):
         """
         :param library_type: <str>
         """
-        self._library_type = library_type
-        self._data = self.parse()
+        if not self.__init:
+            self._library_type = library_type
+            self._data = self.parse()
+            self.__init = True
 
     def library_conf_path(self):
         """
@@ -36,8 +48,22 @@ class Library(object):
         """
         return self._data.get("types", [])
 
+    def double_clicked_type(self):
+        """
+        双击运行的type
+        :return:
+        """
+        return self._data.get("double_clicked", {}).get("type")
+
+    def double_clicked_hook(self):
+        """
+        双击运行的hook
+        :return:
+        """
+        return self._data.get("double_clicked", {}).get("hook")
+
 
 if __name__ == "__main__":
-    lib = Library("MayaAsset")
+    print Library("MayaAsset").double_clicked_hook()
 
 

@@ -4,13 +4,10 @@ maya:
   import: 
     - name: mb import 
       hook: maya_mb_import
-      default: True
     - name: mb reference
       hook: maya_mb_reference
-      default: False
     - name: mb open
       hook: maya_mb_open
-      default: False
   export: 
     name: mb export
     hook: maya_mb_export

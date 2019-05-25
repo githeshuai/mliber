@@ -8,13 +8,25 @@ from mliber_parse.action import Action
 
 
 class ElementType(object):
+    pool = dict()
+    __init = False
+
+    def __new__(cls, element_type=""):
+        obj = cls.pool.get(element_type, None)
+        if not obj:
+            obj = object.__new__(cls)
+            cls.pool[element_type] = obj
+        return obj
+
     def __init__(self, element_type=""):
         """
         init
         :param element_type: <str> element type
         """
-        self._type = element_type
-        self._data = self.parse()
+        if not self.__init:
+            self._type = element_type
+            self._data = self.parse()
+            self.__init = True
 
     def element_type_conf_path(self):
         """
@@ -37,7 +49,7 @@ class ElementType(object):
         :return: <dict>
         """
         if not self._data. has_key(engine):
-            print u"Software: %s not support type: %s" % (engine, self._type)
+            # print u"Software: %s not support type: %s" % (engine, self._type)
             return {}
         engine_actions = self._data.get(engine)
         return engine_actions
@@ -75,7 +87,7 @@ class ElementType(object):
         :return:
         """
         if not self._data:
-            print "[MLIBER] warning: unknown element type: %s." % self._type
+            # print "[MLIBER] warning: unknown element type: %s." % self._type
             return
         if item == "icon":
             icon = self._data.get("icon")

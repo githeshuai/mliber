@@ -116,10 +116,10 @@ class CellElementWidget(QWidget):
         engine = Dcc.engine()
         actions = ElementType(self._element_type).import_actions_of_engine(engine)
         for action in actions:
-            q_action = QAction(action.name, self, triggered=self.run_hook)
+            q_action = QAction(action.name, self, triggered=self._run_hook)
             q_action.hook = action.hook
             menu.addAction(q_action)
-        show_in_explorer_action = QAction("open in explorer", self, triggered=self.run_hook)
+        show_in_explorer_action = QAction("open in explorer", self, triggered=self._run_hook)
         show_in_explorer_action.hook = "open_in_explorer"
         menu.addAction(show_in_explorer_action)
         return menu
@@ -134,14 +134,14 @@ class CellElementWidget(QWidget):
         point = self.icon_button.mapToGlobal(point)
         menu.exec_(point)
 
-    def run_hook(self):
+    def _run_hook(self):
         """
         运行主函数
         :return:
         """
         hook_name = self.sender().hook
         hook_module = mliber_utils.load_hook(hook_name)
-        hook_instance = hook_module.Hook(self._path, self._start, self._end, self._asset_name)
+        hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name)
         hook_instance.main()
 
 

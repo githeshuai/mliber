@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView, QWidget, QStackedLayout, QSizeGrip
+from Qt.QtWidgets import QDialog, QVBoxLayout, QSplitter, QSizePolicy, QListView, QWidget, \
+    QStackedLayout, QSizeGrip, QFrame
 from Qt.QtCore import Qt
 from mliber_widgets.toolbar import Toolbar
 from mliber_widgets.category_widget import CategoryWidget
@@ -24,7 +25,6 @@ class MainWidgetUI(QDialog):
         self.splitter.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         self.splitter.setHandleWidth(2)
         self.splitter.setChildrenCollapsible(False)
-
         # left splitter
         self.left_splitter = QSplitter(Qt.Vertical, self)
         self.left_splitter.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
@@ -54,6 +54,11 @@ class MainWidgetUI(QDialog):
         self.splitter.setSizes([250, self.width()-250, 0])
         # add main splitter to main layout
         main_layout.addWidget(self.splitter)
+        # bottom frame
+        bottom_frame = QFrame(self)
+        bottom_frame.setFrameShape(QFrame.HLine)
+        bottom_frame.setStyleSheet("border-top: 2px solid rgba(255, 255, 255, 10);")
+        main_layout.addWidget(bottom_frame)
         # add status bar
         self.status_bar = StatusBar(self)
         self.status_bar.clear()

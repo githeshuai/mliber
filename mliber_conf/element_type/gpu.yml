@@ -4,7 +4,6 @@ maya:
   import:
     - name: gpu cache import
       hook: maya_gpu_import
-      default: False
   export:
     name: gpu cache export
     hook: maya_gpu_export

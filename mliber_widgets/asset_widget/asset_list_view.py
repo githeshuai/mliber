@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
@@ -9,12 +10,14 @@ from create_tag_widget import CreateTagWidget
 from mliber_conf import mliber_config
 import mliber_global
 import mliber_resource
+import mliber_utils
 from mliber_libs.dcc import Dcc
 from mliber_libs.os_libs.path import Path
 from mliber_api.api_utils import add_tag_of_asset
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
 from mliber_parse.element_type_parser import ElementType
+from mliber_parse.library_parser import Library
 from mliber_qt_components.delete_widget import DeleteWidget
 from mliber_qt_components.messagebox import MessageBox
 
@@ -61,7 +64,6 @@ class AssetListItem(object):
 class AssetListView(QListView):
     MAX_ICON_SIZE = 256
     MIN_ICON_SIZE = 128
-    double_clicked = Signal()
     add_tag_signal = Signal(basestring)
     left_pressed = Signal(list)
     selection_changed = Signal(int)
@@ -69,6 +71,7 @@ class AssetListView(QListView):
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
         self.image_server = None
+        self._engine = Dcc.engine()
         self.assets = []
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
@@ -130,6 +133,23 @@ class AssetListView(QListView):
         """
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._show_context_menu)
+        self.doubleClicked.connect(self._on_item_double_clicked)
+
+    def _on_item_double_clicked(self, index):
+        """
+        双击的时候
+        :param index:
+        :return:
+        """
+        if index.row() < 0:
+            return
+        source_model = self.model().sourceModel()
+        source_index = self.model().mapToSource(index)
+        asset = source_model.model_data[source_index.row()].asset
+        element_type = Library(self.library.type).double_clicked_type()
+        hook = Library(self.library.type).double_clicked_hook()
+        with mliber_global.db() as db:
+            self._run_hook(db, asset, element_type, hook)
 
     def _on_selection_changed(self):
         """
@@ -325,9 +345,12 @@ class AssetListView(QListView):
         """
         :return:
         """
-        assets = self.selected_assets()
-        if not assets:
+        selected_assets = self.selected_assets()
+        if not selected_assets:
             return
+        asset_ids = [asset.id for asset in selected_assets]
+        with mliber_global.db() as db:
+            assets = db.find("Asset", [["id", "in", asset_ids]])
         tags = []
         for asset in assets:
             tags.extend(asset.tags)
@@ -337,7 +360,8 @@ class AssetListView(QListView):
         create_tag_dialog.ok_clicked.connect(self._add_tag)
         create_tag_dialog.exec_()
 
-    def _store_asset(self, user, asset_id):
+    @staticmethod
+    def _store_asset(user, asset_id):
         """
         收藏asset
         :param user: <int>
@@ -355,7 +379,8 @@ class AssetListView(QListView):
             assets = db.find("Asset", [["id", "in", asset_ids]])
             db.update("User", user.id, {"assets": assets})
 
-    def _remove_asset_from_user(self, user, asset_id):
+    @staticmethod
+    def _remove_asset_from_user(user, asset_id):
         """
         讲资产从我的收藏中移出
         :param user:
@@ -392,19 +417,30 @@ class AssetListView(QListView):
         选择一个资产的时候，右键菜单的action
         :return:
         """
-        engine = Dcc.engine()
         q_actions = list()
         elements = asset.elements
         for element in elements:
-            actions = ElementType(element.type).import_actions_of_engine(engine)
+            actions = ElementType(element.type).import_actions_of_engine(self._engine)
             for action in actions:
-                q_action = QAction(action.name, self, triggered=self._run_hook)
-                q_action.path = element.path
+                q_action = QAction(action.name, self, triggered=self._on_action_triggered)
+                q_action.type = element.type
                 q_action.hook = action.hook
-                q_action.asset_name = asset.name
-                # q_action.start = element.start
-                # q_action.end = element.end
                 q_actions.append(q_action)
+        return q_actions
+
+    def _multi_selection_actions(self):
+        """
+        :return:
+        """
+        q_actions = list()
+        support_types = Library(self.library.type).types()
+        for typ in support_types:
+            actions = ElementType(typ).import_actions_of_engine(self._engine)
+            for action in actions:
+                q_action = QAction(action.name, self, triggered=self._on_action_triggered)
+                q_actions.append(q_action)
+                q_action.type = typ
+                q_action.hook = action.hook
         return q_actions
 
     def _show_context_menu(self):
@@ -427,21 +463,53 @@ class AssetListView(QListView):
                                     triggered=self._show_delete_widget)
             menu.addAction(delete_action)
         menu.addSeparator()
-        selected_assets = self.selected_assets()
+        # add custom action
         asset_ids = [asset.id for asset in selected_assets]
         with mliber_global.db() as db:
             assets = db.find("Asset", [["id", "in", asset_ids]])
-        if len(assets) == 1:
-            q_actions = self._single_selection_actions(assets[0])
-            for q_action in q_actions:
-                menu.addAction(q_action)
+            if len(assets) == 1:
+                q_actions = self._single_selection_actions(assets[0])
+            else:
+                q_actions = self._multi_selection_actions()
+        for q_action in q_actions:
+            menu.addAction(q_action)
         menu.exec_(QCursor.pos())
 
-    def _run_hook(self):
+    def _on_action_triggered(self):
         """
         :return:
         """
-        print self.sender().hook
+        element_type = self.sender().type
+        hook = self.sender().hook
+        assets = self.selected_assets()
+        with mliber_global.db() as db:
+            for asset in assets:
+                self._run_hook(db, asset, element_type, hook)
+
+    def _run_hook(self, db, asset, element_type, hook):
+        """
+        :param db:
+        :param asset: <Asset>
+        :param element_type: <str>
+        :param hook: <str> hook name
+        :return:
+        """
+        element = db.find_one("Element", [["type", "=", element_type], ["asset_id", "=", asset.id]])
+        if not element:
+            logging.warning("Element type: %s not found." % element_type)
+            return
+        path = element.path
+        if path:
+            path = path.format(root=self.library.root_path())
+        start = element.start
+        end = element.end
+        asset_name = asset.name
+        try:
+            hook_module = mliber_utils.load_hook(hook)
+            hook_instance = hook_module.Hook(path, "", start, end, asset_name)
+            hook_instance.main()
+        except Exception as e:
+            logging.error(str(e))
 
     def _show_delete_widget(self):
         """
@@ -465,11 +533,11 @@ class AssetListView(QListView):
                 db.update("Asset", asset.id, {"status": "Disable",
                                               "updated_by": self.user.id,
                                               "updated_at": datetime.now()})
-            source_model.removeRows(row - index, 1)
-            elements = db.find("Element", [["asset_id", "=", asset.id], ["status", "=", "Active"]])
-            for element in elements:
-                db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
-                                                  "updated_at": datetime.now()})
+                source_model.removeRows(row - index, 1)
+                elements = db.find("Element", [["asset_id", "=", asset.id], ["status", "=", "Active"]])
+                for element in elements:
+                    db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
+                                                      "updated_at": datetime.now()})
             if delete_source:
                 asset_path = asset.path.format(root=self.library.root_path())
                 try:
