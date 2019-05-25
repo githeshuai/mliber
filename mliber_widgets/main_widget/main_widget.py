@@ -68,7 +68,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
         self.tool_bar.library_button.clicked.connect(self._show_library_manager)
-        self.tool_bar.clear_trash_action_triggered.connect(self._clear_trash)
+        self.tool_bar.clear_trash_action_triggered.connect(self._show_clear_trash_widget)
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
@@ -297,38 +297,39 @@ class MainWidget(MainWidgetUI):
         self.tag_widget.deselect_all()
         self.category_widget.category_tree.clearSelection()
 
-    def _clear_trash(self):
+    def _show_clear_trash_widget(self):
         """
         清空回收站
         :return:
         """
-        password, ok = QInputDialog.getText(self, "Password", "Input admin Password", QLineEdit.Password)
-        if password and ok:
-            if password == self.user.password:
-                with mliber_global.db() as db:
-                    disable_libraries = db.find("Library", [["status", "=", "Disable"]])
-                    for library in disable_libraries:
-                        db.delete(library)
-                    disable_categories = db.find("Category", [["status", "=", "Disable"],
-                                                              ["library_id", "is", None]],
-                                                 "any")
-                    for category in disable_categories:
-                        db.delete(category)
-                    disable_tags = db.find("Tag", [["status", "=", "Disable"]])
-                    for tag in disable_tags:
-                        db.delete(tag)
-                    disable_assets = db.find("Asset", [["status", "=", "Disable"],
-                                                       ["library_id", "is", None],
-                                                       ["category_id", "is", None]],
-                                             "any")
-                    for asset in disable_assets:
-                        db.delete(asset)
-                    disable_elements = db.find("Element", [["status", "=", "Disable"], ["asset_id", "is", None]], "any")
-                    for element in disable_elements:
-                        db.delete(element)
-                    MessageBox.information(self, "Information", "Delete Done.")
-            else:
-                MessageBox.critical(self, "Error", "Password Wrong.")
+        delete_widget = DeleteWidget(self)
+        delete_widget.check.setHidden(True)
+        delete_widget.accept_signal.connect(self._clear_trash)
+        delete_widget.exec_()
+
+    def _clear_trash(self):
+        with mliber_global.db() as db:
+            disable_libraries = db.find("Library", [["status", "=", "Disable"]])
+            for library in disable_libraries:
+                db.delete(library)
+            disable_categories = db.find("Category", [["status", "=", "Disable"],
+                                                      ["library_id", "is", None]],
+                                         "any")
+            for category in disable_categories:
+                db.delete(category)
+            disable_tags = db.find("Tag", [["status", "=", "Disable"]])
+            for tag in disable_tags:
+                db.delete(tag)
+            disable_assets = db.find("Asset", [["status", "=", "Disable"],
+                                               ["library_id", "is", None],
+                                               ["category_id", "is", None]],
+                                     "any")
+            for asset in disable_assets:
+                db.delete(asset)
+            disable_elements = db.find("Element", [["status", "=", "Disable"], ["asset_id", "is", None]], "any")
+            for element in disable_elements:
+                db.delete(element)
+        MessageBox.information(self, "Information", "Delete Done.")
 
     def _auto_login(self):
         """
