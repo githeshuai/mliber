@@ -506,6 +506,10 @@ class AssetListView(QListView):
         asset_name = asset.name
         try:
             hook_module = mliber_utils.load_hook(hook)
+            if not hook_module:
+                logging.error("Hook: %s not found." % hook)
+                return
+            reload(hook_module)
             hook_instance = hook_module.Hook(path, "", start, end, asset_name)
             hook_instance.main()
         except Exception as e:

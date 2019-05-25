@@ -22,13 +22,16 @@ class ToolbarUI(QFrame):
         logo_button.setIcon(mliber_resource.icon("logo.png"))
         logo_button.setText("M-Liber")
         # spacer item
-        space_item_1 = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
+        space_item_1 = QSpacerItem(20, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # login
         self.login_button = IndicatorButton("Login", self)
         # settings
         self.settings_button = IndicatorButton("Settings", self)
         # window
         self.window_button = IndicatorButton("Window", self)
+        # library
+        self.library_button = IndicatorButton("", self)
+        self.library_button.setMinimumWidth(200)
         # user
         self.user_button = ToolButton(self)
         self.user_button.set_icon("user_fill.png")
@@ -60,6 +63,8 @@ class ToolbarUI(QFrame):
         main_layout.addWidget(self.login_button)
         main_layout.addWidget(self.settings_button)
         main_layout.addWidget(self.window_button)
+        main_layout.addStretch()
+        main_layout.addWidget(self.library_button)
         main_layout.addStretch()
         main_layout.addWidget(self.user_button)
         main_layout.addItem(space_item_2)

@@ -67,6 +67,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.window_button.clicked.connect(self._show_window_menu)
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
+        self.tool_bar.library_button.clicked.connect(self._show_library_manager)
         self.tool_bar.clear_trash_action_triggered.connect(self._clear_trash)
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
@@ -242,10 +243,13 @@ class MainWidget(MainWidgetUI):
         """
         # 获取所有的assets, 显示在asset list view中
         if not self.library:
+            self.tool_bar.library_button.setHidden(True)
             self.category_widget.clear()
             self.tag_widget.clear()
             self.asset_widget.clear()
             return
+        # toolbar 上显示当前library
+        self._show_library_on_toolbar()
         # 列出所有的category
         self.category_widget.refresh_ui()
         # 求出所有资产
@@ -256,6 +260,16 @@ class MainWidget(MainWidgetUI):
         self.tag_widget.set_tags(tags)
         # status bar
         self.status_bar.info("%s assets found." % len(assets))
+
+    def _show_library_on_toolbar(self):
+        """
+        在toolbar上显示当前library
+        :return:
+        """
+        button = self.tool_bar.library_button
+        button.setHidden(False)
+        button.setIcon(mliber_resource.icon("library_type.png"))
+        button.setText("%s / %s" % (self.library.type, self.library.name))
 
     def _add_tag(self, tag_names):
         """

@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QVBoxLayout, QStyledItemDelegate, QMenu, QAction
 from Qt.QtGui import QIcon
 from Qt.QtCore import Qt, QSize
@@ -139,10 +140,17 @@ class CellElementWidget(QWidget):
         运行主函数
         :return:
         """
-        hook_name = self.sender().hook
-        hook_module = mliber_utils.load_hook(hook_name)
-        hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name)
-        hook_instance.main()
+        try:
+            hook_name = self.sender().hook
+            hook_module = mliber_utils.load_hook(hook_name)
+            if not hook_module:
+                logging.error("Hook: %s not found." % hook_name)
+                return
+            reload(hook_module)
+            hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name)
+            hook_instance.main()
+        except Exception as e:
+            logging.error(str(e))
 
 
 class ElementDelegate(QStyledItemDelegate):
