@@ -114,26 +114,6 @@ class MainWidget(MainWidgetUI):
             self.showMaximized()
         self._is_maximum = not self._is_maximum
 
-    @staticmethod
-    def _get_children_categories(categories):
-        """
-        获取子类型，需要递归
-        :param categories: <list> list of Category
-        :return:
-        """
-        all_categories = list()
-
-        def get(category_list):
-            category_id_list = [category.id for category in category_list]
-            with mliber_global.db() as db:
-                children_categories = db.find("Category", [["parent_id", "in", category_id_list]])
-                if children_categories:
-                    all_categories.extend(children_categories)
-                    get(children_categories)
-        get(categories)
-        all_categories.extend(categories)
-        return all_categories
-
     def _show_login(self):
         """
         显示login ui
@@ -214,8 +194,7 @@ class MainWidget(MainWidgetUI):
         当category选择改变的时候
         :return:
         """
-        all_categories = self._get_children_categories(categories)
-        category_ids = [category.id for category in all_categories]
+        category_ids = [category.id for category in categories]
         category_ids = list(set(category_ids))
         with mliber_global.db() as db:
             assets = db.find("Asset", [["category_id", "in", category_ids], ["status", "=", "Active"]])
@@ -314,13 +293,25 @@ class MainWidget(MainWidgetUI):
             if password == self.user.password:
                 with mliber_global.db() as db:
                     disable_libraries = db.find("Library", [["status", "=", "Disable"]])
-                    disable_categories = db.find("Category", [["status", "=", "Disable"]])
+                    for library in disable_libraries:
+                        db.delete(library)
+                    disable_categories = db.find("Category", [["status", "=", "Disable"],
+                                                              ["library_id", "is", None]],
+                                                 "any")
+                    for category in disable_categories:
+                        db.delete(category)
                     disable_tags = db.find("Tag", [["status", "=", "Disable"]])
-                    disable_assets = db.find("Asset", [["status", "=", "Disable"]])
-                    disable_elements = db.find("Element", [["status", "=", "Disable"]])
-                    entities = disable_libraries + disable_categories + disable_tags + disable_assets + disable_elements
-                    for entity in entities:
-                        db.delete(entity)
+                    for tag in disable_tags:
+                        db.delete(tag)
+                    disable_assets = db.find("Asset", [["status", "=", "Disable"],
+                                                       ["library_id", "is", None],
+                                                       ["category_id", "is", None]],
+                                             "any")
+                    for asset in disable_assets:
+                        db.delete(asset)
+                    disable_elements = db.find("Element", [["status", "=", "Disable"], ["asset_id", "is", None]], "any")
+                    for element in disable_elements:
+                        db.delete(element)
                     MessageBox.information(self, "Information", "Delete Done.")
             else:
                 MessageBox.critical(self, "Error", "Password Wrong.")

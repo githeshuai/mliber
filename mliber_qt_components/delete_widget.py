@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QCheckBox, QToolButton, QPushButton
-from Qt.QtCore import Qt, Signal
+from Qt.QtCore import Qt, Signal, QSize
 import mliber_resource
 import mliber_global
 
@@ -10,11 +10,23 @@ class DeleteWidget(QDialog):
 
     def __init__(self, parent=None):
         super(DeleteWidget, self).__init__(parent)
-        self.resize(300, 140)
+        self.resize(350, 140)
+        top_layout = QVBoxLayout(self)
+        top_layout.setSpacing(20)
+        top_layout.setContentsMargins(0, 0, 0, 0)
+        title_widget = QPushButton(self)
+        title_widget.setMinimumHeight(50)
+        title_widget.setStyleSheet("background: #2d2f37; padding: 0px; font: bold; "
+                                   "font-size: 15px; border: none; color: #F00;")
+        title_widget.setText("    Do you really want to delete it ?")
+        title_widget.setIcon(mliber_resource.icon("warning_red.png"))
+        title_widget.setIconSize(QSize(40, 40))
+        top_layout.addWidget(title_widget)
         # main
-        main_layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout()
+        top_layout.addLayout(main_layout)
         main_layout.setAlignment(Qt.AlignTop)
-        main_layout.setSpacing(20)
+        main_layout.setSpacing(10)
         self.setWindowTitle("Delete Category")
         # password layout
         password_layout = QVBoxLayout()
@@ -38,6 +50,7 @@ class DeleteWidget(QDialog):
         layout.addWidget(self.check)
         layout.addStretch()
         layout.addWidget(self.info_label)
+        layout.addStretch()
         # button layout
         button_layout = QHBoxLayout()
         self.ok_btn = QPushButton("Ok", self)
@@ -83,7 +96,7 @@ class DeleteWidget(QDialog):
         """
         self.info_label.setHidden(False)
         self.info_label.setIcon(mliber_resource.icon("error.png"))
-        self.info_label.setText(u"密码错误！")
+        self.info_label.setText("Wrong Password !")
 
     def validate_password(self):
         """

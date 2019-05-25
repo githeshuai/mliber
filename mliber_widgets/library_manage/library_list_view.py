@@ -11,7 +11,6 @@ from mliber_libs.os_libs.path import Path
 import mliber_resource
 from mliber_libs.os_libs import system
 from mliber_qt_components.messagebox import MessageBox
-from mliber_api.database_api import Database
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 DEFAULT_ICON_SIZE = 200

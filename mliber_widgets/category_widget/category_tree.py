@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import logging
+from datetime import datetime
 from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem, QApplication, QMenu, QAction, QFrame, QToolButton,\
     QAbstractItemView, QInputDialog, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QCheckBox
 from Qt.QtGui import QCursor
@@ -32,10 +34,11 @@ class CategoryTreeItem(QTreeWidgetItem):
 
 class CategoryTree(QTreeWidget):
     selection_changed = Signal(list)
+    deleted_signal = Signal()
 
     def __init__(self, parent=None):
         super(CategoryTree, self).__init__(parent)
-        self.setSelectionMode(self.SingleSelection)
+        self.setSelectionMode(self.ExtendedSelection)
         self.setFocusPolicy(Qt.NoFocus)
         self.setHeaderHidden(True)
         self.setFrameShape(QFrame.NoFrame)
@@ -56,6 +59,10 @@ class CategoryTree(QTreeWidget):
     @property
     def library(self):
         return mliber_global.library()
+
+    @property
+    def user(self):
+        return mliber_global.user()
 
     def refresh_data(self):
         """
@@ -99,12 +106,12 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         menu = QMenu(self)
-        show_in_explore_action = QAction(u"打开路径", self, triggered=self.open_category)
+        show_in_explore_action = QAction("Open in Explorer", self, triggered=self.open_category)
         menu.addAction(show_in_explore_action)
-        user = mliber_global.user()
-        if user.category_permission:
-            add_category_action = QAction(u"添加子类型", self, triggered=self.add_category)
-            delete_action = QAction(mliber_resource.icon("delete.png"), u"删除", self, triggered=self.delete_category)
+        if self.user.category_permission:
+            add_category_action = QAction("Add Category", self, triggered=self.add_category)
+            delete_action = QAction(mliber_resource.icon("delete.png"), u"Send to Trash", self,
+                                    triggered=self.delete_category)
             menu.addAction(add_category_action)
             menu.addSeparator()
             menu.addAction(delete_action)
@@ -134,7 +141,8 @@ class CategoryTree(QTreeWidget):
         """
         selected_categories = self.selected_categories()
         mliber_global.app().set_value(mliber_categories=selected_categories)
-        self.selection_changed.emit(selected_categories)
+        categories = self._get_children_categories(selected_categories)
+        self.selection_changed.emit(categories)
 
     def _category_exist(self, category_name, parent_id):
         """
@@ -230,10 +238,9 @@ class CategoryTree(QTreeWidget):
             MessageBox.critical(self, "Window Error", str(e))
             return
         # 在数据库里添加
-        user = mliber_global.user()
         with mliber_global.db() as db:
             category = db.create("Category", {"name": name, "parent_id": parent_id, "path": category_relative_path,
-                                              "created_by": user.id, "library_id": self.library.id})
+                                              "created_by": self.user.id, "library_id": self.library.id})
         # 在ui上显示
         tree_widget_item = CategoryTreeItem(parent_item or self)
         tree_widget_item.set_category(category)
@@ -253,6 +260,28 @@ class CategoryTree(QTreeWidget):
         else:
             path = self.library.root_path()
         Path(path).open()
+        
+    @staticmethod
+    def _get_children_categories(categories):
+        """
+        获取子类型，需要递归
+        :param categories: <list> list of Category
+        :return:
+        """
+        all_categories = list()
+
+        def get(category_list):
+            category_id_list = [category.id for category in category_list]
+            with mliber_global.db() as db:
+                children_categories = db.find("Category", 
+                                              [["parent_id", "in", category_id_list], 
+                                               ["status", "=", "Active"]])
+                if children_categories:
+                    all_categories.extend(children_categories)
+                    get(children_categories)
+        get(categories)
+        all_categories.extend(categories)
+        return all_categories
     
     def _recursion_delete_category(self, category):
         """
@@ -260,14 +289,16 @@ class CategoryTree(QTreeWidget):
         :param category: Category instance
         :return:
         """
+        categories = self._get_children_categories([category])
         with mliber_global.db() as db:
-            category_id = category.id
-            db.update("Category", category_id, {"status": "Disable"})
-            children = db.find("Category", [["parent_id", "=", category_id], ["status", "=", "Active"]])
-            if children:
-                for child in children:
-                    self._recursion_delete_category(child)
-
+            for category in categories:
+                db.update("Category", category.id, {"status": "Disable", "updated_by": self.user.id,
+                                                    "updated_at": datetime.now()})
+                assets = [asset for asset in category.assets if asset.status == "Active"]
+                for asset in assets:
+                    db.update("Asset", asset.id, {"status": "Disable", "updated_by": self.user.id,
+                                                  "updated_at": datetime.now()})
+        
     def delete_category(self):
         """
         删除category之前
@@ -289,10 +320,8 @@ class CategoryTree(QTreeWidget):
         selected_item = selected_items[0]
         category_relative_path = selected_item.category.path
         category_abs_path = self.get_abs_path(category_relative_path)
-        # 先删除数据库记录, 如果有子类别一并删除
+        # 先删除数据库记录, 如果有子类别一并删除, 并且删除资产
         self._recursion_delete_category(selected_item.category)
-        # 资产一并删除
-        
         # 从tree widget中移除
         parent = selected_item.father
         if parent is self:
@@ -306,7 +335,7 @@ class CategoryTree(QTreeWidget):
             try:
                 Path(category_abs_path).remove()
             except WindowsError as e:
-                print str(e)
+                logging.error(str(e))
                 MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
 
     def search_item(self, item_text):
@@ -319,18 +348,3 @@ class CategoryTree(QTreeWidget):
         if item:
             index = self.indexFromItem(item)
             self.scrollTo(index)
-
-    # def mouseReleaseEvent(self, event):
-    #     """
-    #     当鼠标右键弹起的时候，发送selection changed信息
-    #     :return:
-    #     """
-    #     super(CategoryTree, self).mouseReleaseEvent(event)
-    #     self._on_item_selection_changed()
-
-
-if __name__ == "__main__":
-    app = QApplication([])
-    ct = DeleteCategoryDialog()
-    ct.show()
-    app.exec_()

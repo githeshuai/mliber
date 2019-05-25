@@ -20,7 +20,7 @@ class PasswordWidget(QDialog):
         top_layout.addWidget(title_widget)
         # main
         main_layout = QVBoxLayout()
-        main_layout.setSpacing(15)
+        main_layout.setSpacing(20)
         top_layout.addLayout(main_layout)
         main_layout.setContentsMargins(5, 5, 5, 10)
         # old password

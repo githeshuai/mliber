@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
 from Qt.QtGui import QCursor
@@ -419,11 +420,12 @@ class AssetListView(QListView):
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
+        open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
+        menu.addAction(open_action)
+        if user.asset_permission:
             delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self,
                                     triggered=self._show_delete_widget)
             menu.addAction(delete_action)
-        open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
-        menu.addAction(open_action)
         menu.addSeparator()
         selected_assets = self.selected_assets()
         asset_ids = [asset.id for asset in selected_assets]
@@ -460,11 +462,14 @@ class AssetListView(QListView):
         for index, row in enumerate(self._selected_rows()):
             asset = source_model.model_data[row]
             with mliber_global.db() as db:
-                db.update("Asset", asset.id, {"status": "disable"})
+                db.update("Asset", asset.id, {"status": "Disable",
+                                              "updated_by": self.user.id,
+                                              "updated_at": datetime.now()})
             source_model.removeRows(row - index, 1)
-            elements = asset.elements
+            elements = [element for element in asset.elements if element.status == "Active"]
             for element in elements:
-                db.update("Element", element.id, {"status": "Active"})
+                db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
+                                                  "updated_at": datetime.now()})
             if delete_source:
                 asset_path = asset.path.format(root=self.library.root_path())
                 try:

@@ -206,7 +206,7 @@ class LibraryManage(LibraryManageUI):
         row = selected_rows[0]
         selected_library = source_model.model_data[row].library
         with mliber_global.db() as db:
-            self._delete(db, selected_library.id)
+            self._delete(db, selected_library)
         if mliber_global.library() == selected_library:
             mliber_global.app().set_value(mliber_library=None)
             self.deleted.emit()
@@ -220,19 +220,23 @@ class LibraryManage(LibraryManageUI):
                 print str(e)
                 MessageBox.warning(self, "Warning", u"源文件删除失败，请手动删除")
 
-    def _delete(self, db, library_id):
+    def _delete(self, db, library):
         """
         删除library下的category和asset
         :param db:
-        :param library_id:
+        :param library:
         :return:
         """
-        db.update("Library", library_id, {"status": "Disable",
+        db.update("Library", library.id, {"status": "Disable",
                                           "updated_at": datetime.now(),
                                           "updated_by": self.user.id})
-        categories = db.find("Category", [["library_id", "=", library_id]])
+        categories = [category for category in library.categories if category.status == "Active"]
         for category in categories:
-            db.update("Category", category.id, {"status": "Disable", "updated_by": self.user.id})
-        assets = db.find("Asset", [["library_id", "=", library_id]])
+            db.update("Category", category.id, {"status": "Disable",
+                                                "updated_at": datetime.now(),
+                                                "updated_by": self.user.id})
+        assets = [asset for asset in library.assets if asset.status == "Active"]
         for asset in assets:
-            db.update("Asset", asset.id, {"status": "Disable", "updated_by": self.user.id})
+            db.update("Asset", asset.id, {"status": "Disable",
+                                          "updated_at": datetime.now(),
+                                          "updated_by": self.user.id})

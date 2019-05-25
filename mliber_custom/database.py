@@ -6,7 +6,7 @@ DATABASES = {
         "ENGINE": "mysql",
         'NAME': "test",
         "USER": "root",
-        "HOST": "192.168.137.129",
+        "HOST": "192.168.202.128",
         "PASSWORD": "Digisky_2019",
     },
 
