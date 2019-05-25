@@ -290,14 +290,15 @@ class CategoryTree(QTreeWidget):
         :return:
         """
         categories = self._get_children_categories([category])
+        category_ids = [category.id for category in categories]
         with mliber_global.db() as db:
             for category in categories:
                 db.update("Category", category.id, {"status": "Disable", "updated_by": self.user.id,
                                                     "updated_at": datetime.now()})
-                assets = [asset for asset in category.assets if asset.status == "Active"]
-                for asset in assets:
-                    db.update("Asset", asset.id, {"status": "Disable", "updated_by": self.user.id,
-                                                  "updated_at": datetime.now()})
+            assets = db.find("Asset", [["category_id", "in", category_ids], ["status", "=", "Active"]])
+            for asset in assets:
+                db.update("Asset", asset.id, {"status": "Disable", "updated_by": self.user.id,
+                                              "updated_at": datetime.now()})
         
     def delete_category(self):
         """

@@ -466,7 +466,7 @@ class AssetListView(QListView):
                                               "updated_by": self.user.id,
                                               "updated_at": datetime.now()})
             source_model.removeRows(row - index, 1)
-            elements = [element for element in asset.elements if element.status == "Active"]
+            elements = db.find("Element", [["asset_id", "=", asset.id], ["status", "=", "Active"]])
             for element in elements:
                 db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
                                                   "updated_at": datetime.now()})
