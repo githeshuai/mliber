@@ -238,7 +238,7 @@ def column_mapped_collection(mapping_spec):
 
     The key value must be immutable for the lifetime of the object.  You
     can not, for example, map on foreign key values if those key values will
-    change during the session, i.e. from None to a database_api-assigned integer
+    change during the session, i.e. from None to a database-assigned integer
     after a session flush.
 
     """
@@ -271,7 +271,7 @@ def attribute_mapped_collection(attr_name):
 
     The key value must be immutable for the lifetime of the object.  You
     can not, for example, map on foreign key values if those key values will
-    change during the session, i.e. from None to a database_api-assigned integer
+    change during the session, i.e. from None to a database-assigned integer
     after a session flush.
 
     """
@@ -288,7 +288,7 @@ def mapped_collection(keyfunc):
 
     The key value must be immutable for the lifetime of the object.  You
     can not, for example, map on foreign key values if those key values will
-    change during the session, i.e. from None to a database_api-assigned integer
+    change during the session, i.e. from None to a database-assigned integer
     after a session flush.
 
     """
@@ -352,8 +352,8 @@ class collection(object):
 
         If the value to append is not allowed in the collection, you may
         raise an exception.  Something to remember is that the appender
-        will be called for each object mapped by a database_api query.  If the
-        database_api contains rows that violate your collection semantics, you
+        will be called for each object mapped by a database query.  If the
+        database contains rows that violate your collection semantics, you
         will need to get creative to fix the problem, as access via the
         collection will not work.
 
@@ -1591,7 +1591,7 @@ class MappedCollection(dict):
         for use as a dictionary key.
 
         The keyfunc will be called every time the ORM needs to add a member by
-        value-only (such as when loading instances from the database_api) or
+        value-only (such as when loading instances from the database) or
         remove a member.  The usual cautions about dictionary keying apply-
         ``keyfunc(object)`` should return the same output for the life of the
         collection.  Keying based on mutable properties can result in

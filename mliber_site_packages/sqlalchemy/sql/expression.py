@@ -1,4 +1,4 @@
-# database_api/expression.py
+# sql/expression.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -174,7 +174,7 @@ from ..util.langhelpers import public_factory  # noqa
 
 # factory functions - these pull class-bound constructors and classmethods
 # from SQL elements and selectables into public functions.  This allows
-# the functions to be available in the sqlalchemy.database_api.* namespace and
+# the functions to be available in the sqlalchemy.sql.* namespace and
 # to be auto-cross-documenting from the function to the class itself.
 
 all_ = public_factory(CollectionAggregate._create_all, ".expression.all_")

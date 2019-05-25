@@ -1,4 +1,4 @@
-# database_api/util.py
+# sql/util.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -20,7 +20,6 @@ from .annotation import _shallow_annotate  # noqa
 from .base import _from_objects
 from .base import ColumnSet
 from .ddl import sort_tables  # noqa
-from .elements import _expand_cloned
 from .elements import _find_columns  # noqa
 from .elements import _label_reference
 from .elements import _textual_label_reference
@@ -42,7 +41,7 @@ from .. import util
 
 
 join_condition = util.langhelpers.public_factory(
-    Join._join_condition, ".database_api.util.join_condition"
+    Join._join_condition, ".sql.util.join_condition"
 )
 
 
@@ -149,14 +148,6 @@ def find_left_clause_to_join_from(clauses, join_to, onclause):
             elif Join._can_join(f, s) or onclause is not None:
                 idx.append(i)
                 break
-
-    if len(idx) > 1:
-        # this is the same "hide froms" logic from
-        # Selectable._get_display_froms
-        toremove = set(
-            chain(*[_expand_cloned(f._hide_froms) for f in clauses])
-        )
-        idx = [i for i in idx if clauses[i] not in toremove]
 
     # onclause was given and none of them resolved, so assume
     # all indexes can match
@@ -637,14 +628,14 @@ def reduce_columns(columns, *clauses, **kw):
                     fk_col = fk.column
                 except exc.NoReferencedColumnError:
                     # TODO: add specific coverage here
-                    # to test/database_api/test_selectable ReduceTest
+                    # to test/sql/test_selectable ReduceTest
                     if ignore_nonexistent_tables:
                         continue
                     else:
                         raise
                 except exc.NoReferencedTableError:
                     # TODO: add specific coverage here
-                    # to test/database_api/test_selectable ReduceTest
+                    # to test/sql/test_selectable ReduceTest
                     if ignore_nonexistent_tables:
                         continue
                     else:

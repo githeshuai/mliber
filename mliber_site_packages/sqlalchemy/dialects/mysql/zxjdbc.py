@@ -10,7 +10,7 @@ r"""
 .. dialect:: mysql+zxjdbc
     :name: zxjdbc for Jython
     :dbapi: zxjdbc
-    :connectstring: mysql+zxjdbc://<user>:<password>@<hostname>[:<port>]/<database_api>
+    :connectstring: mysql+zxjdbc://<user>:<password>@<hostname>[:<port>]/<database>
     :driverurl: http://dev.mysql.com/downloads/connector/j/
 
     .. note:: Jython is not supported by current versions of SQLAlchemy.  The

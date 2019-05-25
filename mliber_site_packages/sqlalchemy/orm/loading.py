@@ -5,7 +5,7 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""private module containing functions used to convert database_api
+"""private module containing functions used to convert database
 rows into object instances and associated state.
 
 the functions here are called primarily by Query, Mapper,
@@ -191,7 +191,7 @@ def get_from_identity(session, key, passive):
 def load_on_ident(
     query, key, refresh_state=None, with_for_update=None, only_load_props=None
 ):
-    """Load the given identity key from the database_api."""
+    """Load the given identity key from the database."""
 
     if key is not None:
         ident = key[1]
@@ -218,7 +218,7 @@ def load_on_pk_identity(
     identity_token=None,
 ):
 
-    """Load the given primary key identity from the database_api."""
+    """Load the given primary key identity from the database."""
 
     if refresh_state is None:
         q = query._clone()
@@ -781,7 +781,7 @@ def _validate_version_id(mapper, state, dict_, row, adapter):
     ):
         raise orm_exc.StaleDataError(
             "Instance '%s' has version id '%s' which "
-            "does not match database_api-loaded version id '%s'."
+            "does not match database-loaded version id '%s'."
             % (
                 state_str(state),
                 mapper._get_state_attr_by_column(

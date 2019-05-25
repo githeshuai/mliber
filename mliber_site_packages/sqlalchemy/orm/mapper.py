@@ -8,7 +8,7 @@
 """Logic to map Python classes to and from selectables.
 
 Defines the :class:`~sqlalchemy.orm.mapper.Mapper` class, the central
-configurational unit which associates a class with a database_api table.
+configurational unit which associates a class with a database table.
 
 This is a semi-private module; the main configurational API of the ORM is
 available in :class:`~sqlalchemy.orm.`.
@@ -69,7 +69,7 @@ _CONFIGURE_MUTEX = util.threading.RLock()
 @inspection._self_inspects
 @log.class_logger
 class Mapper(InspectionAttr):
-    """Define the correlation of class attributes to database_api table
+    """Define the correlation of class attributes to database table
     columns.
 
     The :class:`.Mapper` object is instantiated using the
@@ -222,15 +222,15 @@ class Mapper(InspectionAttr):
         :param always_refresh: If True, all query operations for this mapped
            class will overwrite all data within object instances that already
            exist within the session, erasing any in-memory changes with
-           whatever information was loaded from the database_api. Usage of this
+           whatever information was loaded from the database. Usage of this
            flag is highly discouraged; as an alternative, see the method
            :meth:`.Query.populate_existing`.
 
         :param allow_partial_pks: Defaults to True.  Indicates that a
            composite primary key with some NULL values should be considered as
-           possibly existing within the database_api. This affects whether a
+           possibly existing within the database. This affects whether a
            mapper will assign an incoming row to an existing identity, as well
-           as if :meth:`.Session.merge` will check the database_api first for a
+           as if :meth:`.Session.merge` will check the database first for a
            particular primary key value. A "partial primary key" can occur if
            one has mapped to an OUTER JOIN, for example.
 
@@ -259,7 +259,7 @@ class Mapper(InspectionAttr):
           of one more rows based on specific primary keys, a warning is
           emitted when the number of rows matched does not equal the number
           of rows expected.  This parameter may be set to False to handle the
-          case where database_api ON DELETE CASCADE rules may be deleting some of
+          case where database ON DELETE CASCADE rules may be deleting some of
           those rows automatically.  The warning may be changed to an
           exception in a future release.
 
@@ -275,7 +275,7 @@ class Mapper(InspectionAttr):
           this scheme will emit an individual ``SELECT`` statement per row
           inserted or updated, which note can add significant performance
           overhead.  However, if the
-          target database_api supports :term:`RETURNING`, the default values will
+          target database supports :term:`RETURNING`, the default values will
           be returned inline with the INSERT or UPDATE statement, which can
           greatly enhance performance for an application that needs frequent
           access to just-generated server defaults.
@@ -395,11 +395,11 @@ class Mapper(InspectionAttr):
            inheritance mapping.   Defaults to ``True``.
 
            When True, it is assumed that ON UPDATE CASCADE is configured on
-           the foreign key in the database_api, and that the database_api will handle
+           the foreign key in the database, and that the database will handle
            propagation of an UPDATE from a source column to dependent columns
            on joined-table rows.
 
-           When False, it is assumed that the database_api does not enforce
+           When False, it is assumed that the database does not enforce
            referential integrity and will not be issuing its own CASCADE
            operation for an update.  The unit of work process will
            emit an UPDATE statement for the dependent columns during a
@@ -495,7 +495,7 @@ class Mapper(InspectionAttr):
           When setting ``polymorphic_on`` to reference an
           attribute or expression that's not present in the
           locally mapped :class:`.Table`, yet the value
-          of the discriminator should be persisted to the database_api,
+          of the discriminator should be persisted to the database,
           the value of the
           discriminator is not automatically set on new
           instances; this must be handled by the user,
@@ -514,7 +514,7 @@ class Mapper(InspectionAttr):
           Where above, we assign the value of ``polymorphic_identity``
           for the mapped class to the ``discriminator`` attribute,
           thus persisting the value to the ``discriminator`` column
-          in the database_api.
+          in the database.
 
           .. warning::
 
@@ -2704,7 +2704,7 @@ class Mapper(InspectionAttr):
         its primary key attributes.
 
         If the instance's state is expired, calling this method
-        will result in a database_api check to see if the object has been deleted.
+        will result in a database check to see if the object has been deleted.
         If the row no longer exists,
         :class:`~sqlalchemy.orm.exc.ObjectDeletedError` is raised.
 
@@ -2736,7 +2736,7 @@ class Mapper(InspectionAttr):
         instance.
 
         If the instance's state is expired, calling this method
-        will result in a database_api check to see if the object has been deleted.
+        will result in a database check to see if the object has been deleted.
         If the row no longer exists,
         :class:`~sqlalchemy.orm.exc.ObjectDeletedError` is raised.
 
@@ -3251,10 +3251,10 @@ def reconstructor(fn):
 
     Designates a method as the "reconstructor", an ``__init__``-like
     method that will be called by the ORM after the instance has been
-    loaded from the database_api or otherwise reconstituted.
+    loaded from the database or otherwise reconstituted.
 
     The reconstructor will be invoked with no arguments.  Scalar
-    (non-collection) database_api-mapped attributes of the instance will
+    (non-collection) database-mapped attributes of the instance will
     be available for use within the function.  Eagerly-loaded
     collections are generally not yet available and will usually only
     contain the first element.  ORM state changes made to objects at

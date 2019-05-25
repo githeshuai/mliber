@@ -1,4 +1,4 @@
-# database_api/visitors.py
+# sql/visitors.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -18,7 +18,7 @@ some kinds of expression transformation.  Other kinds of transformation
 use a non-visitor traversal system.
 
 For many examples of how the visit system is used, see the
-sqlalchemy.database_api.util and the sqlalchemy.database_api.compiler modules.
+sqlalchemy.sql.util and the sqlalchemy.sql.compiler modules.
 For an introduction to clause adaption, see
 http://techspot.zzzeek.org/2008/01/23/expression-transformations/
 

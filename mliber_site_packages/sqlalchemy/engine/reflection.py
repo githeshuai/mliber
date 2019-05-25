@@ -5,7 +5,7 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""Provides an abstraction for obtaining database_api schema information.
+"""Provides an abstraction for obtaining database schema information.
 
 Usage Notes:
 
@@ -58,7 +58,7 @@ def cache(fn, self, con, *args, **kw):
 
 
 class Inspector(object):
-    """Performs database_api schema inspection.
+    """Performs database schema inspection.
 
     The Inspector acts as a proxy to the reflection methods of the
     :class:`~sqlalchemy.engine.interfaces.Dialect`, providing a
@@ -80,7 +80,7 @@ class Inspector(object):
 
     Where above, the :class:`~sqlalchemy.engine.interfaces.Dialect` may opt
     to return an :class:`.Inspector` subclass that provides additional
-    methods specific to the dialect's target database_api.
+    methods specific to the dialect's target database.
 
     """
 
@@ -142,7 +142,7 @@ class Inspector(object):
     @property
     def default_schema_name(self):
         """Return the default schema name presented by the dialect
-        for the current engine's database_api user.
+        for the current engine's database user.
 
         E.g. this is typically ``public`` for PostgreSQL and ``dbo``
         for SQL Server.
@@ -179,8 +179,8 @@ class Inspector(object):
 
 
         :param schema: Schema name. If ``schema`` is left at ``None``, the
-         database_api's default schema is
-         used, else the named schema is searched.  If the database_api does not
+         database's default schema is
+         used, else the named schema is searched.  If the database does not
          support named schemas, behavior is undefined if ``schema`` is not
          passed as ``None``.  For special quoting, use :class:`.quoted_name`.
 
@@ -304,7 +304,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         """
@@ -360,11 +360,11 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         :return: list of dictionaries, each representing the definition of
-         a database_api column.
+         a database column.
 
         """
 
@@ -411,7 +411,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         """
@@ -445,7 +445,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         """
@@ -479,7 +479,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         """
@@ -504,7 +504,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         """
@@ -549,7 +549,7 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         :param schema: string schema name; if omitted, uses the default schema
-         of the database_api connection.  For special quoting,
+         of the database connection.  For special quoting,
          use :class:`.quoted_name`.
 
         .. versionadded:: 1.1.0

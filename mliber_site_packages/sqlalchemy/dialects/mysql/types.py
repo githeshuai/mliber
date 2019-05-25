@@ -117,7 +117,7 @@ class NUMERIC(_NumericType, sqltypes.NUMERIC):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -143,7 +143,7 @@ class DECIMAL(_NumericType, sqltypes.DECIMAL):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -177,7 +177,7 @@ class DOUBLE(_FloatType):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -211,7 +211,7 @@ class REAL(_FloatType, sqltypes.REAL):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -237,7 +237,7 @@ class FLOAT(_FloatType, sqltypes.FLOAT):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -263,7 +263,7 @@ class INTEGER(_IntegerType, sqltypes.INTEGER):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -284,7 +284,7 @@ class BIGINT(_IntegerType, sqltypes.BIGINT):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -305,7 +305,7 @@ class MEDIUMINT(_IntegerType):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -326,7 +326,7 @@ class TINYINT(_IntegerType):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """
@@ -347,7 +347,7 @@ class SMALLINT(_IntegerType, sqltypes.SMALLINT):
 
         :param zerofill: Optional. If true, values will be stored as strings
           left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database_api API, which continue to be
+          returned by the underlying database API, which continue to be
           numeric.
 
         """

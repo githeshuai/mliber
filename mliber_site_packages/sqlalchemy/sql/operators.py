@@ -1,4 +1,4 @@
-# database_api/operators.py
+# sql/operators.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -43,11 +43,11 @@ class Operators(object):
     """Base of comparison and logical operators.
 
     Implements base methods
-    :meth:`~sqlalchemy.database_api.operators.Operators.operate` and
-    :meth:`~sqlalchemy.database_api.operators.Operators.reverse_operate`, as well as
-    :meth:`~sqlalchemy.database_api.operators.Operators.__and__`,
-    :meth:`~sqlalchemy.database_api.operators.Operators.__or__`,
-    :meth:`~sqlalchemy.database_api.operators.Operators.__invert__`.
+    :meth:`~sqlalchemy.sql.operators.Operators.operate` and
+    :meth:`~sqlalchemy.sql.operators.Operators.reverse_operate`, as well as
+    :meth:`~sqlalchemy.sql.operators.Operators.__and__`,
+    :meth:`~sqlalchemy.sql.operators.Operators.__or__`,
+    :meth:`~sqlalchemy.sql.operators.Operators.__invert__`.
 
     Usually is used via its most common subclass
     :class:`.ColumnOperators`.
@@ -247,8 +247,8 @@ class custom_op(object):
     used directly when programmatically constructing expressions.   E.g.
     to represent the "factorial" operation::
 
-        from sqlalchemy.database_api import UnaryExpression
-        from sqlalchemy.database_api import operators
+        from sqlalchemy.sql import UnaryExpression
+        from sqlalchemy.sql import operators
         from sqlalchemy import Numeric
 
         unary = UnaryExpression(table.c.somecolumn,
@@ -425,7 +425,7 @@ class ColumnOperators(Operators):
     def __getitem__(self, index):
         """Implement the [] operator.
 
-        This can be used by some database_api-specific types
+        This can be used by some database-specific types
         such as PostgreSQL ARRAY and HSTORE.
 
         """
@@ -560,14 +560,14 @@ class ColumnOperators(Operators):
 
             connection.execute(stmt, {"value": [1, 2, 3]})
 
-          The database_api would be passed a bound parameter for each value::
+          The database would be passed a bound parameter for each value::
 
             WHERE COL IN (?, ?, ?)
 
           .. versionadded:: 1.2 added "expanding" bound parameters
 
           If an empty list is passed, a special "empty list" expression,
-          which is specific to the database_api in use, is rendered.  On
+          which is specific to the database in use, is rendered.  On
           SQLite this would be::
 
             WHERE COL IN (SELECT 1 FROM (SELECT 1) WHERE 1!=1)
@@ -748,7 +748,7 @@ class ColumnOperators(Operators):
             somecolumn.startswith("foo%bar^bat", escape="^", autoescape=True)
 
           Where above, the given literal parameter will be converted to
-          ``"foo^%bar^^bat"`` before being passed to the database_api.
+          ``"foo^%bar^^bat"`` before being passed to the database.
 
         .. seealso::
 
@@ -836,7 +836,7 @@ class ColumnOperators(Operators):
             somecolumn.endswith("foo%bar^bat", escape="^", autoescape=True)
 
           Where above, the given literal parameter will be converted to
-          ``"foo^%bar^^bat"`` before being passed to the database_api.
+          ``"foo^%bar^^bat"`` before being passed to the database.
 
         .. seealso::
 
@@ -924,7 +924,7 @@ class ColumnOperators(Operators):
             somecolumn.contains("foo%bar^bat", escape="^", autoescape=True)
 
           Where above, the given literal parameter will be converted to
-          ``"foo^%bar^^bat"`` before being passed to the database_api.
+          ``"foo^%bar^^bat"`` before being passed to the database.
 
         .. seealso::
 
@@ -939,7 +939,7 @@ class ColumnOperators(Operators):
         return self.operate(contains_op, other, **kwargs)
 
     def match(self, other, **kwargs):
-        """Implements a database_api-specific 'match' operator.
+        """Implements a database-specific 'match' operator.
 
         :meth:`~.ColumnOperators.match` attempts to resolve to
         a MATCH-like function or operator provided by the backend.

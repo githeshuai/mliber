@@ -62,7 +62,7 @@ def picklers():
 
     # yes, this thing needs this much testing
     for pickle_ in picklers:
-        for protocol in range(-2, pickle.HIGHEST_PROTOCOL):
+        for protocol in -1, 0, 1, 2:
             yield pickle_.loads, lambda d: pickle_.dumps(d, protocol)
 
 
@@ -180,7 +180,7 @@ def run_as_contextmanager(ctx, fn, *arg, **kw):
 
 
 def rowset(results):
-    """Converts the results of database_api execution into a plain set of column tuples.
+    """Converts the results of sql execution into a plain set of column tuples.
 
     Useful for asserting the results of an unordered query.
     """

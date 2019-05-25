@@ -8,7 +8,7 @@
 """Serializer/Deserializer objects for usage with SQLAlchemy query structures,
 allowing "contextual" deserialization.
 
-Any SQLAlchemy query structure, either based on sqlalchemy.database_api.*
+Any SQLAlchemy query structure, either based on sqlalchemy.sql.*
 or sqlalchemy.orm.* can be used.  The mappers, Tables, Columns, Session
 etc. which are referenced by the structure are not persisted in serialized
 form, but are instead re-associated with the query structure
@@ -47,7 +47,7 @@ needed for:
 * Table metadata that is to be loaded entirely from the serialized structure
   (i.e. is not already declared in the application).   Regular
   pickle.loads()/dumps() can be used to fully dump any ``MetaData`` object,
-  typically one which was reflected from an existing database_api at some previous
+  typically one which was reflected from an existing database at some previous
   point in time.  The serializer module is specifically for the opposite case,
   where the Table metadata is already present in memory.
 

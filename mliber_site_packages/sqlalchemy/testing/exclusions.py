@@ -221,9 +221,9 @@ class Predicate(object):
             "driver": config.db.url.get_driver_name()
             if config
             else "<no driver>",
-            "database_api": config.db.url.get_backend_name()
+            "database": config.db.url.get_backend_name()
             if config
-            else "<no database_api>",
+            else "<no database>",
             "doesnt_support": "doesn't support" if bool_ else "does support",
             "does_support": "does support" if bool_ else "doesn't support",
         }

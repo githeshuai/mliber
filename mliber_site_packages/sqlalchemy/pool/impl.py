@@ -13,7 +13,6 @@
 import traceback
 import weakref
 
-from .base import _ConnectionFairy
 from .base import _ConnectionRecord
 from .base import Pool
 from .. import exc
@@ -271,7 +270,7 @@ class SingletonThreadPool(Pool):
 
        :class:`.SingletonThreadPool` may be improved in a future release,
        however in its current status it is generally used only for test
-       scenarios using a SQLite ``:memory:`` database_api and is not recommended
+       scenarios using a SQLite ``:memory:`` database and is not recommended
        for production use.
 
 
@@ -281,7 +280,7 @@ class SingletonThreadPool(Pool):
         at once.  Defaults to five.
 
     :class:`.SingletonThreadPool` is used by the SQLite dialect
-    automatically when a memory-based database_api is used.
+    automatically when a memory-based database is used.
     See :ref:`sqlite_toplevel`.
 
     """
@@ -289,7 +288,6 @@ class SingletonThreadPool(Pool):
     def __init__(self, creator, pool_size=5, **kw):
         Pool.__init__(self, creator, **kw)
         self._conn = threading.local()
-        self._fairy = threading.local()
         self._all_conns = set()
         self.size = pool_size
 
@@ -347,25 +345,6 @@ class SingletonThreadPool(Pool):
             self._cleanup()
         self._all_conns.add(c)
         return c
-
-    def connect(self):
-        # vendored from Pool to include use_threadlocal behavior
-        try:
-            rec = self._fairy.current()
-        except AttributeError:
-            pass
-        else:
-            if rec is not None:
-                return rec._checkout_existing()
-
-        return _ConnectionFairy._checkout(self, self._fairy)
-
-    def _return_conn(self, record):
-        try:
-            del self._fairy.current
-        except AttributeError:
-            pass
-        self._do_return_conn(record)
 
 
 class StaticPool(Pool):

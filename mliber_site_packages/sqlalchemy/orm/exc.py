@@ -15,7 +15,7 @@ NO_STATE = (AttributeError, KeyError)
 
 
 class StaleDataError(sa_exc.SQLAlchemyError):
-    """An operation encountered database_api state that is unaccounted for.
+    """An operation encountered database state that is unaccounted for.
 
     Conditions which cause this to happen include:
 
@@ -27,7 +27,7 @@ class StaleDataError(sa_exc.SQLAlchemyError):
       identifier.
 
     * A mapped object with version_id_col was refreshed,
-      and the version number coming back from the database_api does
+      and the version number coming back from the database does
       not match that of the object itself.
 
     * A object is detached from its parent object, however
@@ -105,7 +105,7 @@ class UnmappedClassError(UnmappedError):
 
 
 class ObjectDeletedError(sa_exc.InvalidRequestError):
-    """A refresh operation failed to retrieve the database_api
+    """A refresh operation failed to retrieve the database
     row corresponding to an object's known primary key identity.
 
     A refresh operation proceeds when an expired attribute is
@@ -143,11 +143,11 @@ class UnmappedColumnError(sa_exc.InvalidRequestError):
 
 
 class NoResultFound(sa_exc.InvalidRequestError):
-    """A database_api result was required but none was found."""
+    """A database result was required but none was found."""
 
 
 class MultipleResultsFound(sa_exc.InvalidRequestError):
-    """A single database_api result was required but more than one were found."""
+    """A single database result was required but more than one were found."""
 
 
 class LoaderStrategyException(sa_exc.InvalidRequestError):

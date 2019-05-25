@@ -889,7 +889,7 @@ def contains_eager(loadopt, attr, alias=None):
     ``Order.user`` attribute pre-populated.
 
     :func:`.contains_eager` also accepts an `alias` argument, which is the
-    string name of an alias, an :func:`~sqlalchemy.database_api.expression.alias`
+    string name of an alias, an :func:`~sqlalchemy.sql.expression.alias`
     construct, or an :func:`~sqlalchemy.orm.aliased` construct. Use this when
     the eagerly-loaded rows are to come from an aliased table::
 

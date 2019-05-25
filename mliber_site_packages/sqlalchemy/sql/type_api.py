@@ -1,4 +1,4 @@
-# database_api/types_api.py
+# sql/types_api.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -61,12 +61,12 @@ class TypeEngine(Visitable):
             self.expr = expr
             self.type = expr.type
 
-        @util.dependencies("sqlalchemy.database_api.default_comparator")
+        @util.dependencies("sqlalchemy.sql.default_comparator")
         def operate(self, default_comparator, op, *other, **kwargs):
             o = default_comparator.operator_lookup[op.__name__]
             return o[0](self.expr, op, *(other + o[1:]), **kwargs)
 
-        @util.dependencies("sqlalchemy.database_api.default_comparator")
+        @util.dependencies("sqlalchemy.sql.default_comparator")
         def reverse_operate(self, default_comparator, op, other, **kwargs):
             o = default_comparator.operator_lookup[op.__name__]
             return o[0](self.expr, op, other, reverse=True, *o[1:], **kwargs)
@@ -82,7 +82,7 @@ class TypeEngine(Visitable):
             :class:`.Integer` when compared via the addition (``+``) operator.
             However, using the addition operator with an :class:`.Integer`
             and a :class:`.Date` object will produce a :class:`.Date`, assuming
-            "days delta" behavior by the database_api (in reality, most databases
+            "days delta" behavior by the database (in reality, most databases
             other than PostgreSQL don't accept this particular operation).
 
             The method returns a tuple of the form <operator>, <type>.
@@ -222,8 +222,8 @@ class TypeEngine(Visitable):
         for builtin types as well.
 
         The function should return True if this type is equivalent to the
-        given type; the type is typically reflected from the database_api
-        so should be database_api specific.  The dialect in use is also
+        given type; the type is typically reflected from the database
+        so should be database specific.  The dialect in use is also
         passed.   It can also return False to assert that the type is
         not equivalent.
 
@@ -288,7 +288,7 @@ class TypeEngine(Visitable):
         This is typically a SQL function that wraps a column expression
         as rendered in the columns clause of a SELECT statement.
         It is used for special data types that require
-        columns to be wrapped in some special database_api function in order
+        columns to be wrapped in some special database function in order
         to coerce the value before being sent back to the application.
         It is the SQL analogue of the :meth:`.TypeEngine.result_processor`
         method.
@@ -324,8 +324,8 @@ class TypeEngine(Visitable):
 
         This is typically a SQL function that wraps the existing bound
         parameter within the statement.  It is used for special data types
-        that require literals being wrapped in some special database_api function
-        in order to coerce an application-level value into a database_api-specific
+        that require literals being wrapped in some special database function
+        in order to coerce an application-level value into a database-specific
         format.  It is the SQL analogue of the
         :meth:`.TypeEngine.bind_processor` method.
 
@@ -691,9 +691,9 @@ class UserDefinedType(util.with_metaclass(VisitableCheckKWArg, TypeEngine)):
 class Emulated(object):
     """Mixin for base types that emulate the behavior of a DB-native type.
 
-    An :class:`.Emulated` type will use an available database_api type
-    in conjunction with Python-side routines and/or database_api constraints
-    in order to approximate the behavior of a database_api type that is provided
+    An :class:`.Emulated` type will use an available database type
+    in conjunction with Python-side routines and/or database constraints
+    in order to approximate the behavior of a database type that is provided
     natively by some backends.  When a native-providing backend is in
     use, the native version of the type is used.  This native version
     should include the :class:`.NativeForEmulated` mixin to allow it to be
@@ -1070,7 +1070,7 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         """Receive a result-row column value to be converted.
 
         Subclasses should implement this method to operate on data
-        fetched from the database_api.
+        fetched from the database.
 
         Subclasses override this method to return the
         value that should be passed back to the application,
@@ -1133,10 +1133,10 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         implemented, where :meth:`.TypeDecorator.process_literal_param` is
         not.  The rationale here is that :class:`.TypeDecorator` typically
         deals with Python conversions of data that are above the layer of
-        database_api presentation.  With the value converted by
+        database presentation.  With the value converted by
         :meth:`.TypeDecorator.process_bind_param`, the underlying type will
         then handle whether it needs to be presented to the DBAPI as a bound
-        parameter or to the database_api as an inline SQL value.
+        parameter or to the database as an inline SQL value.
 
         .. versionadded:: 0.9.0
 
@@ -1450,7 +1450,7 @@ def adapt_type(typeobj, colspecs):
         # couldn't adapt - so just return the type itself
         # (it may be a user-defined type)
         return typeobj
-    # if we adapted the given generic type to a database_api-specific type,
+    # if we adapted the given generic type to a database-specific type,
     # but it turns out the originally given "generic" type
     # is actually a subclass of our resulting type, then we were already
     # given a more specific type than that required; so use that.

@@ -233,7 +233,7 @@ class ARRAY(sqltypes.ARRAY):
         :param zero_indexes=False: when True, index values will be converted
          between Python zero-based and PostgreSQL one-based indexes, e.g.
          a value of one will be added to all index values before passing
-         to the database_api.
+         to the database.
 
          .. versionadded:: 0.9.5
 

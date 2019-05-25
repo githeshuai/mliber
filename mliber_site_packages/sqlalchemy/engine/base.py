@@ -246,7 +246,7 @@ class Connection(Connectable):
           those string values accepted by the
           :paramref:`.create_engine.isolation_level`
           parameter passed to :func:`.create_engine`.  These levels are
-          semi-database_api specific; see individual dialect documentation for
+          semi-database specific; see individual dialect documentation for
           valid levels.
 
           Note that this option necessarily affects the underlying
@@ -259,7 +259,7 @@ class Connection(Connectable):
           .. warning::  The ``isolation_level`` execution option should
              **not** be used when a transaction is already established, that
              is, the :meth:`.Connection.begin` method or similar has been
-             called.  A database_api cannot change the isolation level on a
+             called.  A database cannot change the isolation level on a
              transaction in progress, and different DBAPIs and/or
              SQLAlchemy dialects may implicitly roll back or commit
              the transaction, or not affect the connection at all.
@@ -643,7 +643,7 @@ class Connection(Connectable):
         The returned object is an instance of :class:`.NestedTransaction`.
 
         Nested transactions require SAVEPOINT support in the
-        underlying database_api.  Any transaction in the hierarchy may
+        underlying database.  Any transaction in the hierarchy may
         ``commit`` and ``rollback``, however the outermost transaction
         still controls the overall ``commit`` or ``rollback`` of the
         transaction of a whole.
@@ -869,7 +869,7 @@ class Connection(Connectable):
     def close(self):
         """Close this :class:`.Connection`.
 
-        This results in a release of the underlying database_api
+        This results in a release of the underlying database
         resources, that is, the DBAPI connection referenced
         internally. The DBAPI connection is typically restored
         back to the connection-holding :class:`.Pool` referenced
@@ -988,7 +988,7 @@ class Connection(Connectable):
             return meth(self, multiparams, params)
 
     def _execute_function(self, func, multiparams, params):
-        """Execute a database_api.FunctionElement object."""
+        """Execute a sql.FunctionElement object."""
 
         return self._execute_clauseelement(func.select(), multiparams, params)
 
@@ -1054,7 +1054,7 @@ class Connection(Connectable):
         return ret
 
     def _execute_clauseelement(self, elem, multiparams, params):
-        """Execute a database_api.ClauseElement object."""
+        """Execute a sql.ClauseElement object."""
 
         if self._has_events or self.engine._has_events:
             for fn in self.dispatch.before_execute:
@@ -1111,7 +1111,7 @@ class Connection(Connectable):
         return ret
 
     def _execute_compiled(self, compiled, multiparams, params):
-        """Execute a database_api.Compiled object."""
+        """Execute a sql.Compiled object."""
 
         if self._has_events or self.engine._has_events:
             for fn in self.dispatch.before_execute:
@@ -1635,7 +1635,7 @@ class ExceptionContextImpl(ExceptionContext):
 
 
 class Transaction(object):
-    """Represent a database_api transaction in progress.
+    """Represent a database transaction in progress.
 
     The :class:`.Transaction` object is procured by
     calling the :meth:`~.Connection.begin` method of
@@ -1813,7 +1813,7 @@ class Engine(Connectable, log.Identified):
     """
     Connects a :class:`~sqlalchemy.pool.Pool` and
     :class:`~sqlalchemy.engine.interfaces.Dialect` together to provide a
-    source of database_api connectivity and behavior.
+    source of database connectivity and behavior.
 
     An :class:`.Engine` object is instantiated publicly using the
     :func:`~sqlalchemy.create_engine` function.
@@ -1925,7 +1925,7 @@ class Engine(Connectable, log.Identified):
         An event handler can consume the above execution option to perform
         a schema switch or other operation, given a connection.  Below
         we emit a MySQL ``use`` statement to switch databases, at the same
-        time keeping track of which database_api we've established using the
+        time keeping track of which database we've established using the
         :attr:`.Connection.info` dictionary, which gives us a persistent
         storage space that follows the DBAPI connection::
 
@@ -1992,7 +1992,7 @@ class Engine(Connectable, log.Identified):
         """Dispose of the connection pool used by this :class:`.Engine`.
 
         This has the effect of fully closing all **currently checked in**
-        database_api connections.  Connections that are still checked out
+        database connections.  Connections that are still checked out
         will **not** be closed, however they will no longer be associated
         with this :class:`.Engine`, so when they are closed individually,
         eventually the :class:`.Pool` which they are associated with will
@@ -2001,7 +2001,7 @@ class Engine(Connectable, log.Identified):
 
         A new connection pool is created immediately after the old one has
         been disposed.   This new pool, like all SQLAlchemy connection pools,
-        does not make any actual connections to the database_api until one is
+        does not make any actual connections to the database until one is
         first requested, so as long as the :class:`.Engine` isn't used again,
         no new connections will be made.
 
@@ -2180,7 +2180,7 @@ class Engine(Connectable, log.Identified):
         """Return a new :class:`.Connection` object.
 
         The :class:`.Connection` object is a facade that uses a DBAPI
-        connection internally in order to communicate with the database_api.  This
+        connection internally in order to communicate with the database.  This
         connection is procured from the connection-holding :class:`.Pool`
         referenced by this :class:`.Engine`. When the
         :meth:`~.Connection.close` method of the :class:`.Connection` object
@@ -2229,7 +2229,7 @@ class Engine(Connectable, log.Identified):
         )
 
     def table_names(self, schema=None, connection=None):
-        """Return a list of all table names available in the database_api.
+        """Return a list of all table names available in the database.
 
         :param schema: Optional, retrieve names from a non-default schema.
 

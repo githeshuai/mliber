@@ -1,4 +1,4 @@
-# database_api/elements.py
+# sql/elements.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -435,7 +435,7 @@ class ClauseElement(Visitable):
             a custom compilation construct, for example.  It is also used
             for the case of passing the ``literal_binds`` flag through::
 
-                from sqlalchemy.database_api import table, column, select
+                from sqlalchemy.sql import table, column, select
 
                 t = table('t', column('x'))
 
@@ -590,9 +590,9 @@ class ColumnElement(operators.ColumnOperators, ClauseElement):
     Both :class:`.ColumnClause` and :class:`.BinaryExpression` are subclasses
     of :class:`.ColumnElement`::
 
-        >>> from sqlalchemy.database_api import column
+        >>> from sqlalchemy.sql import column
         >>> column('a') + column('b')
-        <sqlalchemy.database_api.expression.BinaryExpression object at 0x101029dd0>
+        <sqlalchemy.sql.expression.BinaryExpression object at 0x101029dd0>
         >>> print column('a') + column('b')
         a + b
 
@@ -928,7 +928,7 @@ class BindParameter(ColumnElement):
         is a :class:`.ColumnElement` subclass which represents a so-called
         "placeholder" value in a SQL expression, the value of which is
         supplied at the point at which the statement in executed against a
-        database_api connection.
+        database connection.
 
         In SQLAlchemy, the :func:`.bindparam` construct has
         the ability to carry along the actual value that will be ultimately
@@ -1010,9 +1010,9 @@ class BindParameter(ColumnElement):
             WHERE "user".name = %(name_1)s
             {'name_1': 'Wendy'}
 
-        Above, we see that ``Wendy`` is passed as a parameter to the database_api,
+        Above, we see that ``Wendy`` is passed as a parameter to the database,
         while the placeholder ``:name_1`` is rendered in the appropriate form
-        for the target database_api, in this case the PostgreSQL database_api.
+        for the target database, in this case the PostgreSQL database.
 
         Similarly, :func:`.bindparam` is invoked automatically
         when working with :term:`CRUD` statements as far as the "VALUES"
@@ -1066,11 +1066,11 @@ class BindParameter(ColumnElement):
 
           The type of a :func:`.bindparam` is significant especially in that
           the type will apply pre-processing to the value before it is
-          passed to the database_api.  For example, a :func:`.bindparam` which
+          passed to the database.  For example, a :func:`.bindparam` which
           refers to a datetime value, and is specified as holding the
           :class:`.DateTime` type, may apply conversion needed to the
           value (such as stringification on SQLite) before passing the value
-          to the database_api.
+          to the database.
 
         :param unique:
           if True, the key name of this :class:`.BindParameter` will be
@@ -1567,7 +1567,7 @@ class TextClause(Executable, ClauseElement):
             else:
                 new_params[key] = existing._with_value(value)
 
-    @util.dependencies("sqlalchemy.database_api.selectable")
+    @util.dependencies("sqlalchemy.sql.selectable")
     def columns(self, selectable, *cols, **types):
         """Turn this :class:`.TextClause` object into a :class:`.TextAsFrom`
         object that can be embedded into another statement.
@@ -1576,7 +1576,7 @@ class TextClause(Executable, ClauseElement):
         textual SELECT statement and the SQL expression language concept
         of a "selectable"::
 
-            from sqlalchemy.database_api import column, text
+            from sqlalchemy.sql import column, text
 
             stmt = text("SELECT id, name FROM some_table")
             stmt = stmt.columns(column('id'), column('name')).alias('st')
@@ -2249,7 +2249,7 @@ class Case(ColumnElement):
          whether or not :paramref:`.case.value` is used.
 
          In the first form, it accepts a list of 2-tuples; each 2-tuple
-         consists of ``(<database_api expression>, <value>)``, where the SQL
+         consists of ``(<sql expression>, <value>)``, where the SQL
          expression is a boolean expression and "value" is a resulting value,
          e.g.::
 
@@ -2420,8 +2420,8 @@ class Cast(ColumnElement):
 
         .. versionchanged:: 0.9.0 :func:`.cast` now applies the given type
            to the expression such that it takes effect on the bound-value,
-           e.g. the Python-to-database_api direction, in addition to the
-           result handling, e.g. database_api-to-Python, direction.
+           e.g. the Python-to-database direction, in addition to the
+           result handling, e.g. database-to-Python, direction.
 
         An alternative to :func:`.cast` is the :func:`.type_coerce` function.
         This function performs the second task of associating an expression
@@ -3047,9 +3047,9 @@ class BinaryExpression(ColumnElement):
     A :class:`.BinaryExpression` is generated automatically
     whenever two column expressions are used in a Python binary expression::
 
-        >>> from sqlalchemy.database_api import column
+        >>> from sqlalchemy.sql import column
         >>> column('a') + column('b')
-        <sqlalchemy.database_api.expression.BinaryExpression object at 0x101029dd0>
+        <sqlalchemy.sql.expression.BinaryExpression object at 0x101029dd0>
         >>> print column('a') + column('b')
         a + b
 
@@ -3058,8 +3058,8 @@ class BinaryExpression(ColumnElement):
     __visit_name__ = "binary"
 
     _is_implicitly_boolean = True
-    """Indicates that any database_api will know this is a boolean expression
-    even if the database_api does not have an explicit boolean datatype.
+    """Indicates that any database will know this is a boolean expression
+    even if the database does not have an explicit boolean datatype.
 
     """
 
@@ -3232,7 +3232,7 @@ class Over(ColumnElement):
     This is a special operator against a so-called
     "window" function, as well as any aggregate function,
     which produces results relative to the result set
-    itself.  It's supported only by certain database_api
+    itself.  It's supported only by certain database
     backends.
 
     """
@@ -3252,7 +3252,7 @@ class Over(ColumnElement):
         r"""Produce an :class:`.Over` object against a function.
 
         Used against aggregate or so-called "window" functions,
-        for database_api backends that support window functions.
+        for database backends that support window functions.
 
         :func:`~.expression.over` is usually called using
         the :meth:`.FunctionElement.over` method, e.g.::
@@ -3441,7 +3441,7 @@ class WithinGroup(ColumnElement):
     set aggregate" functions, including ``percentile_cont()``,
     ``rank()``, ``dense_rank()``, etc.
 
-    It's supported only by certain database_api backends, such as PostgreSQL,
+    It's supported only by certain database backends, such as PostgreSQL,
     Oracle and MS SQL Server.
 
     The :class:`.WithinGroup` construct extracts its type from the
@@ -3547,7 +3547,7 @@ class FunctionFilter(ColumnElement):
 
     This is a special operator against aggregate and window functions,
     which controls which rows are passed to it.
-    It's supported only by certain database_api backends.
+    It's supported only by certain database backends.
 
     Invocation of :class:`.FunctionFilter` is via
     :meth:`.FunctionElement.filter`::
@@ -3570,7 +3570,7 @@ class FunctionFilter(ColumnElement):
         """Produce a :class:`.FunctionFilter` object against a function.
 
         Used against aggregate and window functions,
-        for database_api backends that support the "FILTER" clause.
+        for database backends that support the "FILTER" clause.
 
         E.g.::
 
@@ -3619,7 +3619,7 @@ class FunctionFilter(ColumnElement):
         """Produce an OVER clause against this filtered function.
 
         Used against aggregate or so-called "window" functions,
-        for database_api backends that support window functions.
+        for database backends that support window functions.
 
         The expression::
 
@@ -3670,7 +3670,7 @@ class Label(ColumnElement):
     """Represents a column label (AS).
 
     Represent a label, as typically applied to any column-level
-    element using the ``AS`` database_api keyword.
+    element using the ``AS`` sql keyword.
 
     """
 
@@ -3847,13 +3847,13 @@ class ColumnClause(Immutable, ColumnElement):
         Once constructed, :func:`.column` may be used like any other SQL
         expression element such as within :func:`.select` constructs::
 
-            from sqlalchemy.database_api import column
+            from sqlalchemy.sql import column
 
             id, name = column("id"), column("name")
             stmt = select([id, name]).select_from("user")
 
         The text handled by :func:`.column` is assumed to be handled
-        like the name of a database_api column; if the string contains mixed case,
+        like the name of a database column; if the string contains mixed case,
         special characters, or matches a known reserved word on the target
         backend, the column expression will render using the quoting
         behavior determined by the backend.  To produce a textual SQL
@@ -4100,7 +4100,7 @@ class quoted_name(util.MemoizedSlots, util.text_type):
 
     A :class:`.quoted_name` object with ``quote=True`` is also
     prevented from being modified in the case of a so-called
-    "name normalize" option.  Certain database_api backends, such as
+    "name normalize" option.  Certain database backends, such as
     Oracle, Firebird, and DB2 "normalize" case-insensitive names
     as uppercase.  The SQLAlchemy dialects for these backends
     convert from SQLAlchemy's lower-case-means-insensitive convention
@@ -4117,7 +4117,7 @@ class quoted_name(util.MemoizedSlots, util.text_type):
     an unconditionally quoted name::
 
         from sqlalchemy import create_engine
-        from sqlalchemy.database_api import quoted_name
+        from sqlalchemy.sql import quoted_name
 
         engine = create_engine("oracle+cx_oracle://some_dsn")
         engine.has_table(quoted_name("some_table", True))
@@ -4129,8 +4129,8 @@ class quoted_name(util.MemoizedSlots, util.text_type):
     .. versionadded:: 0.9.0
 
     .. versionchanged:: 1.2 The :class:`.quoted_name` construct is now
-       importable from ``sqlalchemy.database_api``, in addition to the previous
-       location of ``sqlalchemy.database_api.elements``.
+       importable from ``sqlalchemy.sql``, in addition to the previous
+       location of ``sqlalchemy.sql.elements``.
 
     """
 
@@ -4365,7 +4365,7 @@ def _cloned_difference(a, b):
     )
 
 
-@util.dependencies("sqlalchemy.database_api.functions")
+@util.dependencies("sqlalchemy.sql.functions")
 def _labeled(functions, element):
     if not hasattr(element, "name") or isinstance(
         element, functions.FunctionElement

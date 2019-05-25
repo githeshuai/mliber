@@ -37,7 +37,7 @@ own primary key values upon INSERT.  Since Oracle has no "autoincrement"
 feature, SQLAlchemy relies upon sequences to produce these values.   With the
 Oracle dialect, *a sequence must always be explicitly specified to enable
 autoincrement*.  This is divergent with the majority of documentation
-examples which assume the usage of an autoincrement-capable database_api.   To
+examples which assume the usage of an autoincrement-capable database.   To
 specify sequences, use the sqlalchemy.schema.Sequence object which is passed
 to a Column construct::
 
@@ -101,7 +101,7 @@ with a window function.
 RETURNING Support
 -----------------
 
-The Oracle database_api supports a limited form of RETURNING, in order to retrieve
+The Oracle database supports a limited form of RETURNING, in order to retrieve
 result sets of matched rows from INSERT, UPDATE and DELETE statements.
 Oracle's RETURNING..INTO syntax only supports one row being returned, as it
 relies upon OUT parameters in order to function.  In addition, supported
@@ -266,7 +266,7 @@ Oracle has no datatype known as ``DATETIME``, it instead has only ``DATE``,
 which can actually store a date and time value.  For this reason, the Oracle
 dialect provides a type :class:`.oracle.DATE` which is a subclass of
 :class:`.DateTime`.   This type has no special behavior, and is only
-present as a "marker" for this type; additionally, when a database_api column
+present as a "marker" for this type; additionally, when a database column
 is reflected and the type is reported as ``DATE``, the time-supporting
 :class:`.oracle.DATE` type is used.
 
@@ -275,7 +275,7 @@ is reflected and the type is reported as ``DATE``, the time-supporting
    would reflect a ``DATE`` column as :class:`.types.DATE`, which subclasses
    :class:`.Date`.   The only significance here is for schemes that are
    examining the type of column for use in special Python translations or
-   for migrating schemas to other database_api backends.
+   for migrating schemas to other database backends.
 
 .. _oracle_table_options:
 
@@ -321,7 +321,7 @@ instead of a B-tree index::
     Index('my_index', my_table.c.data, oracle_bitmap=True)
 
 Bitmap indexes cannot be unique and cannot be compressed. SQLAlchemy will not
-check for such limitations, only the database_api will.
+check for such limitations, only the database will.
 
 .. versionadded:: 1.0.0
 

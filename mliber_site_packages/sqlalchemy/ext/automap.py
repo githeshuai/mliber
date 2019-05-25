@@ -6,7 +6,7 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 r"""Define an extension to the :mod:`sqlalchemy.ext.declarative` system
-which automatically generates mapped classes and relationships from a database_api
+which automatically generates mapped classes and relationships from a database
 schema, typically though not necessarily one which is reflected.
 
 .. versionadded:: 0.9.1 Added :mod:`sqlalchemy.ext.automap`.
@@ -15,7 +15,7 @@ It is hoped that the :class:`.AutomapBase` system provides a quick
 and modernized solution to the problem that the very famous
 `SQLSoup <https://sqlsoup.readthedocs.io/en/latest/>`_
 also tries to solve, that of generating a quick and rudimentary object
-model from an existing database_api on the fly.  By addressing the issue strictly
+model from an existing database on the fly.  By addressing the issue strictly
 at the mapper configuration level, and integrating fully with existing
 Declarative class techniques, :class:`.AutomapBase` seeks to provide
 a well-integrated approach to the issue of expediently auto-generating ad-hoc
@@ -25,7 +25,7 @@ mappings.
 Basic Use
 =========
 
-The simplest usage is to reflect an existing database_api into a new model.
+The simplest usage is to reflect an existing database into a new model.
 We create a new :class:`.AutomapBase` class in a similar manner as to how
 we create a declarative base class, using :func:`.automap_base`.
 We then call :meth:`.AutomapBase.prepare` on the resulting base class,
@@ -92,7 +92,7 @@ explicit table declaration::
     # produce our own MetaData object
     metadata = MetaData()
 
-    # we can reflect it ourselves from a database_api, using options
+    # we can reflect it ourselves from a database, using options
     # such as 'only' to limit what tables we look at...
     metadata.reflect(engine, only=['user', 'address'])
 
@@ -416,7 +416,7 @@ automap is attempting to name a many-to-one relationship the same as an
 existing column, an alternate convention can be conditionally selected.  Given
 a schema:
 
-.. sourcecode:: database_api
+.. sourcecode:: sql
 
     CREATE TABLE table_a (
         id INTEGER PRIMARY KEY
@@ -749,7 +749,7 @@ class AutomapBase(object):
          :paramref:`.AutomapBase.prepare.reflect` flag, is passed to
          :meth:`.MetaData.reflect` to indicate the primary schema where tables
          should be reflected from.  When omitted, the default schema in use
-         by the database_api connection is used.
+         by the database connection is used.
 
          .. versionadded:: 1.1
 

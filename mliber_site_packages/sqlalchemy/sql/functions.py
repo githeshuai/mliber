@@ -1,4 +1,4 @@
-# database_api/functions.py
+# sql/functions.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -95,7 +95,7 @@ class FunctionElement(Executable, ColumnElement, FromClause):
         as a FROM clause is to build a :func:`.select` with the
         desired columns::
 
-            from sqlalchemy.database_api import column
+            from sqlalchemy.sql import column
 
             stmt = select([column('x'), column('y')]).\
                 select_from(func.myfunction())
@@ -116,7 +116,7 @@ class FunctionElement(Executable, ColumnElement, FromClause):
         """Produce an OVER clause against this function.
 
         Used against aggregate or so-called "window" functions,
-        for database_api backends that support window functions.
+        for database backends that support window functions.
 
         The expression::
 
@@ -157,7 +157,7 @@ class FunctionElement(Executable, ColumnElement, FromClause):
         """Produce a FILTER clause against this function.
 
         Used against aggregate and window functions,
-        for database_api backends that support the "FILTER" clause.
+        for database backends that support the "FILTER" clause.
 
         The expression::
 
@@ -281,7 +281,7 @@ class FunctionElement(Executable, ColumnElement, FromClause):
 
         e.g.::
 
-            from sqlalchemy.database_api import column
+            from sqlalchemy.sql import column
 
             stmt = select([column('data_view')]).\
                 select_from(SomeTable).\
@@ -290,7 +290,7 @@ class FunctionElement(Executable, ColumnElement, FromClause):
 
         Would produce:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT data_view
             FROM sometable, unnest(sometable.data) AS data_view
@@ -467,7 +467,7 @@ func = _FunctionGenerator()
    Any name can be given to :data:`.func`. If the function name is unknown to
    SQLAlchemy, it will be rendered exactly as is. For common SQL functions
    which SQLAlchemy is aware of, the name may be interpreted as a *generic
-   function* which will be compiled appropriately to the target database_api::
+   function* which will be compiled appropriately to the target database::
 
         >>> print(func.current_timestamp())
         CURRENT_TIMESTAMP
@@ -597,7 +597,7 @@ class GenericFunction(util.with_metaclass(_GenericMeta, Function)):
     example, a user-defined function ``as_utc()`` would
     be available immediately::
 
-        from sqlalchemy.database_api.functions import GenericFunction
+        from sqlalchemy.sql.functions import GenericFunction
         from sqlalchemy.types import DateTime
 
         class as_utc(GenericFunction):

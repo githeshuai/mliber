@@ -148,7 +148,7 @@ RESERVED_WORDS = set(
         "current_transaction",
         "current_user",
         "cursor",
-        "database_api",
+        "database",
         "date",
         "day",
         "dec",
@@ -504,7 +504,7 @@ class FBCompiler(sql.compiler.SQLCompiler):
             return ""
 
     def default_from(self):
-        return " FROM rdb$database_api"
+        return " FROM rdb$database"
 
     def visit_sequence(self, seq, **kw):
         return "gen_id(%s, 1)" % self.preparer.format_sequence(seq)
@@ -594,7 +594,7 @@ class FBExecutionContext(default.DefaultExecutionContext):
         """Get the next value from the sequence using ``gen_id()``."""
 
         return self._execute_scalar(
-            "SELECT gen_id(%s, 1) FROM rdb$database_api"
+            "SELECT gen_id(%s, 1) FROM rdb$database"
             % self.dialect.identifier_preparer.format_sequence(seq),
             type_,
         )
@@ -683,7 +683,7 @@ class FBDialect(default.DefaultDialect):
         the `schema`."""
 
         tblqry = """
-        SELECT 1 AS has_table FROM rdb$database_api
+        SELECT 1 AS has_table FROM rdb$database
         WHERE EXISTS (SELECT rdb$relation_name
                       FROM rdb$relations
                       WHERE rdb$relation_name=?)
@@ -695,7 +695,7 @@ class FBDialect(default.DefaultDialect):
         """Return ``True`` if the given sequence (generator) exists."""
 
         genqry = """
-        SELECT 1 AS has_sequence FROM rdb$database_api
+        SELECT 1 AS has_sequence FROM rdb$database
         WHERE EXISTS (SELECT rdb$generator_name
                       FROM rdb$generators
                       WHERE rdb$generator_name=?)

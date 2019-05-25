@@ -42,7 +42,7 @@ be employed.  See :ref:`pool_disconnects` for current approaches.
 .. seealso::
 
     :ref:`pool_disconnects` - Background on several techniques for dealing
-    with timed out connections as well as database_api restarts.
+    with timed out connections as well as database restarts.
 
 .. _mysql_storage_engines:
 
@@ -79,7 +79,7 @@ to ``MyISAM`` for this value, although newer versions may be defaulting
 to ``InnoDB``.  The ``InnoDB`` engine is typically preferred for its support
 of transactions and foreign keys.
 
-A :class:`.Table` that is created in a MySQL database_api with a storage engine
+A :class:`.Table` that is created in a MySQL database with a storage engine
 of ``MyISAM`` will be essentially non-transactional, meaning any
 INSERT/UPDATE/DELETE statement referring to this table will be invoked as
 autocommit.   It also will have no support for foreign key constraints; while
@@ -104,13 +104,13 @@ MySQL has inconsistent support for case-sensitive identifier
 names, basing support on specific details of the underlying
 operating system. However, it has been observed that no matter
 what case sensitivity behavior is present, the names of tables in
-foreign key declarations are *always* received from the database_api
+foreign key declarations are *always* received from the database
 as all-lower case, making it impossible to accurately reflect a
 schema where inter-related tables use mixed-case identifier names.
 
 Therefore it is strongly advised that table names be declared as
 all lower case both within SQLAlchemy as well as on the MySQL
-database_api itself, especially if database_api reflection features are
+database itself, especially if database reflection features are
 to be used.
 
 .. _mysql_isolation_level:
@@ -227,9 +227,9 @@ by the server if plain ``utf8`` is specified within any server-side
 directives, replaced with ``utf8mb3``.   The rationale for this new encoding
 is due to the fact that MySQL's legacy utf-8 encoding only supports
 codepoints up to three bytes instead of four.  Therefore,
-when communicating with a MySQL database_api
+when communicating with a MySQL database
 that includes codepoints more than three bytes in size,
-this new charset is preferred, if supported by both the database_api as well
+this new charset is preferred, if supported by both the database as well
 as the client DBAPI, as in::
 
     e = create_engine(
@@ -253,7 +253,7 @@ Dealing with Binary Data Warnings and Unicode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MySQL versions 5.6, 5.7 and later (not MariaDB at the time of this writing) now
-emit a warning when attempting to pass binary data to the database_api, while a
+emit a warning when attempting to pass binary data to the database, while a
 character set encoding is also in place, when the binary data itself is not
 valid for that encoding::
 
@@ -303,7 +303,7 @@ backticks and the other using quotes, e.g. ```some_identifier```  vs.
 is in use by checking the value of ``sql_mode`` when a connection is first
 established with a particular :class:`.Engine`.  This quoting style comes
 into play when rendering table and column names as well as when reflecting
-existing database_api structures.  The detection is entirely automatic and
+existing database structures.  The detection is entirely automatic and
 no special configuration is needed to use either quoting style.
 
 MySQL SQL Extensions
@@ -466,7 +466,7 @@ didn't add all datatype support until 4.1.1.   If your application falls into
 this narrow area, the behavior of CAST can be controlled using the
 :ref:`sqlalchemy.ext.compiler_toplevel` system, as per the recipe below::
 
-    from sqlalchemy.database_api.expression import Cast
+    from sqlalchemy.sql.expression import Cast
     from sqlalchemy.ext.compiler import compiles
 
     @compiles(Cast, 'mysql')
@@ -828,7 +828,7 @@ RESERVED_WORDS = set(
         "current_timestamp",
         "current_user",
         "cursor",
-        "database_api",
+        "database",
         "databases",
         "day_hour",
         "day_microsecond",
@@ -971,7 +971,7 @@ RESERVED_WORDS = set(
         "smallint",
         "spatial",
         "specific",
-        "database_api",
+        "sql",
         "sqlexception",
         "sqlstate",
         "sqlwarning",
@@ -2182,7 +2182,7 @@ class MySQLDialect(default.DefaultDialect):
         return val.upper().replace("-", " ")
 
     def _get_server_version_info(self, connection):
-        # get database_api server version info explicitly over the wire
+        # get database server version info explicitly over the wire
         # to avoid proxy servers like MaxScale getting in the
         # way with their own values, see #4205
         dbapi_con = connection.connection
@@ -2807,7 +2807,7 @@ class MySQLDialect(default.DefaultDialect):
             self._sql_mode = row[1] or ""
 
     def _detect_ansiquotes(self, connection):
-        """Detect and adjust for the ANSI_QUOTES database_api mode."""
+        """Detect and adjust for the ANSI_QUOTES sql mode."""
 
         mode = self._sql_mode
         if not mode:

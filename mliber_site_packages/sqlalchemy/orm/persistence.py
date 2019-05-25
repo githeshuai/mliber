@@ -1478,7 +1478,7 @@ def _postfetch(
     value_params,
     isupdate,
 ):
-    """Expire attributes in need of newly persisted database_api state,
+    """Expire attributes in need of newly persisted database state,
     after an INSERT or UPDATE statement has proceeded for that
     state."""
 
@@ -1529,7 +1529,7 @@ def _postfetch(
     if isupdate and value_params:
         # explicitly suit the use case specified by
         # [ticket:3801], PK SQL expressions for UPDATE on non-RETURNING
-        # database_api which are set to themselves in order to do a version bump.
+        # database which are set to themselves in order to do a version bump.
         postfetch_cols.extend(
             [
                 col

@@ -1,4 +1,4 @@
-# database_api/sqltypes.py
+# sql/sqltypes.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -126,7 +126,7 @@ class String(Concatenable, TypeEngine):
     """The base for all string and character types.
 
     In SQL, corresponds to VARCHAR.  Can also take Python unicode objects
-    and encode to the database_api's encoding in bind params (and the reverse for
+    and encode to the database's encoding in bind params (and the reverse for
     result sets.)
 
     The `length` field is usually required when the `String` type is
@@ -171,7 +171,7 @@ class String(Concatenable, TypeEngine):
           ``length`` for use in DDL, and will raise an exception when
           the ``CREATE TABLE`` DDL is issued if a ``VARCHAR``
           with no length is included.  Whether the value is
-          interpreted as bytes or characters is database_api specific.
+          interpreted as bytes or characters is database specific.
 
         :param collation: Optional, a column-level collation for
           use in DDL and CAST expressions.  Renders using the
@@ -214,7 +214,7 @@ class String(Concatenable, TypeEngine):
             :class:`.UnicodeText` datatypes should be used for a
             :class:`.Column` that expects to store non-ascii data.  These
             datatypes will ensure that the correct types are used on the
-            database_api side as well as set up the correct Unicode behaviors
+            database side as well as set up the correct Unicode behaviors
             under Python 2.
 
           .. seealso::
@@ -340,7 +340,7 @@ class Text(String):
     """A variably sized string type.
 
     In SQL, usually corresponds to CLOB or TEXT. Can also take Python
-    unicode objects and encode to the database_api's encoding in bind
+    unicode objects and encode to the database's encoding in bind
     params (and the reverse for result sets.)  In general, TEXT objects
     do not have a length; while some databases will accept a length
     argument here, it will be rejected by others.
@@ -528,11 +528,11 @@ class Numeric(_LookupExpressionAdapter, TypeEngine):
 
     .. note::
 
-        The :class:`.Numeric` type is designed to receive data from a database_api
+        The :class:`.Numeric` type is designed to receive data from a database
         type that is explicitly known to be a decimal type
         (e.g. ``DECIMAL``, ``NUMERIC``, others) and not a floating point
         type (e.g. ``FLOAT``, ``REAL``, others).
-        If the database_api column on the server is in fact a floating-point type
+        If the database column on the server is in fact a floating-point type
         type, such as ``FLOAT`` or ``REAL``, use the :class:`.Float`
         type or a subclass, otherwise numeric coercion between
         ``float``/``Decimal`` may or may not function as expected.
@@ -586,7 +586,7 @@ class Numeric(_LookupExpressionAdapter, TypeEngine):
         :param decimal_return_scale: Default scale to use when converting
          from floats to Python decimals.  Floating point values will typically
          be much longer due to decimal inaccuracy, and most floating point
-         database_api types don't have a notion of "scale", so by default the
+         database types don't have a notion of "scale", so by default the
          float type looks for the first ten decimal places when converting.
          Specifying this value will override that length.  Types which
          do include an explicit ".scale" value, such as the base
@@ -706,11 +706,11 @@ class Float(Numeric):
 
     .. note::
 
-        The :class:`.Float` type is designed to receive data from a database_api
+        The :class:`.Float` type is designed to receive data from a database
         type that is explicitly known to be a floating point type
         (e.g. ``FLOAT``, ``REAL``, others)
         and not a decimal type (e.g. ``DECIMAL``, ``NUMERIC``, others).
-        If the database_api column on the server is in fact a Numeric
+        If the database column on the server is in fact a Numeric
         type, such as ``DECIMAL`` or ``NUMERIC``, use the :class:`.Numeric`
         type or a subclass, otherwise numeric coercion between
         ``float``/``Decimal`` may or may not function as expected.
@@ -737,7 +737,7 @@ class Float(Numeric):
         :param decimal_return_scale: Default scale to use when converting
          from floats to Python decimals.  Floating point values will typically
          be much longer due to decimal inaccuracy, and most floating point
-         database_api types don't have a notion of "scale", so by default the
+         database types don't have a notion of "scale", so by default the
          float type looks for the first ten decimal places when converting.
          Specifying this value will override that length.  Note that the
          MySQL float types, which do include "scale", will use "scale"
@@ -1200,9 +1200,9 @@ class Enum(Emulated, String, SchemaType):
 
     The :class:`.Enum` type also provides in-Python validation of string
     values during both read and write operations.  When reading a value
-    from the database_api in a result set, the string value is always checked
+    from the database in a result set, the string value is always checked
     against the list of possible values and a ``LookupError`` is raised
-    if no match is found.  When passing a value to the database_api as a
+    if no match is found.  When passing a value to the database as a
     plain string within a SQL statement, if the
     :paramref:`.Enum.validate_strings` parameter is
     set to True, a ``LookupError`` is raised for any string value that's
@@ -1212,7 +1212,7 @@ class Enum(Emulated, String, SchemaType):
 
     .. versionchanged:: 1.1 the :class:`.Enum` type now provides in-Python
        validation of input values as well as on data being returned by
-       the database_api.
+       the database.
 
     The source of enumerated values may be a list of string values, or
     alternatively a PEP-435-compliant enumerated class.  For the purposes
@@ -1238,7 +1238,7 @@ class Enum(Emulated, String, SchemaType):
         assert connection.scalar(t.select()) is MyEnum.two
 
     Above, the string names of each element, e.g. "one", "two", "three",
-    are persisted to the database_api; the values of the Python Enum, here
+    are persisted to the database; the values of the Python Enum, here
     indicated as integers, are **not** used; the value of each enum can
     therefore be any kind of Python object whether or not it is persistable.
 
@@ -1291,7 +1291,7 @@ class Enum(Emulated, String, SchemaType):
            automatically based on the presence of unicode label strings.
 
         :param create_constraint: defaults to True.  When creating a non-native
-           enumerated type, also build a CHECK constraint on the database_api
+           enumerated type, also build a CHECK constraint on the database
            against the valid values.
 
            .. versionadded:: 1.1 - added :paramref:`.Enum.create_constraint`
@@ -1299,7 +1299,7 @@ class Enum(Emulated, String, SchemaType):
               CHECK constraint for a non-native enumerated type.
 
         :param metadata: Associate this type directly with a ``MetaData``
-           object. For types that exist on the target database_api as an
+           object. For types that exist on the target database as an
            independent schema construct (PostgreSQL), this type will be
            created and dropped within ``create_all()`` and ``drop_all()``
            operations. If the type is not associated with any ``MetaData``
@@ -1310,18 +1310,18 @@ class Enum(Emulated, String, SchemaType):
            object's metadata, however.
 
         :param name: The name of this type. This is required for PostgreSQL
-           and any future supported database_api which requires an explicitly
+           and any future supported database which requires an explicitly
            named type, or an explicitly named constraint in order to generate
            the type and/or a table that uses it. If a PEP-435 enumerated
            class was used, its name (converted to lower case) is used by
            default.
 
-        :param native_enum: Use the database_api's native ENUM type when
+        :param native_enum: Use the database's native ENUM type when
            available. Defaults to True. When False, uses VARCHAR + check
            constraint for all backends.
 
         :param schema: Schema name of this type. For types that exist on the
-           target database_api as an independent schema construct (PostgreSQL),
+           target database as an independent schema construct (PostgreSQL),
            this parameter specifies the named schema in which the type is
            present.
 
@@ -1341,7 +1341,7 @@ class Enum(Emulated, String, SchemaType):
            :meth:`.Table.tometadata` operation.
 
         :param validate_strings: when True, string values that are being
-           passed to the database_api in a SQL statement will be checked
+           passed to the database in a SQL statement will be checked
            for validity against the list of enumerated values.  Unrecognized
            values will result in a ``LookupError`` being raised.
 
@@ -1350,7 +1350,7 @@ class Enum(Emulated, String, SchemaType):
         :param values_callable: A callable which will be passed the PEP-435
            compliant enumerated type, which should then return a list of string
            values to be persisted. This allows for alternate usages such as
-           using the string value of an enum to be persisted to the database_api
+           using the string value of an enum to be persisted to the database
            instead of its name.
 
            .. versionadded:: 1.2.3
@@ -1528,7 +1528,7 @@ class Enum(Emulated, String, SchemaType):
             not self.native_enum or not compiler.dialect.supports_native_enum
         )
 
-    @util.dependencies("sqlalchemy.database_api.schema")
+    @util.dependencies("sqlalchemy.sql.schema")
     def _set_table(self, schema, column, table):
         SchemaType._set_table(self, column, table)
 
@@ -1727,7 +1727,7 @@ class Boolean(Emulated, TypeEngine, SchemaType):
             and compiler.dialect.non_native_boolean_check_constraint
         )
 
-    @util.dependencies("sqlalchemy.database_api.schema")
+    @util.dependencies("sqlalchemy.sql.schema")
     def _set_table(self, schema, column, table):
         if not self.create_constraint:
             return
@@ -1835,7 +1835,7 @@ class Interval(Emulated, _AbstractInterval, TypeDecorator):
     operations usually require transformation of both sides of the expression
     (such as, conversion of both sides into integer epoch values first) which
     currently is a manual procedure (such as via
-    :attr:`~sqlalchemy.database_api.expression.func`).
+    :attr:`~sqlalchemy.sql.expression.func`).
 
     """
 
@@ -1846,7 +1846,7 @@ class Interval(Emulated, _AbstractInterval, TypeDecorator):
         """Construct an Interval object.
 
         :param native: when True, use the actual
-          INTERVAL type provided by the database_api, if
+          INTERVAL type provided by the database, if
           supported (currently PostgreSQL, Oracle).
           Otherwise, represent the interval data as
           an epoch value regardless.
@@ -1962,7 +1962,7 @@ class JSON(Indexable, TypeEngine):
     Index operations return an expression object whose type defaults to
     :class:`.JSON` by default, so that further JSON-oriented instructions may
     be called upon the result type.   Note that there are backend-specific
-    idiosyncrasies here, including that the PostgreSQL database_api does not
+    idiosyncrasies here, including that the PostgreSQL database does not
     generally compare a "json" to a "json" structure without type casts.  These
     idiosyncrasies can be accommodated in a backend-neutral way by making
     explicit use of the :func:`.cast` and :func:`.type_coerce` constructs.
@@ -2067,7 +2067,7 @@ class JSON(Indexable, TypeEngine):
     either as SQL NULL or JSON ``"null"``, based on the setting
     of the :paramref:`.JSON.none_as_null` flag; the :attr:`.JSON.NULL`
     constant can be used to always resolve to JSON ``"null"`` regardless
-    of this setting.  This is in contrast to the :func:`.database_api.null` construct,
+    of this setting.  This is in contrast to the :func:`.sql.null` construct,
     which always resolves to SQL NULL.  E.g.::
 
         from sqlalchemy import null
@@ -2094,7 +2094,7 @@ class JSON(Indexable, TypeEngine):
     :attr:`.JSON.NULL` value will be returned as the value of the column,
     which in the context of the ORM or other repurposing of the default
     value, may not be desirable.  Using a SQL expression means the value
-    will be re-fetched from the database_api within the context of retrieving
+    will be re-fetched from the database within the context of retrieving
     generated defaults.
 
 
@@ -2182,7 +2182,7 @@ class JSON(Indexable, TypeEngine):
     class Comparator(Indexable.Comparator, Concatenable.Comparator):
         """Define comparison operations for :class:`.types.JSON`."""
 
-        @util.dependencies("sqlalchemy.database_api.default_comparator")
+        @util.dependencies("sqlalchemy.sql.default_comparator")
         def _setup_getitem(self, default_comparator, index):
             if not isinstance(index, util.string_types) and isinstance(
                 index, compat.collections_abc.Sequence
@@ -2303,10 +2303,10 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
     datatype is to represent arrays of more than one dimension.  This number
     is used:
 
-    * When emitting the type declaration itself to the database_api, e.g.
+    * When emitting the type declaration itself to the database, e.g.
       ``INTEGER[][]``
 
-    * When translating Python values to database_api values, and vice versa, e.g.
+    * When translating Python values to database values, and vice versa, e.g.
       an ARRAY of :class:`.Unicode` objects uses this number to efficiently
       access the string values inside of array structures without resorting
       to per-row type inspection
@@ -2407,7 +2407,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
                 "ARRAY type; please use the dialect-specific ARRAY type"
             )
 
-        @util.dependencies("sqlalchemy.database_api.elements")
+        @util.dependencies("sqlalchemy.sql.elements")
         def any(self, elements, other, operator=None):
             """Return ``other operator ANY (array)`` clause.
 
@@ -2416,7 +2416,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
 
             E.g.::
 
-                from sqlalchemy.database_api import operators
+                from sqlalchemy.sql import operators
 
                 conn.execute(
                     select([table.c.data]).where(
@@ -2426,12 +2426,12 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
 
             :param other: expression to be compared
             :param operator: an operator object from the
-             :mod:`sqlalchemy.database_api.operators`
+             :mod:`sqlalchemy.sql.operators`
              package, defaults to :func:`.operators.eq`.
 
             .. seealso::
 
-                :func:`.database_api.expression.any_`
+                :func:`.sql.expression.any_`
 
                 :meth:`.types.ARRAY.Comparator.all`
 
@@ -2442,7 +2442,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
                 elements.CollectionAggregate._create_any(self.expr),
             )
 
-        @util.dependencies("sqlalchemy.database_api.elements")
+        @util.dependencies("sqlalchemy.sql.elements")
         def all(self, elements, other, operator=None):
             """Return ``other operator ALL (array)`` clause.
 
@@ -2451,7 +2451,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
 
             E.g.::
 
-                from sqlalchemy.database_api import operators
+                from sqlalchemy.sql import operators
 
                 conn.execute(
                     select([table.c.data]).where(
@@ -2461,12 +2461,12 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
 
             :param other: expression to be compared
             :param operator: an operator object from the
-             :mod:`sqlalchemy.database_api.operators`
+             :mod:`sqlalchemy.sql.operators`
              package, defaults to :func:`.operators.eq`.
 
             .. seealso::
 
-                :func:`.database_api.expression.all_`
+                :func:`.sql.expression.all_`
 
                 :meth:`.types.ARRAY.Comparator.any`
 
@@ -2502,7 +2502,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
 
         :param dimensions: if non-None, the ARRAY will assume a fixed
          number of dimensions.   This impacts how the array is declared
-         on the database_api, how it goes about interpreting Python and
+         on the database, how it goes about interpreting Python and
          result values, as well as how expression behavior in conjunction
          with the "getitem" operator works.  See the description at
          :class:`.types.ARRAY` for additional detail.
@@ -2510,7 +2510,7 @@ class ARRAY(SchemaEventTarget, Indexable, Concatenable, TypeEngine):
         :param zero_indexes=False: when True, index values will be converted
          between Python zero-based and SQL one-based indexes, e.g.
          a value of one will be added to all index values before passing
-         to the database_api.
+         to the database.
 
         """
         if isinstance(item_type, ARRAY):
@@ -2620,9 +2620,9 @@ class TIMESTAMP(DateTime):
         """Construct a new :class:`.TIMESTAMP`.
 
         :param timezone: boolean.  Indicates that the TIMESTAMP type should
-         enable timezone support, if available on the target database_api.
+         enable timezone support, if available on the target database.
          On a per-dialect basis is similar to "TIMESTAMP WITH TIMEZONE".
-         If the target database_api does not support timezones, this flag is
+         If the target database does not support timezones, this flag is
          ignored.
 
 

@@ -127,10 +127,10 @@ name to be ``INTEGER`` when compiled against SQLite::
 Database Locking Behavior / Concurrency
 ---------------------------------------
 
-SQLite is not designed for a high level of write concurrency. The database_api
+SQLite is not designed for a high level of write concurrency. The database
 itself, being a file, is locked completely during write operations within
 transactions, meaning exactly one "connection" (in reality a file handle)
-has exclusive access to the database_api during this period - all other
+has exclusive access to the database during this period - all other
 "connections" will be blocked during this time.
 
 The Python DBAPI specification also calls for a connection model that is
@@ -138,12 +138,12 @@ always in a transaction; there is no ``connection.begin()`` method,
 only ``connection.commit()`` and ``connection.rollback()``, upon which a
 new transaction is to be begun immediately.  This may seem to imply
 that the SQLite driver would in theory allow only a single filehandle on a
-particular database_api file at any time; however, there are several
+particular database file at any time; however, there are several
 factors both within SQLite itself as well as within the pysqlite driver
 which loosen this restriction significantly.
 
 However, no matter what locking modes are used, SQLite will still always
-lock the database_api file once a transaction is started and DML (e.g. INSERT,
+lock the database file once a transaction is started and DML (e.g. INSERT,
 UPDATE, DELETE) has at least been emitted, and this will block
 other transactions at least at the point that they also attempt to emit DML.
 By default, the length of time on this block is very short before it times out
@@ -152,7 +152,7 @@ with an error.
 This behavior becomes more critical when used in conjunction with the
 SQLAlchemy ORM.  SQLAlchemy's :class:`.Session` object by default runs
 within a transaction, and with its autoflush model, may emit DML preceding
-any SELECT statement.   This may lead to a SQLite database_api that locks
+any SELECT statement.   This may lead to a SQLite database that locks
 more quickly than is expected.   The locking mode of SQLite and the pysqlite
 driver can be manipulated to some degree, however it should be noted that
 achieving a high degree of write-concurrency with SQLite is a losing battle.
@@ -189,7 +189,7 @@ The other axis along which SQLite's transactional locking is impacted is
 via the nature of the ``BEGIN`` statement used.   The three varieties
 are "deferred", "immediate", and "exclusive", as described at
 `BEGIN TRANSACTION <http://sqlite.org/lang_transaction.html>`_.   A straight
-``BEGIN`` statement uses the "deferred" mode, where the database_api file is
+``BEGIN`` statement uses the "deferred" mode, where the database file is
 not locked until the first read or write operation, and read access remains
 open to other transactions until the first write operation.  But again,
 it is critical to note that the pysqlite driver interferes with this behavior
@@ -221,7 +221,7 @@ won't work at all with pysqlite unless workarounds are taken.
 Transactional DDL
 ----------------------------
 
-The SQLite database_api supports transactional :term:`DDL` as well.
+The SQLite database supports transactional :term:`DDL` as well.
 In this case, the pysqlite driver is not only failing to start transactions,
 it also is ending any existing transaction when DDL is detected, so again,
 workarounds are required.
@@ -391,7 +391,7 @@ resolution algorithm is applied to the constraint itself::
 Type Reflection
 ---------------
 
-SQLite types are unlike those of most other database_api backends, in that
+SQLite types are unlike those of most other database backends, in that
 the string name of the type usually does not correspond to a "type" in a
 one-to-one fashion.  Instead, SQLite links per-column typing behavior
 to one of five so-called "type affinities" based on a string matching
@@ -1268,7 +1268,7 @@ class SQLiteIdentifierPreparer(compiler.IdentifierPreparer):
             "current_date",
             "current_time",
             "current_timestamp",
-            "database_api",
+            "database",
             "default",
             "deferrable",
             "deferred",
@@ -1374,8 +1374,8 @@ class SQLiteExecutionContext(default.DefaultExecutionContext):
 
         # adjust for dotted column names.  SQLite
         # in the case of UNION may store col names as
-        # "tablename.colname", or if using an attached database_api,
-        # "database_api.tablename.colname", in cursor.description
+        # "tablename.colname", or if using an attached database,
+        # "database.tablename.colname", in cursor.description
         if not self._preserve_raw_colnames and "." in colname:
             return colname.split(".")[-1], colname
         else:
@@ -1494,7 +1494,7 @@ class SQLiteDialect(default.DefaultDialect):
             # http://www.sqlite.org/changes.html#version_3_3_3
             # "Optional READ UNCOMMITTED isolation (instead of the
             # default isolation level of SERIALIZABLE) and
-            # table level locking when database_api connections
+            # table level locking when database connections
             # share a common cache.""
             # pre-SQLite 3.3.0 default to 0
             value = 0
@@ -1581,7 +1581,7 @@ class SQLiteDialect(default.DefaultDialect):
         if schema is not None:
             qschema = self.identifier_preparer.quote_identifier(schema)
             master = "%s.sqlite_master" % qschema
-            s = ("SELECT database_api FROM %s WHERE name = '%s'" "AND type='view'") % (
+            s = ("SELECT sql FROM %s WHERE name = '%s'" "AND type='view'") % (
                 master,
                 view_name,
             )
@@ -1589,7 +1589,7 @@ class SQLiteDialect(default.DefaultDialect):
         else:
             try:
                 s = (
-                    "SELECT database_api FROM "
+                    "SELECT sql FROM "
                     " (SELECT * FROM sqlite_master UNION ALL "
                     "  SELECT * FROM sqlite_temp_master) "
                     "WHERE name = '%s' "
@@ -1598,7 +1598,7 @@ class SQLiteDialect(default.DefaultDialect):
                 rs = connection.execute(s)
             except exc.DBAPIError:
                 s = (
-                    "SELECT database_api FROM sqlite_master WHERE name = '%s' "
+                    "SELECT sql FROM sqlite_master WHERE name = '%s' "
                     "AND type='view'"
                 ) % view_name
                 rs = connection.execute(s)
@@ -1974,7 +1974,7 @@ class SQLiteDialect(default.DefaultDialect):
             schema_expr = ""
         try:
             s = (
-                "SELECT database_api FROM "
+                "SELECT sql FROM "
                 " (SELECT * FROM %(schema)ssqlite_master UNION ALL "
                 "  SELECT * FROM %(schema)ssqlite_temp_master) "
                 "WHERE name = '%(table)s' "
@@ -1984,7 +1984,7 @@ class SQLiteDialect(default.DefaultDialect):
             rs = connection.execute(s)
         except exc.DBAPIError:
             s = (
-                "SELECT database_api FROM %(schema)ssqlite_master "
+                "SELECT sql FROM %(schema)ssqlite_master "
                 "WHERE name = '%(table)s' "
                 "AND type = 'table'"
                 % {"schema": schema_expr, "table": table_name}

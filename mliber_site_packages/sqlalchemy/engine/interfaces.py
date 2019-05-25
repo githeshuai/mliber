@@ -13,13 +13,13 @@ from ..sql.compiler import TypeCompiler  # noqa
 
 
 class Dialect(object):
-    """Define the behavior of a specific database_api and DB-API combination.
+    """Define the behavior of a specific database and DB-API combination.
 
     Any aspect of metadata definition, SQL query generation,
     execution, result-set handling, or anything else which varies
     between databases is defined under the general category of the
     Dialect.  The Dialect acts as a factory for other
-    database_api-specific object implementations including
+    database-specific object implementations including
     ExecutionContext, Compiled, DefaultGenerator, and TypeEngine.
 
     All Dialects implement the following attributes:
@@ -55,12 +55,12 @@ class Dialect(object):
     server_version_info
       a tuple containing a version number for the DB backend in use.
       This value is only available for supporting dialects, and is
-      typically populated during the initial connection to the database_api.
+      typically populated during the initial connection to the database.
 
     default_schema_name
      the name of the default schema.  This value is only available for
      supporting dialects, and is typically populated during the
-     initial connection to the database_api.
+     initial connection to the database.
 
     execution_ctx_cls
       a :class:`.ExecutionContext` class used to handle statement execution
@@ -70,11 +70,11 @@ class Dialect(object):
       accepts for the second argument (they vary).
 
     preparer
-      a :class:`~sqlalchemy.database_api.compiler.IdentifierPreparer` class used to
+      a :class:`~sqlalchemy.sql.compiler.IdentifierPreparer` class used to
       quote identifiers.
 
     supports_alter
-      ``True`` if the database_api supports ``ALTER TABLE``.
+      ``True`` if the database supports ``ALTER TABLE``.
 
     max_identifier_length
       The maximum length of identifier names.
@@ -199,11 +199,11 @@ class Dialect(object):
     def reflecttable(
         self, connection, table, include_columns, exclude_columns, resolve_fks
     ):
-        """Load table description from the database_api.
+        """Load table description from the database.
 
         Given a :class:`.Connection` and a
         :class:`~sqlalchemy.schema.Table` object, reflect its columns and
-        properties from the database_api.
+        properties from the database.
 
         The implementation of this method is provided by
         :meth:`.DefaultDialect.reflecttable`, which makes use of
@@ -321,7 +321,7 @@ class Dialect(object):
         raise NotImplementedError()
 
     def get_view_names(self, connection, schema=None, **kw):
-        """Return a list of all view names available in the database_api.
+        """Return a list of all view names available in the database.
 
         schema:
           Optional, retrieve names from a non-default schema.
@@ -451,22 +451,22 @@ class Dialect(object):
         raise NotImplementedError()
 
     def has_table(self, connection, table_name, schema=None):
-        """Check the existence of a particular table in the database_api.
+        """Check the existence of a particular table in the database.
 
         Given a :class:`.Connection` object and a string
         `table_name`, return True if the given table (possibly within
-        the specified `schema`) exists in the database_api, False
+        the specified `schema`) exists in the database, False
         otherwise.
         """
 
         raise NotImplementedError()
 
     def has_sequence(self, connection, sequence_name, schema=None):
-        """Check the existence of a particular sequence in the database_api.
+        """Check the existence of a particular sequence in the database.
 
         Given a :class:`.Connection` object and a string
         `sequence_name`, return True if the given sequence exists in
-        the database_api, False otherwise.
+        the database, False otherwise.
         """
 
         raise NotImplementedError()
@@ -820,7 +820,7 @@ class CreateEnginePlugin(object):
     The purpose of :class:`.CreateEnginePlugin` is to allow third-party
     systems to apply engine, pool and dialect level event listeners without
     the need for the target application to be modified; instead, the plugin
-    names can be added to the database_api URL.  Target applications for
+    names can be added to the database URL.  Target applications for
     :class:`.CreateEnginePlugin` include:
 
     * connection and SQL performance tools, e.g. which use events to track
@@ -836,7 +836,7 @@ class CreateEnginePlugin(object):
                 'myplugin = myapp.plugins:MyPlugin'
             ]
 
-    A plugin that uses the above names would be invoked from a database_api
+    A plugin that uses the above names would be invoked from a database
     URL as in::
 
         from sqlalchemy import create_engine
@@ -965,7 +965,7 @@ class ExecutionContext(object):
     statement
       string version of the statement to be executed.  Is either
       passed to the constructor, or must be created from the
-      database_api.Compiled object by the time pre_exec() has completed.
+      sql.Compiled object by the time pre_exec() has completed.
 
     parameters
       bind parameters passed to the execute() method.  For compiled
@@ -1080,7 +1080,7 @@ class ExecutionContext(object):
 
     def lastrow_has_defaults(self):
         """Return True if the last INSERT or UPDATE row contained
-        inlined or database_api-side defaults.
+        inlined or database-side defaults.
         """
 
         raise NotImplementedError()

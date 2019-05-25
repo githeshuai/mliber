@@ -13,8 +13,8 @@ class MayaAssetMaker(AssetMaker):
         super(MayaAssetMaker, self).__init__(database_name, library_id, category_id, asset_name, objects, types, start,
                                              end, thumbnail_files, tag_names, description, overwrite, created_by)
 
-        self.export_texture = export_texture
-        self.recover_texture = recover_texture
+        self._export_texture = export_texture
+        self._recover_texture = recover_texture
         self._texture_info_dict = dict()
 
     def pre_create_elements(self):
@@ -22,7 +22,7 @@ class MayaAssetMaker(AssetMaker):
         在创建element之前先导出贴图
         :return:
         """
-        if self.export_texture:
+        if self._export_texture:
             try:
                 texture_dir = get_texture_dir(self.asset_abs_dir)
                 self._texture_info_dict = MayaTexture(self.objects).export(texture_dir)
@@ -35,7 +35,7 @@ class MayaAssetMaker(AssetMaker):
         在创建element之后
         :return:
         """
-        if self.export_texture and self.recover_texture:
+        if self._export_texture and self._recover_texture:
             try:
                 post_export_textures(self._texture_info_dict)
                 logging.info("[MLIBER] info: Recover texture settings done.")

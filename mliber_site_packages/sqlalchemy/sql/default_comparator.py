@@ -1,4 +1,4 @@
-# database_api/default_comparator.py
+# sql/default_comparator.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #

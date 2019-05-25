@@ -180,7 +180,7 @@ class MapperExtension(object):
 
         This method is only called during a userland construction of
         an object.  It is not called when an object is loaded from the
-        database_api.
+        database.
 
         The return value is only significant within the ``MapperExtension``
         chain; the parent mapper's behavior isn't modified by this method.
@@ -194,7 +194,7 @@ class MapperExtension(object):
 
         This method is only called during a userland construction of
         an object.  It is not called when an object is loaded from the
-        database_api.
+        database.
 
         The return value is only significant within the ``MapperExtension``
         chain; the parent mapper's behavior isn't modified by this method.

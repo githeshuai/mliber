@@ -708,11 +708,11 @@ will transform a :class:`.Query` first to join to ``Node.parent``, then to
 compare ``parent_alias`` using :attr:`.Operators.eq` against the left and right
 sides, passing into :class:`.Query.filter`:
 
-.. sourcecode:: pycon+database_api
+.. sourcecode:: pycon+sql
 
     >>> from sqlalchemy.orm import Session
     >>> session = Session()
-    {database_api}>>> session.query(Node).\
+    {sql}>>> session.query(Node).\
     ...        with_transformation(Node.grandparent==Node(id=5)).\
     ...        all()
     SELECT node.id AS node_id, node.parent_id AS node_parent_id
@@ -753,9 +753,9 @@ class::
         def operate(self, op, other):
             return op(self.parent_alias.parent, other)
 
-.. sourcecode:: pycon+database_api
+.. sourcecode:: pycon+sql
 
-    {database_api}>>> session.query(Node).\
+    {sql}>>> session.query(Node).\
     ...            with_transformation(Node.grandparent.join).\
     ...            filter(Node.grandparent==Node(id=5))
     SELECT node.id AS node_id, node.parent_id AS node_parent_id

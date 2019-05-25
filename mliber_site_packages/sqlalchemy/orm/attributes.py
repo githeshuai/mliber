@@ -1726,7 +1726,7 @@ def get_history(obj, key, passive=PASSIVE_OFF):
 
     This is the **pre-flush** history for a given attribute, which is
     reset each time the :class:`.Session` flushes changes to the
-    current database_api transaction.
+    current database transaction.
 
     .. note::
 
@@ -1892,7 +1892,7 @@ def set_committed_value(instance, key, value):
     an iterable for any collection-holding attribute.
 
     This is the same underlying method used when a lazy loader
-    fires off and loads additional data from the database_api.
+    fires off and loads additional data from the database.
     In particular, this method can be used by application code
     which has loaded additional attributes or collections through
     separate queries, which can then be attached to an instance

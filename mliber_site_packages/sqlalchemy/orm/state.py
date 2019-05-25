@@ -772,7 +772,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
         """Commit attributes.
 
         This is used by a partial-attribute load operation to mark committed
-        those attributes which were refreshed from the database_api.
+        those attributes which were refreshed from the database.
 
         Attributes marked as "expired" can potentially remain "expired" after
         this step if a value was not populated in state.dict.
@@ -857,7 +857,7 @@ class AttributeState(object):
 
     @property
     def loaded_value(self):
-        """The current value of this attribute as loaded from the database_api.
+        """The current value of this attribute as loaded from the database.
 
         If the value has not been loaded, or is otherwise not present
         in the object's dictionary, returns NO_VALUE.

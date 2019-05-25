@@ -36,34 +36,34 @@ this explicitly::
 Connect Strings
 ---------------
 
-The file specification for the SQLite database_api is taken as the "database_api"
+The file specification for the SQLite database is taken as the "database"
 portion of the URL.  Note that the format of a SQLAlchemy url is::
 
-    driver://user:pass@host/database_api
+    driver://user:pass@host/database
 
 This means that the actual filename to be used starts with the characters to
 the **right** of the third slash.   So connecting to a relative filepath
 looks like::
 
     # relative path
-    e = create_engine('sqlite:///path/to/database_api.db')
+    e = create_engine('sqlite:///path/to/database.db')
 
 An absolute path, which is denoted by starting with a slash, means you
 need **four** slashes::
 
     # absolute path
-    e = create_engine('sqlite:////path/to/database_api.db')
+    e = create_engine('sqlite:////path/to/database.db')
 
 To use a Windows path, regular drive specifications and backslashes can be
 used. Double backslashes are probably needed::
 
     # absolute path on Windows
-    e = create_engine('sqlite:///C:\\path\\to\\database_api.db')
+    e = create_engine('sqlite:///C:\\path\\to\\database.db')
 
 The sqlite ``:memory:`` identifier is the default if no filepath is
 present.  Specify ``sqlite://`` and nothing else::
 
-    # in-memory database_api
+    # in-memory database
     e = create_engine('sqlite://')
 
 Compatibility with sqlite3 "native" date and datetime types
@@ -109,7 +109,7 @@ Pysqlite's default behavior is to prohibit the usage of a single connection
 in more than one thread.   This is originally intended to work with older
 versions of SQLite that did not support multithreaded operation under
 various circumstances.  In particular, older SQLite versions
-did not allow a ``:memory:`` database_api to be used in multiple threads
+did not allow a ``:memory:`` database to be used in multiple threads
 under any circumstances.
 
 Pysqlite does include a now-undocumented flag known as
@@ -123,12 +123,12 @@ thread-safety to make this usage worth it.
 
 SQLAlchemy sets up pooling to work with Pysqlite's default behavior:
 
-* When a ``:memory:`` SQLite database_api is specified, the dialect by default
+* When a ``:memory:`` SQLite database is specified, the dialect by default
   will use :class:`.SingletonThreadPool`. This pool maintains a single
   connection per thread, so that all access to the engine within the current
-  thread use the same ``:memory:`` database_api - other threads would access a
-  different ``:memory:`` database_api.
-* When a file-based database_api is specified, the dialect will use
+  thread use the same ``:memory:`` database - other threads would access a
+  different ``:memory:`` database.
+* When a file-based database is specified, the dialect will use
   :class:`.NullPool` as the source of connections. This pool closes and
   discards connections which are returned to the pool immediately. SQLite
   file-based connections have extremely low overhead, so pooling is not
@@ -138,8 +138,8 @@ SQLAlchemy sets up pooling to work with Pysqlite's default behavior:
 Using a Memory Database in Multiple Threads
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To use a ``:memory:`` database_api in a multithreaded scenario, the same
-connection object must be shared among threads, since the database_api exists
+To use a ``:memory:`` database in a multithreaded scenario, the same
+connection object must be shared among threads, since the database exists
 only within the scope of that connection.   The
 :class:`.StaticPool` implementation will maintain a single connection
 globally, and the ``check_same_thread`` flag can be passed to Pysqlite
@@ -150,14 +150,14 @@ as ``False``::
                         connect_args={'check_same_thread':False},
                         poolclass=StaticPool)
 
-Note that using a ``:memory:`` database_api in multiple threads requires a recent
+Note that using a ``:memory:`` database in multiple threads requires a recent
 version of SQLite.
 
 Using Temporary Tables with SQLite
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Due to the way SQLite deals with temporary tables, if you wish to use a
-temporary table in a file-based SQLite database_api across multiple checkouts
+temporary table in a file-based SQLite database across multiple checkouts
 from the connection pool, such as when using an ORM :class:`.Session` where
 the temporary table should continue to remain after :meth:`.Session.commit` or
 :meth:`.Session.rollback` is called, a pool which maintains a single
@@ -378,7 +378,7 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
     def is_disconnect(self, e, connection, cursor):
         return isinstance(
             e, self.dbapi.ProgrammingError
-        ) and "Cannot operate on a closed database_api." in str(e)
+        ) and "Cannot operate on a closed database." in str(e)
 
 
 dialect = SQLiteDialect_pysqlite

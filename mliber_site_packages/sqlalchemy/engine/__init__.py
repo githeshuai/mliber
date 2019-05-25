@@ -23,8 +23,8 @@ base.py
 
 default.py
     Contains default implementations of some of the components defined
-    in base.py.  All current database_api dialects use the classes in
-    default.py as base classes for their own database_api-specific
+    in base.py.  All current database dialects use the classes in
+    default.py as base classes for their own database-specific
     implementations.
 
 strategies.py
@@ -87,7 +87,7 @@ def create_engine(*args, **kwargs):
 
     The standard calling form is to send the URL as the
     first positional argument, usually a string
-    that indicates database_api dialect and connection arguments::
+    that indicates database dialect and connection arguments::
 
 
         engine = create_engine("postgresql://scott:tiger@localhost/test")
@@ -102,7 +102,7 @@ def create_engine(*args, **kwargs):
 
     The string form of the URL is
     ``dialect[+driver]://user:password@host/dbname[?key=value..]``, where
-    ``dialect`` is a database_api name such as ``mysql``, ``oracle``,
+    ``dialect`` is a database name such as ``mysql``, ``oracle``,
     ``postgresql``, etc., and ``driver`` the name of a DBAPI, such as
     ``psycopg2``, ``pyodbc``, ``cx_oracle``, etc.  Alternatively,
     the URL can be an instance of :class:`~sqlalchemy.engine.url.URL`.
@@ -156,36 +156,24 @@ def create_engine(*args, **kwargs):
 
     :param creator: a callable which returns a DBAPI connection.
         This creation function will be passed to the underlying
-        connection pool and will be used to create all new database_api
+        connection pool and will be used to create all new database
         connections. Usage of this function causes connection
         parameters specified in the URL argument to be bypassed.
 
     :param echo=False: if True, the Engine will log all statements
-        as well as a ``repr()`` of their parameter lists to the default log
-        handler, which defaults to ``sys.stdout`` for output.   If set to the
-        string ``"debug"``, result rows will be printed to the standard output
-        as well. The ``echo`` attribute of ``Engine`` can be modified at any
-        time to turn logging on and off; direct control of logging is also
-        available using the standard Python ``logging`` module.
-
-        .. seealso::
-
-            :ref:`dbengine_logging` - further detail on how to configure
-            logging.
+        as well as a repr() of their parameter lists to the engines
+        logger, which defaults to sys.stdout. The ``echo`` attribute of
+        ``Engine`` can be modified at any time to turn logging on and
+        off. If set to the string ``"debug"``, result rows will be
+        printed to the standard output as well. This flag ultimately
+        controls a Python logger; see :ref:`dbengine_logging` for
+        information on how to configure logging directly.
 
     :param echo_pool=False: if True, the connection pool will log
-        informational output such as when connections are invalidated
-        as well as when connections are recycled to the default log handler,
-        which defaults to ``sys.stdout`` for output.   If set to the string
-        ``"debug"``, the logging will include pool checkouts and checkins.
-        Direct control of logging is also available using the standard Python
-        ``logging`` module.
-
-        .. seealso::
-
-            :ref:`dbengine_logging` - further detail on how to configure
-            logging.
-
+        all checkouts/checkins to the logging stream, which defaults to
+        sys.stdout. This flag ultimately controls a Python logger; see
+        :ref:`dbengine_logging` for information on how to configure logging
+        directly.
 
     :param empty_in_strategy:  The SQL compilation strategy to use when
         rendering an IN or NOT IN expression for :meth:`.ColumnOperators.in_`
@@ -223,7 +211,7 @@ def create_engine(*args, **kwargs):
         configured to handle unicode to the greatest
         degree as is appropriate - see
         the notes on unicode pertaining to the specific
-        target database_api in use at :ref:`dialect_toplevel`.
+        target database in use at :ref:`dialect_toplevel`.
 
         Areas where string encoding may need to be accommodated
         outside of the DBAPI include zero or more of:
@@ -265,7 +253,7 @@ def create_engine(*args, **kwargs):
 
     :param isolation_level: this string parameter is interpreted by various
         dialects in order to affect the transaction isolation level of the
-        database_api connection.   The parameter essentially accepts some subset of
+        database connection.   The parameter essentially accepts some subset of
         these string arguments: ``"SERIALIZABLE"``, ``"REPEATABLE_READ"``,
         ``"READ_COMMITTED"``, ``"READ_UNCOMMITTED"`` and ``"AUTOCOMMIT"``.
         Behavior here varies per backend, and
@@ -425,7 +413,7 @@ def create_engine(*args, **kwargs):
           <http://docs.sqlalchemy.org/en/latest/faq/metadata_schema.html#how-can-i-get-the-create-table-drop-table-output-as-a-string>`_.
 
     :param executor=None: a function taking arguments
-        ``(database_api, *multiparams, **params)``, to which the ``mock`` strategy will
+        ``(sql, *multiparams, **params)``, to which the ``mock`` strategy will
         dispatch all statement execution. Used only by ``strategy='mock'``.
 
     """  # noqa
@@ -447,7 +435,7 @@ def engine_from_config(configuration, prefix="sqlalchemy.", **kwargs):
     argument to a :func:`.create_engine` call.
 
     The only required key is (assuming the default prefix) ``sqlalchemy.url``,
-    which provides the :ref:`database_api URL <database_urls>`.
+    which provides the :ref:`database URL <database_urls>`.
 
     A select set of keyword arguments will be "coerced" to their
     expected type based on string values.    The set of arguments

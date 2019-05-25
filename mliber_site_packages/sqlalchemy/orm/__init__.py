@@ -69,7 +69,7 @@ def create_session(bind=None, **kwargs):
     or the :func:`.sessionmaker` function.
 
     :param bind: optional, a single Connectable to use for all
-      database_api access in the created
+      database access in the created
       :class:`~sqlalchemy.orm.session.Session`.
 
     :param \*\*kwargs: optional, passed through to the

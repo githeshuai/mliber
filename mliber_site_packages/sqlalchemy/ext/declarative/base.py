@@ -350,7 +350,7 @@ class _MapperConfig(object):
         if isinstance(c, expression.ColumnClause):
             util.warn(
                 "Attribute '%s' on class %s appears to be a non-schema "
-                "'sqlalchemy.database_api.column()' "
+                "'sqlalchemy.sql.column()' "
                 "object; this won't be part of the declarative mapping"
                 % (key, cls)
             )

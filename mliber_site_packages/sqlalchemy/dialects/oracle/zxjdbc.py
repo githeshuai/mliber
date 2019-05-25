@@ -10,7 +10,7 @@
     :name: zxJDBC for Jython
     :dbapi: zxjdbc
     :connectstring: oracle+zxjdbc://user:pass@host/dbname
-    :driverurl: http://www.oracle.com/technetwork/database_api/features/jdbc/index-091264.html
+    :driverurl: http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 
     .. note:: Jython is not supported by current versions of SQLAlchemy.  The
        zxjdbc dialect should be considered as experimental.

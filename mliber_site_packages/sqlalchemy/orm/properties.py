@@ -112,7 +112,7 @@ class ColumnProperty(StrategizedProperty):
             to a SQL expression (and not a single table-bound column)
             is considered to be a "read only" property; populating it
             has no effect on the state of data, and it can only return
-            database_api state.   For this reason a column_property()'s value
+            database state.   For this reason a column_property()'s value
             is expired whenever the parent object is involved in a
             flush, that is, has any kind of "dirty" state within a flush.
             Setting this parameter to ``False`` will have the effect of

@@ -737,7 +737,7 @@ class ComparableProperty(DescriptorProperty):
 
             from sqlalchemy.orm import comparable_property
             from sqlalchemy.orm.interfaces import PropComparator
-            from sqlalchemy.database_api import func
+            from sqlalchemy.sql import func
             from sqlalchemy import Integer, String, Column
             from sqlalchemy.ext.declarative import declarative_base
 

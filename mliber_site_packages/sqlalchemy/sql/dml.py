@@ -1,4 +1,4 @@
-# database_api/dml.py
+# sql/dml.py
 # Copyright (C) 2009-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -129,7 +129,7 @@ class UpdateBase(
                 (table.c.first_name + " " + table.c.last_name).
                 label('fullname'))
 
-        Upon compilation, a RETURNING clause, or database_api equivalent,
+        Upon compilation, a RETURNING clause, or database equivalent,
         will be rendered within the statement.   For INSERT and UPDATE,
         the values are the newly inserted/updated values.  For DELETE,
         the values are those of the rows which were deleted.
@@ -147,7 +147,7 @@ class UpdateBase(
         For those who do support it, the functionality across backends
         varies greatly, including restrictions on executemany()
         and other statements which return multiple rows. Please
-        read the documentation notes for the database_api in use in
+        read the documentation notes for the database in use in
         order to determine the availability of RETURNING.
 
         .. seealso::
@@ -172,7 +172,7 @@ class UpdateBase(
          :meth:`.UpdateBase.prefix_with`.
 
         The text of the hint is rendered in the appropriate
-        location for the database_api backend in use, relative
+        location for the database backend in use, relative
         to the :class:`.Table` that is the subject of this
         statement, or optionally to that of the given
         :class:`.Table` passed as the ``selectable`` argument.
@@ -289,7 +289,7 @@ class ValuesBase(UpdateBase):
          syntax is a **special** syntax not typically used.  To emit an
          INSERT statement against multiple rows, the normal method is
          to pass a multiple values list to the :meth:`.Connection.execute`
-         method, which is supported by all database_api backends and is generally
+         method, which is supported by all database backends and is generally
          more efficient for a very large number of parameters.
 
            .. seealso::
@@ -316,7 +316,7 @@ class ValuesBase(UpdateBase):
          The :class:`.Update` construct supports a special form which is a
          list of 2-tuples, which when provided must be passed in conjunction
          with the
-         :paramref:`~sqlalchemy.database_api.expression.update.preserve_parameter_order`
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
          parameter.
          This form causes the UPDATE statement to render the SET clauses
          using the order of parameters given to :meth:`.Update.values`, rather
@@ -324,13 +324,13 @@ class ValuesBase(UpdateBase):
 
            .. versionadded:: 1.0.10 - added support for parameter-ordered
               UPDATE statements via the
-              :paramref:`~sqlalchemy.database_api.expression.update.preserve_parameter_order`
+              :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
               flag.
 
            .. seealso::
 
               :ref:`updates_order_parameters` - full example of the
-              :paramref:`~sqlalchemy.database_api.expression.update.preserve_parameter_order`
+              :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
               flag
 
         .. seealso::
@@ -571,7 +571,7 @@ class Insert(ValuesBase):
          such as an ORM :class:`.Query` object, etc.  The order of
          columns returned from this FROM clause should correspond to the
          order of columns sent as the ``names`` parameter;  while this
-         is not checked before passing along to the database_api, the database_api
+         is not checked before passing along to the database, the database
          would normally raise an exception if these column lists don't
          correspond.
         :param include_defaults: if True, non-server default values and
@@ -659,7 +659,7 @@ class Update(ValuesBase):
                         where(users.c.id==5).\
                         values(name='user #5')
 
-        :param table: A :class:`.Table` object representing the database_api
+        :param table: A :class:`.Table` object representing the database
          table to be updated.
 
         :param whereclause: Optional SQL expression describing the ``WHERE``

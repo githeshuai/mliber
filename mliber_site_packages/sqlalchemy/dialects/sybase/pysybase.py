@@ -9,7 +9,7 @@
 .. dialect:: sybase+pysybase
     :name: Python-Sybase
     :dbapi: Sybase
-    :connectstring: sybase+pysybase://<username>:<password>@<dsn>/[database_api name]
+    :connectstring: sybase+pysybase://<username>:<password>@<dsn>/[database name]
     :url: http://python-sybase.sourceforge.net/
 
 Unicode Support

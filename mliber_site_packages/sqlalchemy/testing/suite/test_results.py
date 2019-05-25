@@ -93,7 +93,7 @@ class RowFetchTest(fixtures.TablesTest):
         """test that a scalar select as a column is returned as such
         and that type conversion works OK.
 
-        (this is half a SQLAlchemy Core test and half to catch database_api
+        (this is half a SQLAlchemy Core test and half to catch database
         backends that may have unusual behavior with scalar selects.)
 
         """

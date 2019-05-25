@@ -156,7 +156,7 @@ class JSON(sqltypes.JSON):
                         )
 
     When using the psycopg2 dialect, the json_deserializer is registered
-    against the database_api using ``psycopg2.extras.register_default_json``.
+    against the database using ``psycopg2.extras.register_default_json``.
 
     .. seealso::
 

@@ -29,7 +29,7 @@ The driver here is the
 `pysqlcipher <https://pypi.python.org/pypi/pysqlcipher>`_
 driver, which makes use of the SQLCipher engine.  This system essentially
 introduces new PRAGMA commands to SQLite which allows the setting of a
-passphrase and other encryption parameters, allowing the database_api
+passphrase and other encryption parameters, allowing the database
 file to be encrypted.
 
 `pysqlcipher3` is a fork of `pysqlcipher` with support for Python 3,
@@ -45,7 +45,7 @@ of the :mod:`~sqlalchemy.dialects.sqlite.pysqlite` driver, except that the
     e = create_engine('sqlite+pysqlcipher://:testing@/foo.db')
 
 For an absolute file path, two leading slashes should be used for the
-database_api name::
+database name::
 
     e = create_engine('sqlite+pysqlcipher://:testing@//path/to/foo.db')
 

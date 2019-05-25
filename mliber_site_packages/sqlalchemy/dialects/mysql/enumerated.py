@@ -214,7 +214,7 @@ class SET(_EnumeratedValues):
 
             When using :paramref:`.mysql.SET.retrieve_as_bitwise`, it is
             essential that the list of set values is expressed in the
-            **exact same order** as exists on the MySQL database_api.
+            **exact same order** as exists on the MySQL database.
 
           .. versionadded:: 1.0.0
 

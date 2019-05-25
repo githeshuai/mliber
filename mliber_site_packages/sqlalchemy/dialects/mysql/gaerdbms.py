@@ -9,7 +9,7 @@ r"""
     :name: Google Cloud SQL
     :dbapi: rdbms
     :connectstring: mysql+gaerdbms:///<dbname>?instance=<instancename>
-    :url: https://developers.google.com/appengine/docs/python/cloud-database_api/developers-guide
+    :url: https://developers.google.com/appengine/docs/python/cloud-sql/developers-guide
 
     This dialect is based primarily on the :mod:`.mysql.mysqldb` dialect with
     minimal changes.

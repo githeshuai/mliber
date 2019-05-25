@@ -120,7 +120,7 @@ if has_xdist:
 
 def pytest_collection_modifyitems(session, config, items):
     # look for all those classes that specify __backend__ and
-    # expand them out into per-database_api test cases.
+    # expand them out into per-database test cases.
 
     # this is much easier to do within pytest_pycollect_makeitem, however
     # pytest is iterating through cls.__dict__ as makeitem is
@@ -129,35 +129,31 @@ def pytest_collection_modifyitems(session, config, items):
     # it's to suit the rather odd use case here which is that we are adding
     # new classes to a module on the fly.
 
-    rebuilt_items = collections.defaultdict(
-        lambda: collections.defaultdict(list)
-    )
+    rebuilt_items = collections.defaultdict(list)
     items[:] = [
         item
         for item in items
         if isinstance(item.parent, pytest.Instance)
         and not item.parent.parent.name.startswith("_")
     ]
-
     test_classes = set(item.parent for item in items)
     for test_class in test_classes:
         for sub_cls in plugin_base.generate_sub_tests(
             test_class.cls, test_class.parent.module
         ):
             if sub_cls is not test_class.cls:
-                per_cls_dict = rebuilt_items[test_class.cls]
+                list_ = rebuilt_items[test_class.cls]
 
-                names = [i.name for i in items]
                 for inst in pytest.Class(
                     sub_cls.__name__, parent=test_class.parent.parent
                 ).collect():
-                    for t in inst.collect():
-                        per_cls_dict[t.name].append(t)
+                    list_.extend(inst.collect())
 
     newitems = []
     for item in items:
         if item.parent.cls in rebuilt_items:
-            newitems.extend(rebuilt_items[item.parent.cls][item.name])
+            newitems.extend(rebuilt_items[item.parent.cls])
+            rebuilt_items[item.parent.cls][:] = []
         else:
             newitems.append(item)
 

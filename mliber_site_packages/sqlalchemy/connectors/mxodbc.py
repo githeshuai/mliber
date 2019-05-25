@@ -13,7 +13,7 @@ testing.
 
 This has been tested for use with mxODBC 3.1.2 on SQL Server 2005
 and 2008, using the SQL Server Native driver. However, it is
-possible for this to be used on other database_api platforms.
+possible for this to be used on other database platforms.
 
 For more info on mxODBC, see http://www.egenix.com/
 
@@ -107,7 +107,7 @@ class MxODBCConnector(Connector):
         opts.update(url.query)
         args = opts.pop("host")
         opts.pop("port", None)
-        opts.pop("database_api", None)
+        opts.pop("database", None)
         return (args,), opts
 
     def is_disconnect(self, e, connection, cursor):

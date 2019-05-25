@@ -32,7 +32,7 @@ identity column and will generate DDL as such::
 
 The above example will generate DDL as:
 
-.. sourcecode:: database_api
+.. sourcecode:: sql
 
     CREATE TABLE t (
         id INTEGER NOT NULL IDENTITY(1,1),
@@ -77,7 +77,7 @@ is set to ``False`` on any integer primary key column::
     There can only be one IDENTITY column on the table.  When using
     ``autoincrement=True`` to enable the IDENTITY keyword, SQLAlchemy does not
     guard against multiple columns specifying the option simultaneously.  The
-    SQL Server database_api will instead reject the ``CREATE TABLE`` statement.
+    SQL Server database will instead reject the ``CREATE TABLE`` statement.
 
 .. note::
 
@@ -114,7 +114,7 @@ passed to the :class:`.Column` object::
 
 The CREATE TABLE for the above :class:`.Table` object would be:
 
-.. sourcecode:: database_api
+.. sourcecode:: sql
 
    CREATE TABLE test (
      id INTEGER NOT NULL IDENTITY(100,10) PRIMARY KEY,
@@ -141,7 +141,7 @@ The process for fetching this value has several variants:
 * In the vast majority of cases, RETURNING is used in conjunction with INSERT
   statements on SQL Server in order to get newly generated primary key values:
 
-  .. sourcecode:: database_api
+  .. sourcecode:: sql
 
     INSERT INTO t (x) OUTPUT inserted.id VALUES (?)
 
@@ -159,7 +159,7 @@ The process for fetching this value has several variants:
 
     an INSERT will look like:
 
-    .. sourcecode:: database_api
+    .. sourcecode:: sql
 
         INSERT INTO t (x) VALUES (?); select scope_identity()
 
@@ -188,7 +188,7 @@ The above column will be created with IDENTITY, however the INSERT statement
 we emit is specifying explicit values.  In the echo output we can see
 how SQLAlchemy handles this:
 
-.. sourcecode:: database_api
+.. sourcecode:: sql
 
     CREATE TABLE t (
         id INTEGER NOT NULL IDENTITY(1,1),
@@ -310,7 +310,7 @@ construct::
     name VARCHAR(20) NULL
 
 If ``nullable=None`` is specified then no specification is made. In
-other words the database_api's configured default is used. This will
+other words the database's configured default is used. This will
 render::
 
     name VARCHAR(20)
@@ -353,7 +353,7 @@ behavior of this flag is as follows:
   types ``NTEXT``, ``TEXT``, and ``IMAGE``,
   respectively.  This is the long-standing behavior of these types.
 
-* The flag begins with the value ``None``, before a database_api connection is
+* The flag begins with the value ``None``, before a database connection is
   established.   If the dialect is used to render DDL without the flag being
   set, it is interpreted the same as ``False``.
 
@@ -381,7 +381,7 @@ Multipart Schema Names
 ----------------------
 
 SQL Server schemas sometimes require multiple parts to their "schema"
-qualifier, that is, including the database_api name and owner name as separate
+qualifier, that is, including the database name and owner name as separate
 tokens, such as ``mydatabase.dbo.some_table``. These multipart names can be set
 at once using the :paramref:`.Table.schema` argument of :class:`.Table`::
 
@@ -393,7 +393,7 @@ at once using the :paramref:`.Table.schema` argument of :class:`.Table`::
 
 When performing operations such as table or component reflection, a schema
 argument that contains a dot will be split into separate
-"database_api" and "owner"  components in order to correctly query the SQL
+"database" and "owner"  components in order to correctly query the SQL
 Server information schema tables, as these two values are stored separately.
 Additionally, when rendering the schema name for DDL or SQL, the two
 components will be quoted separately for case sensitive names and other
@@ -407,12 +407,12 @@ special characters.   Given an argument as below::
 
 The above schema would be rendered as ``[MyDataBase].dbo``, and also in
 reflection, would be reflected using "dbo" as the owner and "MyDataBase"
-as the database_api name.
+as the database name.
 
-To control how the schema name is broken into database_api / owner,
+To control how the schema name is broken into database / owner,
 specify brackets (which in SQL Server are quoting characters) in the name.
 Below, the "owner" will be considered as ``MyDataBase.dbo`` and the
-"database_api" will be None::
+"database" will be None::
 
     Table(
         "some_table", metadata,
@@ -420,7 +420,7 @@ Below, the "owner" will be considered as ``MyDataBase.dbo`` and the
         schema="[MyDataBase.dbo]"
     )
 
-To individually specify both database_api and owner name with special characters
+To individually specify both database and owner name with special characters
 or embedded dots, use two sets of brackets::
 
     Table(
@@ -431,7 +431,7 @@ or embedded dots, use two sets of brackets::
 
 
 .. versionchanged:: 1.2 the SQL Server dialect now treats brackets as
-   identifier delimeters splitting the schema into separate database_api
+   identifier delimeters splitting the schema into separate database
    and owner tokens, to allow dots within either name itself.
 
 .. _legacy_schema_rendering:
@@ -556,13 +556,13 @@ would render the index as ``CREATE INDEX my_index ON table (x DESC)``
 Compatibility Levels
 --------------------
 MSSQL supports the notion of setting compatibility levels at the
-database_api level. This allows, for instance, to run a database_api that
-is compatible with SQL2000 while running on a SQL2005 database_api
-server. ``server_version_info`` will always return the database_api
+database level. This allows, for instance, to run a database that
+is compatible with SQL2000 while running on a SQL2005 database
+server. ``server_version_info`` will always return the database
 server version information (in this case SQL2005) and not the
 compatibility level information. Because of this, if running under
 a backwards compatibility mode SQLAlchemy may attempt to use T-SQL
-statements that are unable to be parsed by the database_api server.
+statements that are unable to be parsed by the database server.
 
 Triggers
 --------
@@ -630,7 +630,7 @@ Enabling Snapshot Isolation
 SQL Server has a default transaction
 isolation mode that locks entire tables, and causes even mildly concurrent
 applications to have long held locks and frequent deadlocks.
-Enabling snapshot isolation for the database_api as a whole is recommended
+Enabling snapshot isolation for the database as a whole is recommended
 for modern levels of concurrency support.  This is accomplished via the
 following ALTER DATABASE commands executed at the SQL prompt::
 
@@ -727,7 +727,7 @@ RESERVED_WORDS = set(
         "current_timestamp",
         "current_user",
         "cursor",
-        "database_api",
+        "database",
         "dbcc",
         "deallocate",
         "declare",
@@ -1075,7 +1075,7 @@ class ROWVERSION(TIMESTAMP):
     ROWVERSION for new datatypes going forward.
 
     The ROWVERSION datatype does **not** reflect (e.g. introspect) from the
-    database_api as itself; the returned datatype will be
+    database as itself; the returned datatype will be
     :class:`.mssql.TIMESTAMP`.
 
     This is a read-only datatype that does not support INSERT of values.
@@ -1753,16 +1753,10 @@ class MSSQLCompiler(compiler.SQLCompiler):
         return ""
 
     def order_by_clause(self, select, **kw):
-        # MSSQL only allows ORDER BY in subqueries if there is a LIMIT
-        if self.is_subquery() and not select._limit:
-            # avoid processing the order by clause if we won't end up
-            # using it, because we don't want all the bind params tacked
-            # onto the positional list if that is what the dbapi requires
-            return ""
-
         order_by = self.process(select._order_by_clause, **kw)
 
-        if order_by:
+        # MSSQL only allows ORDER BY in subqueries if there is a LIMIT
+        if order_by and (not self.is_subquery() or select._limit):
             return " ORDER BY " + order_by
         else:
             return ""

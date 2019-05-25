@@ -541,7 +541,7 @@ class Result(object):
         return query._get_impl(ident, self._load_on_pk_identity)
 
     def _load_on_pk_identity(self, query, primary_key_identity):
-        """Load the given primary key identity from the database_api."""
+        """Load the given primary key identity from the database."""
 
         mapper = query._mapper_zero()
 

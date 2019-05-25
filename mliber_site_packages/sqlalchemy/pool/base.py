@@ -105,20 +105,11 @@ class Pool(log.Identified):
           "sqlalchemy.pool" logger. Defaults to a hexstring of the object's
           id.
 
-        :param echo: if True, the connection pool will log
-         informational output such as when connections are invalidated
-         as well as when connections are recycled to the default log handler,
-         which defaults to ``sys.stdout`` for output..   If set to the string
-         ``"debug"``, the logging will include pool checkouts and checkins.
-
-         The :paramref:`.Pool.echo` parameter can also be set from the
-         :func:`.create_engine` call by using the
-         :paramref:`.create_engine.echo_pool` parameter.
-
-         .. seealso::
-
-             :ref:`dbengine_logging` - further detail on how to configure
-             logging.
+        :param echo: If True, connections being pulled and retrieved
+          from the pool will be logged to the standard output, as well
+          as pool sizing information.  Echoing can also be achieved by
+          enabling logging for the "sqlalchemy.pool"
+          namespace. Defaults to False.
 
         :param use_threadlocal: If set to True, repeated calls to
           :meth:`connect` within the same application thread will be
@@ -145,7 +136,7 @@ class Pool(log.Identified):
             any data changes present on the transaction
             are committed unconditionally.
           * ``None`` - don't do anything on the connection.
-            This setting should generally only be made on a database_api
+            This setting should generally only be made on a database
             that has no transaction support at all,
             namely MySQL MyISAM; when used on this backend, performance
             can be improved as the "rollback" call is still expensive on
@@ -776,7 +767,7 @@ class _ConnectionFairy(object):
 
         # Pool listeners can trigger a reconnection on checkout, as well
         # as the pre-pinger.
-        # there are three attempts made here, but note that if the database_api
+        # there are three attempts made here, but note that if the database
         # is not accessible from a connection standpoint, those won't proceed
         # here.
         attempts = 2

@@ -61,7 +61,7 @@ class PyODBCConnector(Connector):
             keys = dict((k, check_quote(v)) for k, v in keys.items())
 
             dsn_connection = "dsn" in keys or (
-                "host" in keys and "database_api" not in keys
+                "host" in keys and "database" not in keys
             )
             if dsn_connection:
                 connectors = [
@@ -86,7 +86,7 @@ class PyODBCConnector(Connector):
                 connectors.extend(
                     [
                         "Server=%s%s" % (keys.pop("host", ""), port),
-                        "Database=%s" % keys.pop("database_api", ""),
+                        "Database=%s" % keys.pop("database", ""),
                     ]
                 )
 
@@ -98,9 +98,9 @@ class PyODBCConnector(Connector):
                 connectors.append("Trusted_Connection=Yes")
 
             # if set to 'Yes', the ODBC layer will try to automagically
-            # convert textual data from your database_api encoding to your
+            # convert textual data from your database encoding to your
             # client encoding.  This should obviously be set to 'No' if
-            # you query a cp1253 encoded database_api from a latin1 client...
+            # you query a cp1253 encoded database from a latin1 client...
             if "odbc_autotranslate" in keys:
                 connectors.append(
                     "AutoTranslate=%s" % keys.pop("odbc_autotranslate")
@@ -137,7 +137,7 @@ class PyODBCConnector(Connector):
 
     def _get_server_version_info(self, connection, allow_chars=True):
         # NOTE: this function is not reliable, particularly when
-        # freetds is in use.   Implement database_api-specific server version
+        # freetds is in use.   Implement database-specific server version
         # queries.
         dbapi_con = connection.connection
         version = []

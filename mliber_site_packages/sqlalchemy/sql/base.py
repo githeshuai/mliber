@@ -1,11 +1,11 @@
-# database_api/base.py
+# sql/base.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""Foundational utilities common to many database_api modules.
+"""Foundational utilities common to many sql modules.
 
 """
 
@@ -589,7 +589,7 @@ class ColumnCollection(util.OrderedProperties):
 
     __hash__ = None
 
-    @util.dependencies("sqlalchemy.database_api.elements")
+    @util.dependencies("sqlalchemy.sql.elements")
     def __eq__(self, elements, other):
         l = []
         for c in getattr(other, "_all_columns", other):
@@ -636,7 +636,7 @@ class ColumnSet(util.ordered_column_set):
     def __add__(self, other):
         return list(self) + list(other)
 
-    @util.dependencies("sqlalchemy.database_api.elements")
+    @util.dependencies("sqlalchemy.sql.elements")
     def __eq__(self, elements, other):
         l = []
         for c in other:
@@ -663,7 +663,7 @@ def _bind_or_error(schemaitem, msg=None):
         if msg is None:
             msg = (
                 "%s is not bound to an Engine or Connection.  "
-                "Execution can not proceed without a database_api to execute "
+                "Execution can not proceed without a database to execute "
                 "against." % item
             )
         raise exc.UnboundExecutionError(msg)

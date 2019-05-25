@@ -825,7 +825,7 @@ class ResultProxy(object):
         using insert() expression constructs; the
         :attr:`~ResultProxy.inserted_primary_key` attribute provides a
         tuple of primary key values for a newly inserted row,
-        regardless of database_api backend.
+        regardless of database backend.
 
         """
         try:
@@ -979,7 +979,7 @@ class ResultProxy(object):
         server_default clause,
         or otherwise do not qualify as "autoincrement"
         columns (see the notes at :class:`.Column`), and were
-        generated using the database_api-side default, will
+        generated using the database-side default, will
         appear in this list as ``None`` unless the backend
         supports "returning" and the insert statement executed
         with the "implicit returning" enabled.
@@ -1417,7 +1417,7 @@ class FullyBufferedResultProxy(ResultProxy):
     """A result proxy that buffers rows fully upon creation.
 
     Used for operations where a result is to be delivered
-    after the database_api conversation can not be continued,
+    after the database conversation can not be continued,
     such as MSSQL INSERT...OUTPUT after an autocommit.
 
     """

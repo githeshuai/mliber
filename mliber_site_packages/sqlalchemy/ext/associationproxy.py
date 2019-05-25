@@ -892,7 +892,7 @@ class ObjectAssociationProxyInstance(AssociationProxyInstance):
 class ColumnAssociationProxyInstance(
     ColumnOperators, AssociationProxyInstance
 ):
-    """an :class:`.AssociationProxyInstance` that has a database_api column as a
+    """an :class:`.AssociationProxyInstance` that has a database column as a
     target.
     """
 

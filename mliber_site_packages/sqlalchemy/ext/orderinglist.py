@@ -84,7 +84,7 @@ With the above mapping the ``Bullet.position`` attribute is managed::
     >>> 2
 
 The :class:`.OrderingList` construct only works with **changes** to a
-collection, and not the initial load from the database_api, and requires that the
+collection, and not the initial load from the database, and requires that the
 list be sorted when loaded.  Therefore, be sure to specify ``order_by`` on the
 :func:`.relationship` against the target ordering attribute, so that the
 ordering is correct when first loaded.
@@ -251,10 +251,10 @@ class OrderingList(list):
           Default False.  When appending an object with an existing (non-None)
           ordering value, that value will be left untouched unless
           ``reorder_on_append`` is true.  This is an optimization to avoid a
-          variety of dangerous unexpected database_api writes.
+          variety of dangerous unexpected database writes.
 
           SQLAlchemy will add instances to the list via append() when your
-          object loads.  If for some reason the result set from the database_api
+          object loads.  If for some reason the result set from the database
           skips a step in the ordering (say, row '1' is missing but you get
           '2', '3', and '4'), reorder_on_append=True would immediately
           renumber the items to '1', '2', '3'.  If you have multiple sessions
@@ -266,7 +266,7 @@ class OrderingList(list):
           Recommend leaving this with the default of False, and just call
           ``reorder()`` if you're doing ``append()`` operations with
           previously ordered instances or when doing some housekeeping after
-          manual database_api operations.
+          manual sql operations.
 
         """
         self.ordering_attr = ordering_attr

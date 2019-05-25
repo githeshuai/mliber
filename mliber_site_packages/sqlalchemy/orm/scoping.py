@@ -28,7 +28,7 @@ class scoped_session(object):
     """The `session_factory` provided to `__init__` is stored in this
     attribute and may be accessed at a later time.  This can be useful when
     a new non-scoped :class:`.Session` or :class:`.Connection` to the
-    database_api is needed."""
+    database is needed."""
 
     def __init__(self, session_factory, scopefunc=None):
         """Construct a new :class:`.scoped_session`.

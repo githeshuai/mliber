@@ -10,7 +10,7 @@
 
 Provides a number of connection pool implementations for a variety of
 usage scenarios and thread behavior requirements imposed by the
-application, DB-API or database_api itself.
+application, DB-API or database itself.
 
 Also provides a DB-API 2.0 connection proxying mechanism allowing
 regular DB-API connect() methods to be transparently managed by a

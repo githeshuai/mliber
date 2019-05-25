@@ -35,7 +35,7 @@ INSERT, UPDATE, and DELETE statements, and uses the escaped string mode for
 all other statements.
 
 This behavior can be controlled via
-:meth:`~sqlalchemy.database_api.expression.Executable.execution_options` using the
+:meth:`~sqlalchemy.sql.expression.Executable.execution_options` using the
 ``native_odbc_execute`` flag with a value of ``True`` or ``False``, where a
 value of ``True`` will unconditionally use native bind parameters and a value
 of ``False`` will unconditionally use string-escaped parameters.

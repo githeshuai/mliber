@@ -6,7 +6,7 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """Provides the :class:`~sqlalchemy.engine.url.URL` class which encapsulates
-information about a database_api connection specification.
+information about a database connection specification.
 
 The URL object is created automatically when
 :func:`~sqlalchemy.engine.create_engine` is called with a string
@@ -25,7 +25,7 @@ from ..dialects import registry
 
 class URL(object):
     """
-    Represent the components of a URL used to connect to a database_api.
+    Represent the components of a URL used to connect to a database.
 
     This object is suitable to be passed directly to a
     :func:`~sqlalchemy.create_engine` call.  The fields of the URL are parsed
@@ -34,19 +34,19 @@ class URL(object):
 
     All initialization parameters are available as public attributes.
 
-    :param drivername: the name of the database_api backend.
+    :param drivername: the name of the database backend.
       This name will correspond to a module in sqlalchemy/databases
       or a third party plug-in.
 
     :param username: The user name.
 
-    :param password: database_api password.
+    :param password: database password.
 
     :param host: The name of the host.
 
     :param port: The port number.
 
-    :param database: The database_api name.
+    :param database: The database name.
 
     :param query: A dictionary of options to be passed to the
       dialect and/or the DBAPI upon connect.
@@ -183,7 +183,7 @@ class URL(object):
             return cls
 
     def get_dialect(self):
-        """Return the SQLAlchemy database_api dialect class corresponding
+        """Return the SQLAlchemy database dialect class corresponding
         to this URL's driver name.
         """
         entrypoint = self._get_entrypoint()
@@ -193,7 +193,7 @@ class URL(object):
     def translate_connect_args(self, names=[], **kw):
         r"""Translate url attributes into a dictionary of connection arguments.
 
-        Returns attributes of this url (`host`, `database_api`, `username`,
+        Returns attributes of this url (`host`, `database`, `username`,
         `password`, `port`) as a plain dictionary.  The attribute names are
         used as the keys by default.  Unset or false attributes are omitted
         from the final dictionary.
@@ -205,7 +205,7 @@ class URL(object):
         """
 
         translated = {}
-        attribute_names = ["host", "database_api", "username", "password", "port"]
+        attribute_names = ["host", "database", "username", "password", "port"]
         for sname in attribute_names:
             if names:
                 name = names.pop(0)
@@ -246,7 +246,7 @@ def _parse_rfc1738_args(name):
                 )?
                 (?::(?P<port>[^/]*))?
             )?
-            (?:/(?P<database_api>.*))?
+            (?:/(?P<database>.*))?
             """,
         re.X,
     )
@@ -254,9 +254,9 @@ def _parse_rfc1738_args(name):
     m = pattern.match(name)
     if m is not None:
         components = m.groupdict()
-        if components["database_api"] is not None:
-            tokens = components["database_api"].split("?", 2)
-            components["database_api"] = tokens[0]
+        if components["database"] is not None:
+            tokens = components["database"].split("?", 2)
+            components["database"] = tokens[0]
 
             if len(tokens) > 1:
                 query = {}

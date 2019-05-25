@@ -83,7 +83,7 @@ class ExcludeConstraint(ColumnCollectionConstraint):
     Defines an EXCLUDE constraint as described in the `postgres
     documentation`__.
 
-    __ http://www.postgresql.org/docs/9.0/static/database_api-createtable.html#SQL-CREATETABLE-EXCLUDE
+    __ http://www.postgresql.org/docs/9.0/static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
 
     """  # noqa
 
@@ -135,11 +135,11 @@ class ExcludeConstraint(ColumnCollectionConstraint):
           containing the operator to use.   In order to specify a column name
           when a  :class:`.Column` object is not available, while ensuring
           that any necessary quoting rules take effect, an ad-hoc
-          :class:`.Column` or :func:`.database_api.expression.column` object should be
+          :class:`.Column` or :func:`.sql.expression.column` object should be
           used.
 
         :param name:
-          Optional, the in-database_api name of this constraint.
+          Optional, the in-database name of this constraint.
 
         :param deferrable:
           Optional bool.  If set, emit DEFERRABLE or NOT DEFERRABLE when

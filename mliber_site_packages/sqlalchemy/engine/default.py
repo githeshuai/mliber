@@ -8,7 +8,7 @@
 """Default implementations of per-dialect sqlalchemy.engine classes.
 
 These are semi-private implementation classes which are only of importance
-to database_api dialect authors; dialects will usually use the classes here
+to database dialect authors; dialects will usually use the classes here
 as the base class for their own corresponding classes.
 
 """
@@ -168,7 +168,7 @@ class DefaultDialect(interfaces.Dialect):
 
     # indicates symbol names are
     # UPPERCASEd if they are case insensitive
-    # within the database_api.
+    # within the database.
     # if this is True, the methods normalize_name()
     # and denormalize_name() must be provided.
     requires_name_normalize = False
@@ -407,7 +407,7 @@ class DefaultDialect(interfaces.Dialect):
             cursor.close()
 
     def type_descriptor(self, typeobj):
-        """Provide a database_api-specific :class:`.TypeEngine` object, given
+        """Provide a database-specific :class:`.TypeEngine` object, given
         the generic object which comes from the types module.
 
         This method looks for a dictionary called

@@ -1,13 +1,13 @@
-# database_api/schema.py
+# sql/schema.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""The schema module provides the building blocks for database_api metadata.
+"""The schema module provides the building blocks for database metadata.
 
-Each element within this module describes a database_api entity which can be
+Each element within this module describes a database entity which can be
 created and dropped, or is otherwise part of such an entity.  Examples include
 tables, columns, sequences, and indexes.
 
@@ -17,12 +17,12 @@ constructs.
 
 A collection of entities are grouped into a unit called
 :class:`~sqlalchemy.schema.MetaData`. MetaData serves as a logical grouping of
-schema elements, and can also be associated with an actual database_api connection
-such that operations involving the contained elements can contact the database_api
+schema elements, and can also be associated with an actual database connection
+such that operations involving the contained elements can contact the database
 as needed.
 
 Two of the elements here also build upon their "syntactic" counterparts, which
-are defined in :class:`~sqlalchemy.database_api.expression.`, specifically
+are defined in :class:`~sqlalchemy.sql.expression.`, specifically
 :class:`~sqlalchemy.schema.Table` and :class:`~sqlalchemy.schema.Column`.
 Since these objects are part of the SQL expression language, they are usable
 as components in SQL expressions.
@@ -77,7 +77,7 @@ def _get_table_key(name, schema):
         return schema + "." + name
 
 
-# this should really be in database_api/util.py but we'd have to
+# this should really be in sql/util.py but we'd have to
 # break an import cycle
 def _copy_expression(expression, source_table, target_table):
     def replace(col):
@@ -95,7 +95,7 @@ def _copy_expression(expression, source_table, target_table):
 
 @inspection._self_inspects
 class SchemaItem(SchemaEventTarget, visitors.Visitable):
-    """Base class for items that define a database_api schema."""
+    """Base class for items that define a database schema."""
 
     __visit_name__ = "schema_item"
 
@@ -153,7 +153,7 @@ class SchemaItem(SchemaEventTarget, visitors.Visitable):
 
 
 class Table(DialectKWArgs, SchemaItem, TableClause):
-    r"""Represent a table in a database_api.
+    r"""Represent a table in a database.
 
     e.g.::
 
@@ -171,11 +171,11 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
     .. seealso::
 
-        :ref:`metadata_describing` - Introduction to database_api metadata
+        :ref:`metadata_describing` - Introduction to database metadata
 
     Constructor arguments are as follows:
 
-    :param name: The name of this table as represented in the database_api.
+    :param name: The name of this table as represented in the database.
 
         The table name, along with the value of the ``schema`` parameter,
         forms a key which uniquely identifies this :class:`.Table` within
@@ -207,7 +207,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
     :param autoload: Defaults to False, unless :paramref:`.Table.autoload_with`
         is set in which case it defaults to True; :class:`.Column` objects
-        for this table should be reflected from the database_api, possibly
+        for this table should be reflected from the database, possibly
         augmenting or replacing existing :class:`.Column` objects that were
         explicitly specified.
 
@@ -270,7 +270,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
         :paramref:`.Table.extend_existing` will also work in conjunction
         with :paramref:`.Table.autoload` to run a new reflection
-        operation against the database_api, even if a :class:`.Table`
+        operation against the database, even if a :class:`.Table`
         of the same name is already present in the target
         :class:`.MetaData`; newly reflected :class:`.Column` objects
         and other options will be added into the state of the
@@ -281,7 +281,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
         :class:`.Column` objects can be specified in the same :class:`.Table`
         constructor, which will take precedence.  Below, the existing
         table ``mytable`` will be augmented with :class:`.Column` objects
-        both reflected from the database_api, as well as the given :class:`.Column`
+        both reflected from the database, as well as the given :class:`.Column`
         named "y"::
 
             Table("mytable", metadata,
@@ -395,7 +395,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
     :param schema: The schema name for this table, which is required if
         the table resides in a schema other than the default selected schema
-        for the engine's database_api connection.  Defaults to ``None``.
+        for the engine's database connection.  Defaults to ``None``.
 
         If the owning :class:`.MetaData` of this :class:`.Table` specifies its
         own :paramref:`.MetaData.schema` parameter, then that schema name will
@@ -573,7 +573,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
         self._extra_kwargs(**kwargs)
 
-        # load column definitions from the database_api if 'autoload' is defined
+        # load column definitions from the database if 'autoload' is defined
         # we do it after the table is in the singleton dictionary to support
         # circular foreign keys
         if autoload:
@@ -769,8 +769,8 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
         construct.
 
         Note that this does **not** change the definition of the table
-        as it exists within any underlying database_api, assuming that
-        table has already been created in the database_api.   Relational
+        as it exists within any underlying database, assuming that
+        table has already been created in the database.   Relational
         databases support the addition of columns to existing tables
         using the SQL ALTER command, which would need to be
         emitted for an already-existing table that doesn't contain
@@ -790,9 +790,9 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
         :class:`~.schema.Constraint` object.
 
         Note that this does **not** produce the constraint within the
-        relational database_api automatically, for a table that already exists
-        in the database_api.   To add a constraint to an
-        existing relational database_api table, the SQL ALTER command must
+        relational database automatically, for a table that already exists
+        in the database.   To add a constraint to an
+        existing relational database table, the SQL ALTER command must
         be used.  SQLAlchemy also provides the
         :class:`.AddConstraint` construct which can produce this SQL when
         invoked as an executable clause.
@@ -1011,7 +1011,7 @@ class Table(DialectKWArgs, SchemaItem, TableClause):
 
 
 class Column(DialectKWArgs, SchemaItem, ColumnClause):
-    """Represents a column in a database_api table."""
+    """Represents a column in a database table."""
 
     __visit_name__ = "column"
 
@@ -1019,7 +1019,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
         r"""
         Construct a new ``Column`` object.
 
-        :param name: The name of this column as represented in the database_api.
+        :param name: The name of this column as represented in the database.
           This argument may be the first positional argument, or specified
           via keyword.
 
@@ -1102,7 +1102,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
              at most one of those columns to be an "autoincrement" column.
              ``autoincrement=True`` may also be set on a :class:`.Column`
              that has an explicit client-side or server-side default,
-             subject to limitations of the backend database_api and dialect.
+             subject to limitations of the backend database and dialect.
 
 
           The setting *only* has an effect for columns which are:
@@ -1126,7 +1126,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
           The setting has these two effects on columns that meet the
           above criteria:
 
-          * DDL issued for the column will include database_api-specific
+          * DDL issued for the column will include database-specific
             keywords intended to signify this column as an
             "autoincrement" column, such as AUTO INCREMENT on MySQL,
             SERIAL on PostgreSQL, and IDENTITY on MS-SQL.  It does
@@ -1139,7 +1139,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
                 :ref:`sqlite_autoincrement`
 
           * The column will be considered to be available using an
-            "autoincrement" method specific to the backend database_api, such
+            "autoincrement" method specific to the backend database, such
             as calling upon ``cursor.lastrowid``, using RETURNING in an
             INSERT statement to get at a sequence-generated value, or using
             special functions such as "SELECT scope_identity()".
@@ -1157,7 +1157,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
             structure of the argument.
 
             Contrast this argument to :paramref:`.Column.server_default`
-            which creates a default generator on the database_api side.
+            which creates a default generator on the database side.
 
             .. seealso::
 
@@ -1193,7 +1193,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
             CREATE TABLE statements.
 
         :param onupdate: A scalar, Python callable, or
-            :class:`~sqlalchemy.database_api.expression.ClauseElement` representing a
+            :class:`~sqlalchemy.sql.expression.ClauseElement` representing a
             default value to be applied to the column within UPDATE
             statements, which will be invoked upon update if this column is not
             present in the SET clause of the update. This is a shortcut to
@@ -1211,7 +1211,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
             :class:`.PrimaryKeyConstraint` object.
 
         :param server_default: A :class:`.FetchedValue` instance, str, Unicode
-            or :func:`~sqlalchemy.database_api.expression.text` construct representing
+            or :func:`~sqlalchemy.sql.expression.text` construct representing
             the DDL DEFAULT value for the column.
 
             String types will be emitted as-is, surrounded by single quotes::
@@ -1220,7 +1220,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
 
                 x TEXT DEFAULT 'val'
 
-            A :func:`~sqlalchemy.database_api.expression.text` expression will be
+            A :func:`~sqlalchemy.sql.expression.text` expression will be
             rendered as-is, without quotes::
 
                 Column('y', DateTime, server_default=text('NOW()'))
@@ -1231,10 +1231,10 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
             :class:`.DefaultClause` object upon initialization.
 
             Use :class:`.FetchedValue` to indicate that an already-existing
-            column will generate a default value on the database_api side which
+            column will generate a default value on the database side which
             will be available to SQLAlchemy for post-fetch after inserts. This
             construct does not specify any DDL and the implementation is left
-            to the database_api, such as via a trigger.
+            to the database, such as via a trigger.
 
             .. seealso::
 
@@ -1242,11 +1242,11 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
                 defaults
 
         :param server_onupdate:   A :class:`.FetchedValue` instance
-             representing a database_api-side default generation function,
+             representing a database-side default generation function,
              such as a trigger. This
              indicates to SQLAlchemy that a newly generated value will be
              available after updates. This construct does not actually
-             implement any kind of generation function within the database_api,
+             implement any kind of generation function within the database,
              which instead must be specified separately.
 
             .. seealso::
@@ -1270,7 +1270,7 @@ class Column(DialectKWArgs, SchemaItem, ColumnClause):
 
         :param system: When ``True``, indicates this is a "system" column,
              that is a column which is automatically made available by the
-             database_api, and should not be included in the columns list for a
+             database, and should not be included in the columns list for a
              ``CREATE TABLE`` statement.
 
              For more elaborate scenarios where columns should be
@@ -1692,7 +1692,7 @@ class ForeignKey(DialectKWArgs, SchemaItem):
             (defaults to the column name itself), unless ``link_to_name`` is
             ``True`` in which case the rendered name of the column is used.
 
-        :param name: Optional string. An in-database_api name for the key if
+        :param name: Optional string. An in-database name for the key if
             `constraint` is not provided.
 
         :param onupdate: Optional string. If set, emit ON UPDATE <value> when
@@ -1900,7 +1900,7 @@ class ForeignKey(DialectKWArgs, SchemaItem):
         # 'otherdb.dbo.foo.bar'. Once we have the column name and
         # the table name, treat everything else as the schema
         # name. Some databases (e.g. Sybase) support
-        # inter-database_api foreign keys. See tickets#1341 and --
+        # inter-database foreign keys. See tickets#1341 and --
         # indirectly related -- Ticket #594. This assumes that '.'
         # will never appear *within* any component of the FK.
 
@@ -2229,7 +2229,7 @@ class ColumnDefault(DefaultGenerator):
         )
 
     @util.memoized_property
-    @util.dependencies("sqlalchemy.database_api.sqltypes")
+    @util.dependencies("sqlalchemy.sql.sqltypes")
     def _arg_is_typed(self, sqltypes):
         if self.is_clause_element:
             return not isinstance(self.arg.type, sqltypes.NullType)
@@ -2275,13 +2275,13 @@ class ColumnDefault(DefaultGenerator):
 
 
 class Sequence(DefaultGenerator):
-    """Represents a named database_api sequence.
+    """Represents a named database sequence.
 
     The :class:`.Sequence` object represents the name and configurational
-    parameters of a database_api sequence.   It also represents
+    parameters of a database sequence.   It also represents
     a construct that can be "executed" by a SQLAlchemy :class:`.Engine`
     or :class:`.Connection`, rendering the appropriate "next value" function
-    for the target database_api and returning a result.
+    for the target database and returning a result.
 
     The :class:`.Sequence` is typically associated with a primary key column::
 
@@ -2331,18 +2331,18 @@ class Sequence(DefaultGenerator):
 
         :param name: The name of the sequence.
         :param start: the starting index of the sequence.  This value is
-         used when the CREATE SEQUENCE command is emitted to the database_api
+         used when the CREATE SEQUENCE command is emitted to the database
          as the value of the "START WITH" clause.   If ``None``, the
          clause is omitted, which on most platforms indicates a starting
          value of 1.
         :param increment: the increment value of the sequence.  This
          value is used when the CREATE SEQUENCE command is emitted to
-         the database_api as the value of the "INCREMENT BY" clause.  If ``None``,
+         the database as the value of the "INCREMENT BY" clause.  If ``None``,
          the clause is omitted, which on most platforms indicates an
          increment of 1.
         :param minvalue: the minimum value of the sequence.  This
          value is used when the CREATE SEQUENCE command is emitted to
-         the database_api as the value of the "MINVALUE" clause.  If ``None``,
+         the database as the value of the "MINVALUE" clause.  If ``None``,
          the clause is omitted, which on most platforms indicates a
          minvalue of 1 and -2^63-1 for ascending and descending sequences,
          respectively.
@@ -2351,7 +2351,7 @@ class Sequence(DefaultGenerator):
 
         :param maxvalue: the maximum value of the sequence.  This
          value is used when the CREATE SEQUENCE command is emitted to
-         the database_api as the value of the "MAXVALUE" clause.  If ``None``,
+         the database as the value of the "MAXVALUE" clause.  If ``None``,
          the clause is omitted, which on most platforms indicates a
          maxvalue of 2^63-1 and -1 for ascending and descending sequences,
          respectively.
@@ -2360,7 +2360,7 @@ class Sequence(DefaultGenerator):
 
         :param nominvalue: no minimum value of the sequence.  This
          value is used when the CREATE SEQUENCE command is emitted to
-         the database_api as the value of the "NO MINVALUE" clause.  If ``None``,
+         the database as the value of the "NO MINVALUE" clause.  If ``None``,
          the clause is omitted, which on most platforms indicates a
          minvalue of 1 and -2^63-1 for ascending and descending sequences,
          respectively.
@@ -2369,7 +2369,7 @@ class Sequence(DefaultGenerator):
 
         :param nomaxvalue: no maximum value of the sequence.  This
          value is used when the CREATE SEQUENCE command is emitted to
-         the database_api as the value of the "NO MAXVALUE" clause.  If ``None``,
+         the database as the value of the "NO MAXVALUE" clause.  If ``None``,
          the clause is omitted, which on most platforms indicates a
          maxvalue of 2^63-1 and -1 for ascending and descending sequences,
          respectively.
@@ -2379,7 +2379,7 @@ class Sequence(DefaultGenerator):
         :param cycle: allows the sequence to wrap around when the maxvalue
          or minvalue has been reached by an ascending or descending sequence
          respectively.  This value is used when the CREATE SEQUENCE command
-         is emitted to the database_api as the "CYCLE" clause.  If the limit is
+         is emitted to the database as the "CYCLE" clause.  If the limit is
          reached, the next number generated will be the minvalue or maxvalue,
          respectively.  If cycle=False (the default) any calls to nextval
          after the sequence has reached its maximum value will return an
@@ -2482,7 +2482,7 @@ class Sequence(DefaultGenerator):
     def is_clause_element(self):
         return False
 
-    @util.dependencies("sqlalchemy.database_api.functions.func")
+    @util.dependencies("sqlalchemy.sql.functions.func")
     def next_value(self, func):
         """Return a :class:`.next_value` function element
         which will render the appropriate increment function
@@ -2510,14 +2510,14 @@ class Sequence(DefaultGenerator):
             return None
 
     def create(self, bind=None, checkfirst=True):
-        """Creates this sequence in the database_api."""
+        """Creates this sequence in the database."""
 
         if bind is None:
             bind = _bind_or_error(self)
         bind._run_visitor(ddl.SchemaGenerator, self, checkfirst=checkfirst)
 
     def drop(self, bind=None, checkfirst=True):
-        """Drops this sequence from the database_api."""
+        """Drops this sequence from the database."""
 
         if bind is None:
             bind = _bind_or_error(self)
@@ -2534,9 +2534,9 @@ class Sequence(DefaultGenerator):
 
 @inspection._self_inspects
 class FetchedValue(_NotAColumnExpr, SchemaEventTarget):
-    """A marker for a transparent database_api-side default.
+    """A marker for a transparent database-side default.
 
-    Use :class:`.FetchedValue` when the database_api is configured
+    Use :class:`.FetchedValue` when the database is configured
     to provide some automatic default for a column.
 
     E.g.::
@@ -2651,7 +2651,7 @@ class Constraint(DialectKWArgs, SchemaItem):
         r"""Create a SQL constraint.
 
         :param name:
-          Optional, the in-database_api name of this ``Constraint``.
+          Optional, the in-database name of this ``Constraint``.
 
         :param deferrable:
           Optional bool.  If set, emit DEFERRABLE or NOT DEFERRABLE when
@@ -2673,7 +2673,7 @@ class Constraint(DialectKWArgs, SchemaItem):
 
           The AddConstraint and DropConstraint DDL constructs provide
           DDLElement's more comprehensive "conditional DDL" approach that is
-          passed a database_api connection when DDL is being issued. _create_rule
+          passed a database connection when DDL is being issued. _create_rule
           is instead called during any CREATE TABLE compilation, where there
           may not be any transaction/connection in progress. However, it
           allows conditional compilation of the constraint even for backends
@@ -2842,7 +2842,7 @@ class ColumnCollectionConstraint(ColumnCollectionMixin, Constraint):
           A sequence of column names or Column objects.
 
         :param name:
-          Optional, the in-database_api name of this constraint.
+          Optional, the in-database name of this constraint.
 
         :param deferrable:
           Optional bool.  If set, emit DEFERRABLE or NOT DEFERRABLE when
@@ -2943,7 +2943,7 @@ class CheckConstraint(ColumnCollectionConstraint):
            CheckConstraint(r"foo ~ E'a(?\:b|c)d")
 
         :param name:
-          Optional, the in-database_api name of the constraint.
+          Optional, the in-database name of the constraint.
 
         :param deferrable:
           Optional bool.  If set, emit DEFERRABLE or NOT DEFERRABLE when
@@ -3046,7 +3046,7 @@ class ForeignKeyConstraint(ColumnCollectionConstraint):
         :param refcolumns: A sequence of foreign column names or Column
           objects. The columns must all be located within the same Table.
 
-        :param name: Optional, the in-database_api name of the key.
+        :param name: Optional, the in-database name of the key.
 
         :param onupdate: Optional string. If set, emit ON UPDATE <value> when
           issuing DDL for this constraint. Typical values include CASCADE,
@@ -3744,7 +3744,7 @@ class MetaData(SchemaItem):
 
     .. seealso::
 
-        :ref:`metadata_describing` - Introduction to database_api metadata
+        :ref:`metadata_describing` - Introduction to database metadata
 
     """
 
@@ -3775,7 +3775,7 @@ class MetaData(SchemaItem):
           be bound to the resulting engine.
 
         :param reflect:
-          Optional, automatically load all tables from the bound database_api.
+          Optional, automatically load all tables from the bound database.
           Defaults to False. ``bind`` is required when this option is set.
 
         :param schema:
@@ -4097,16 +4097,16 @@ class MetaData(SchemaItem):
         resolve_fks=True,
         **dialect_kwargs
     ):
-        r"""Load all available table definitions from the database_api.
+        r"""Load all available table definitions from the database.
 
         Automatically creates ``Table`` entries in this ``MetaData`` for any
-        table available in the database_api but not yet present in the
+        table available in the database but not yet present in the
         ``MetaData``.  May be called multiple times to pick up tables recently
-        added to the database_api, however no special action is taken if a table
-        in this ``MetaData`` no longer exists in the database_api.
+        added to the database, however no special action is taken if a table
+        in this ``MetaData`` no longer exists in the database.
 
         :param bind:
-          A :class:`.Connectable` used to access the database_api; if None, uses
+          A :class:`.Connectable` used to access the database; if None, uses
           the existing bind on this ``MetaData``, if any.
 
         :param schema:
@@ -4265,11 +4265,11 @@ class MetaData(SchemaItem):
         """Create all tables stored in this metadata.
 
         Conditional by default, will not attempt to recreate tables already
-        present in the target database_api.
+        present in the target database.
 
         :param bind:
           A :class:`.Connectable` used to access the
-          database_api; if None, uses the existing bind on this ``MetaData``, if
+          database; if None, uses the existing bind on this ``MetaData``, if
           any.
 
         :param tables:
@@ -4278,7 +4278,7 @@ class MetaData(SchemaItem):
 
         :param checkfirst:
           Defaults to True, don't issue CREATEs for tables already present
-          in the target database_api.
+          in the target database.
 
         """
         if bind is None:
@@ -4291,11 +4291,11 @@ class MetaData(SchemaItem):
         """Drop all tables stored in this metadata.
 
         Conditional by default, will not attempt to drop tables not present in
-        the target database_api.
+        the target database.
 
         :param bind:
           A :class:`.Connectable` used to access the
-          database_api; if None, uses the existing bind on this ``MetaData``, if
+          database; if None, uses the existing bind on this ``MetaData``, if
           any.
 
         :param tables:
@@ -4304,7 +4304,7 @@ class MetaData(SchemaItem):
 
         :param checkfirst:
           Defaults to True, only issue DROPs for tables confirmed to be
-          present in the target database_api.
+          present in the target database.
 
         """
         if bind is None:

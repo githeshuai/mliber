@@ -36,7 +36,7 @@ def manage(module, **params):
     creating new connection pools for each distinct set of connection
     arguments sent to the decorated module's connect() function.
 
-    :param module: a DB-API 2.0 database_api module
+    :param module: a DB-API 2.0 database module
 
     :param poolclass: the class used by the pool module to provide
       pooling.  Defaults to :class:`.QueuePool`.
@@ -119,16 +119,16 @@ class _DBProxy(object):
                 self._create_pool_mutex.release()
 
     def connect(self, *args, **kw):
-        """Activate a connection to the database_api.
+        """Activate a connection to the database.
 
-        Connect to the database_api using this DBProxy's module and the given
+        Connect to the database using this DBProxy's module and the given
         connect arguments.  If the arguments match an existing pool, the
         connection will be returned from the pool's current thread-local
         connection instance, or if there is no thread-local connection
         instance it will be checked out from the set of pooled connections.
 
         If the pool has no available connections and allows new connections
-        to be created, a new database_api connection will be made.
+        to be created, a new database connection will be made.
 
         """
 

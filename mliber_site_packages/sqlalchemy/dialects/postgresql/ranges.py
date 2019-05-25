@@ -23,7 +23,7 @@ class RangeOperators(object):
 
     No extra support is provided for the Range Functions listed in
     Table 9-45 of the postgres documentation. For these, the normal
-    :func:`~sqlalchemy.database_api.expression.func` object should be used.
+    :func:`~sqlalchemy.sql.expression.func` object should be used.
 
     """
 

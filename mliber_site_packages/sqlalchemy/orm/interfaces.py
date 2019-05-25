@@ -315,7 +315,7 @@ class PropComparator(operators.ColumnOperators):
             def __gt__(self, other):
                 "redefine the 'greater than' operation"
 
-                return database_api.and_(*[a>b for a, b in
+                return sql.and_(*[a>b for a, b in
                                   zip(self.__clause_element__().clauses,
                                       other.__composite_values__())])
 

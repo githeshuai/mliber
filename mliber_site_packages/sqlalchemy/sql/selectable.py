@@ -1,4 +1,4 @@
-# database_api/selectable.py
+# sql/selectable.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -292,7 +292,7 @@ class FromClause(Selectable):
         ":class:`.functions.count` function available from the "
         ":attr:`.func` namespace.",
     )
-    @util.dependencies("sqlalchemy.database_api.functions")
+    @util.dependencies("sqlalchemy.sql.functions")
     def count(self, functions, whereclause=None, **params):
         """return a SELECT COUNT generated against this
         :class:`.FromClause`.
@@ -319,7 +319,7 @@ class FromClause(Selectable):
 
         .. seealso::
 
-            :func:`~.database_api.expression.select` - general purpose
+            :func:`~.sql.expression.select` - general purpose
             method which allows for arbitrary column lists.
 
         """
@@ -478,7 +478,7 @@ class FromClause(Selectable):
         """
         return self._cloned_set.intersection(other._cloned_set)
 
-    @util.dependencies("sqlalchemy.database_api.util")
+    @util.dependencies("sqlalchemy.sql.util")
     def replace_selectable(self, sqlutil, old, alias):
         """replace all occurrences of FromClause 'old' with the given Alias
         object, returning a copy of this :class:`.FromClause`.
@@ -826,7 +826,7 @@ class Join(FromClause):
     def self_group(self, against=None):
         return FromGrouping(self)
 
-    @util.dependencies("sqlalchemy.database_api.util")
+    @util.dependencies("sqlalchemy.sql.util")
     def _populate_column_collection(self, sqlutil):
         columns = [c for c in self.left.columns] + [
             c for c in self.right.columns
@@ -1066,7 +1066,7 @@ class Join(FromClause):
     def bind(self):
         return self.left.bind or self.right.bind
 
-    @util.dependencies("sqlalchemy.database_api.util")
+    @util.dependencies("sqlalchemy.sql.util")
     def alias(self, sqlutil, name=None, flat=False):
         r"""return an alias of this :class:`.Join`.
 
@@ -1479,7 +1479,7 @@ class TableSample(Alias):
         self.seed = seed
         super(TableSample, self)._init(selectable, name=name)
 
-    @util.dependencies("sqlalchemy.database_api.functions")
+    @util.dependencies("sqlalchemy.sql.functions")
     def _get_method(self, functions):
         if isinstance(self.sampling, functions.Function):
             return self.sampling
@@ -1533,7 +1533,7 @@ class CTE(Generative, HasSuffixes, Alias):
             [clone(elem, **kw) for elem in self._restates]
         )
 
-    @util.dependencies("sqlalchemy.database_api.dml")
+    @util.dependencies("sqlalchemy.sql.dml")
     def _populate_column_collection(self, dml):
         if isinstance(self.element, dml.UpdateBase):
             for col in self.element._returning:
@@ -1877,7 +1877,7 @@ class TableClause(Immutable, FromClause):
         else:
             return []
 
-    @util.dependencies("sqlalchemy.database_api.dml")
+    @util.dependencies("sqlalchemy.sql.dml")
     def insert(self, dml, values=None, inline=False, **kwargs):
         """Generate an :func:`.insert` construct against this
         :class:`.TableClause`.
@@ -1892,7 +1892,7 @@ class TableClause(Immutable, FromClause):
 
         return dml.Insert(self, values=values, inline=inline, **kwargs)
 
-    @util.dependencies("sqlalchemy.database_api.dml")
+    @util.dependencies("sqlalchemy.sql.dml")
     def update(
         self, dml, whereclause=None, values=None, inline=False, **kwargs
     ):
@@ -1915,7 +1915,7 @@ class TableClause(Immutable, FromClause):
             **kwargs
         )
 
-    @util.dependencies("sqlalchemy.database_api.dml")
+    @util.dependencies("sqlalchemy.sql.dml")
     def delete(self, dml, whereclause=None, **kwargs):
         """Generate a :func:`.delete` construct against this
         :class:`.TableClause`.
@@ -2187,7 +2187,7 @@ class GenerativeSelect(SelectBase):
 
             stmt = select([table]).with_for_update(nowait=True)
 
-        On a database_api like PostgreSQL or Oracle, the above would render a
+        On a database like PostgreSQL or Oracle, the above would render a
         statement like::
 
             SELECT table.a, table.b FROM table FOR UPDATE NOWAIT
@@ -2199,7 +2199,7 @@ class GenerativeSelect(SelectBase):
 
         When called with no arguments, the statement will render with
         the suffix ``FOR UPDATE``.   Additional arguments can then be
-        provided which allow for common database_api-specific
+        provided which allow for common database-specific
         variants.
 
         :param nowait: boolean; will render ``FOR UPDATE NOWAIT`` on Oracle
@@ -3087,7 +3087,7 @@ class Select(HasPrefixes, HasSuffixes, GenerativeSelect):
         it does not require an individual table, and instead applies to the
         statement as a whole.
 
-        Hints here are specific to the backend database_api and may include
+        Hints here are specific to the backend database and may include
         directives such as isolation levels, file directives, fetch directives,
         etc.
 
@@ -3106,7 +3106,7 @@ class Select(HasPrefixes, HasSuffixes, GenerativeSelect):
         selectable to this :class:`.Select`.
 
         The text of the hint is rendered in the appropriate
-        location for the database_api backend in use, relative
+        location for the database backend in use, relative
         to the given :class:`.Table` or :class:`.Alias` passed as the
         ``selectable`` argument. The dialect implementation
         typically uses Python string substitution syntax
@@ -3290,7 +3290,7 @@ class Select(HasPrefixes, HasSuffixes, GenerativeSelect):
         """
         self.append_column(column)
 
-    @util.dependencies("sqlalchemy.database_api.util")
+    @util.dependencies("sqlalchemy.sql.util")
     def reduce_columns(self, sqlutil, only_synonyms=True):
         """Return a new :func`.select` construct with redundantly
         named, equivalently-valued columns removed from the columns clause.

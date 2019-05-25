@@ -1,4 +1,4 @@
-# database_api/compiler.py
+# sql/compiler.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -255,7 +255,7 @@ class Compiled(object):
 
     The ``__str__`` method of the ``Compiled`` object should produce
     the actual text of the statement.  ``Compiled`` objects are
-    specific to their underlying database_api dialect, and also may
+    specific to their underlying database dialect, and also may
     or may not be specific to the columns referenced within a
     particular set of bind parameters.  In no case should the
     ``Compiled`` object be dependent on the actual values of those
@@ -1511,7 +1511,7 @@ class SQLCompiler(Compiled):
         """Render the value of a bind parameter as a quoted literal.
 
         This is used for statement sections that do not accept bind parameters
-        on the target driver/database_api.
+        on the target driver/database.
 
         This should be implemented by subclasses using the quoting services
         of the DBAPI.
@@ -2387,7 +2387,7 @@ class SQLCompiler(Compiled):
             and not self.dialect.supports_empty_insert
         ):
             raise exc.CompileError(
-                "The '%s' dialect with current database_api "
+                "The '%s' dialect with current database "
                 "version settings does not support empty "
                 "inserts." % self.dialect.name
             )
@@ -2395,7 +2395,7 @@ class SQLCompiler(Compiled):
         if insert_stmt._has_multi_parameters:
             if not self.dialect.supports_multivalues_insert:
                 raise exc.CompileError(
-                    "The '%s' dialect with current database_api "
+                    "The '%s' dialect with current database "
                     "version settings does not support "
                     "in-place multirow inserts." % self.dialect.name
                 )
@@ -2717,20 +2717,10 @@ class SQLCompiler(Compiled):
 
 
 class StrSQLCompiler(SQLCompiler):
-    """A :class:`.SQLCompiler` subclass which allows a small selection
-    of non-standard SQL features to render into a string value.
+    """"a compiler subclass with a few non-standard SQL features allowed.
 
-    The :class:`.StrSQLCompiler` is invoked whenever a Core expression
-    element is directly stringified without calling upon the
-    :meth:`.ClauseElement.compile` method.   It can render a limited set
-    of non-standard SQL constructs to assist in basic stringification,
-    however for more substantial custom or dialect-specific SQL constructs,
-    it will be necessary to make use of :meth:`.ClauseElement.compile`
-    directly.
-
-    .. seealso::
-
-        :ref:`faq_sql_expression_string`
+    Used for stringification of SQL statements when a real dialect is not
+    available.
 
     """
 
@@ -3435,7 +3425,7 @@ class IdentifierPreparer(object):
     def _escape_identifier(self, value):
         """Escape an identifier.
 
-        Subclasses should override this to provide database_api-dependent
+        Subclasses should override this to provide database-dependent
         escaping behavior.
         """
 
@@ -3447,7 +3437,7 @@ class IdentifierPreparer(object):
     def _unescape_identifier(self, value):
         """Canonicalize an escaped identifier.
 
-        Subclasses should override this to provide database_api-dependent
+        Subclasses should override this to provide database-dependent
         unescaping behavior that reverses _escape_identifier.
         """
 
@@ -3474,7 +3464,7 @@ class IdentifierPreparer(object):
     def quote_identifier(self, value):
         """Quote an identifier.
 
-        Subclasses should override this to provide database_api-dependent
+        Subclasses should override this to provide database-dependent
         quoting behavior.
         """
 
@@ -3507,7 +3497,7 @@ class IdentifierPreparer(object):
         characters, or is an instance of :class:`.quoted_name` which includes
         ``quote`` set to ``True``.
 
-        Subclasses can override this to provide database_api-dependent
+        Subclasses can override this to provide database-dependent
         quoting behavior for schema names.
 
         :param schema: string schema name
@@ -3543,7 +3533,7 @@ class IdentifierPreparer(object):
         quote-necessary characters, or is an instance of
         :class:`.quoted_name` which includes ``quote`` set to ``True``.
 
-        Subclasses can override this to provide database_api-dependent
+        Subclasses can override this to provide database-dependent
         quoting behavior for identifier names.
 
         :param ident: string identifier
@@ -3620,7 +3610,7 @@ class IdentifierPreparer(object):
             ident = self.quote_identifier(ident)
         return ident
 
-    @util.dependencies("sqlalchemy.database_api.naming")
+    @util.dependencies("sqlalchemy.sql.naming")
     def format_constraint(self, naming, constraint):
         if isinstance(constraint.name, elements._defer_name):
             name = naming._constraint_name_for_table(
@@ -3713,7 +3703,7 @@ class IdentifierPreparer(object):
         """Format table name and schema as a tuple."""
 
         # Dialects with more levels in their fully qualified references
-        # ('database_api', 'owner', etc.) could override this and return
+        # ('database', 'owner', etc.) could override this and return
         # a longer sequence.
 
         effective_schema = self.schema_for_object(table)

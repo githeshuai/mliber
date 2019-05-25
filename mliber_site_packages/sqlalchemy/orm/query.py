@@ -8,14 +8,14 @@
 """The Query class and support.
 
 Defines the :class:`.Query` class, the central
-construct used by the ORM to construct database_api queries.
+construct used by the ORM to construct database queries.
 
 The :class:`.Query` class should not be confused with the
-:class:`.Select` class, which defines database_api
+:class:`.Select` class, which defines database
 SELECT operations at the SQL (non-ORM) level.  ``Query`` differs from
 ``Select`` in that it returns ORM-mapped objects and interacts with an
 ORM session, whereas the ``Select`` construct interacts directly with the
-database_api to return iterable result sets.
+database to return iterable result sets.
 
 """
 
@@ -631,7 +631,7 @@ class Query(object):
         :class:`.Query`, converted
         to a scalar subquery with a label of the given name.
 
-        Analogous to :meth:`sqlalchemy.database_api.expression.SelectBase.label`.
+        Analogous to :meth:`sqlalchemy.sql.expression.SelectBase.label`.
 
         """
 
@@ -641,7 +641,7 @@ class Query(object):
         """Return the full SELECT statement represented by this
         :class:`.Query`, converted to a scalar subquery.
 
-        Analogous to :meth:`sqlalchemy.database_api.expression.SelectBase.as_scalar`.
+        Analogous to :meth:`sqlalchemy.sql.expression.SelectBase.as_scalar`.
 
         """
 
@@ -819,7 +819,7 @@ class Query(object):
         The :meth:`.Query.yield_per` method **is not compatible
         subqueryload eager loading or joinedload eager loading when
         using collections**.  It is potentially compatible with "select in"
-        eager loading, **provided the database_api driver supports multiple,
+        eager loading, **provided the database driver supports multiple,
         independent cursors** (pysqlite and psycopg2 are known to work,
         MySQL and SQL Server ODBC drivers do not).
 
@@ -859,7 +859,7 @@ class Query(object):
             which will stream results using server side cursors
             instead of pre-buffer all rows for this query. Other
             DBAPIs **pre-buffer all rows** before making them
-            available.  The memory use of raw database_api rows is much less
+            available.  The memory use of raw database rows is much less
             than that of an ORM-mapped object, but should still be taken into
             consideration when benchmarking.
 
@@ -918,7 +918,7 @@ class Query(object):
         foreign-key-to-primary-key criterion, will also use an
         operation equivalent to :meth:`~.Query.get` in order to retrieve
         the target value from the local identity map
-        before querying the database_api.  See :doc:`/orm/loading_relationships`
+        before querying the database.  See :doc:`/orm/loading_relationships`
         for further details on relationship loading.
 
         :param ident: A scalar, tuple, or dictionary representing the
@@ -1236,7 +1236,7 @@ class Query(object):
 
         This query renders as:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT anon_1.user_id AS anon_1_user_id,
                    anon_1.user_name AS anon_1_user_name
@@ -1256,7 +1256,7 @@ class Query(object):
         The above query joins to the ``Address`` entity but only against the
         first five results of the ``User`` query:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT anon_1.user_id AS anon_1_user_id,
                    anon_1.user_name AS anon_1_user_name
@@ -1283,7 +1283,7 @@ class Query(object):
         The ORDER BY against ``User.name`` is aliased to be in terms of the
         inner subquery:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT anon_1.user_id AS anon_1_user_id,
                    anon_1.user_name AS anon_1_user_name
@@ -1316,7 +1316,7 @@ class Query(object):
 
         yielding:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT address.email AS address_email
             FROM (SELECT "user".id AS user_id, "user".name AS user_name
@@ -1349,7 +1349,7 @@ class Query(object):
         :func:`.contains_eager` modifier we are using on the outside,
         producing:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT anon_1.address_id AS anon_1_address_id,
                    anon_1.address_email AS anon_1_address_email,
@@ -1371,7 +1371,7 @@ class Query(object):
         join criteria - note the ``anon1, "user"`` phrase at
         the end:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             -- incorrect query
             SELECT anon_1.address_id AS anon_1_address_id,
@@ -1567,7 +1567,7 @@ class Query(object):
         this :class:`.Query`.
 
         Functionality is passed straight through to
-        :meth:`~sqlalchemy.database_api.expression.Select.with_hint`,
+        :meth:`~sqlalchemy.sql.expression.Select.with_hint`,
         with the addition that ``selectable`` can be a
         :class:`.Table`, :class:`.Alias`, or ORM entity / mapped class
         /etc.
@@ -1791,7 +1791,7 @@ class Query(object):
             _entity_descriptor(self._joinpoint_zero(), key) == value
             for key, value in kwargs.items()
         ]
-        return self.filter(*clauses)
+        return self.filter(sql.and_(*clauses))
 
     @_generative(_no_statement_condition, _no_limit_offset)
     def order_by(self, *criterion):
@@ -1873,7 +1873,7 @@ class Query(object):
         ):
             raise sa_exc.ArgumentError(
                 "having() argument must be of type "
-                "sqlalchemy.database_api.ClauseElement or string"
+                "sqlalchemy.sql.ClauseElement or string"
             )
 
         criterion = self._adapt_clause(criterion, True, True)
@@ -1917,7 +1917,7 @@ class Query(object):
             SELECT * FROM (SELECT * FROM X UNION SELECT * FROM y UNION
                             SELECT * FROM Z)
 
-        Note that many database_api backends do not allow ORDER BY to
+        Note that many database backends do not allow ORDER BY to
         be rendered on a query called within UNION, EXCEPT, etc.
         To disable all ORDER BY clauses including those configured
         on mappers, issue ``query.order_by(None)`` - the resulting
@@ -2912,7 +2912,7 @@ class Query(object):
         Above, the generated SQL will show that the ``User`` entity is
         adapted to our statement, even in the case of the WHERE clause:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             SELECT anon_1.id AS anon_1_id, anon_1.name AS anon_1_name
             FROM (SELECT "user".id AS id, "user".name AS name
@@ -2927,7 +2927,7 @@ class Query(object):
         primary entity.  If above we had used :meth:`.Query.select_from`
         instead, the SQL generated would have been:
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
             -- uses plain select_from(), not select_entity_from()
             SELECT "user".id AS user_id, "user".name AS user_name
@@ -3027,7 +3027,7 @@ class Query(object):
 
         renders as
 
-        .. sourcecode:: database_api
+        .. sourcecode:: sql
 
            SELECT users.id AS users_id,
                   users.name AS users_name
@@ -3080,7 +3080,7 @@ class Query(object):
             The :meth:`.distinct` call includes logic that will automatically
             add columns from the ORDER BY of the query to the columns
             clause of the SELECT statement, to satisfy the common need
-            of the database_api backend that ORDER BY columns be part of the
+            of the database backend that ORDER BY columns be part of the
             SELECT list when DISTINCT is used.   These columns *are not*
             added to the list of columns actually fetched by the
             :class:`.Query`, however, so would not affect results.
@@ -3536,7 +3536,7 @@ class Query(object):
         to count, to skip the usage of a subquery or
         otherwise control of the FROM clause,
         or to use other aggregate functions,
-        use :attr:`~sqlalchemy.database_api.expression.func`
+        use :attr:`~sqlalchemy.sql.expression.func`
         expressions in conjunction
         with :meth:`~.Session.query`, i.e.::
 
@@ -3563,7 +3563,7 @@ class Query(object):
     def delete(self, synchronize_session="evaluate"):
         r"""Perform a bulk delete query.
 
-        Deletes rows matched by this query from the database_api.
+        Deletes rows matched by this query from the database.
 
         E.g.::
 
@@ -3598,9 +3598,9 @@ class Query(object):
             implemented, an error is raised.
 
             The expression evaluator currently doesn't account for differing
-            string collations between the database_api and Python.
+            string collations between the database and Python.
 
-        :return: the count of rows matched as returned by the database_api's
+        :return: the count of rows matched as returned by the database's
           "row count" feature.
 
         .. warning:: **Additional Caveats for bulk query deletes**
@@ -3624,7 +3624,7 @@ class Query(object):
                         delete()
 
               However the above SQL will not delete from the Engineer table,
-              unless an ON DELETE CASCADE rule is established in the database_api
+              unless an ON DELETE CASCADE rule is established in the database
               to handle it.
 
               Short story, **do not use this method for joined inheritance
@@ -3639,7 +3639,7 @@ class Query(object):
             * The method does **not** offer in-Python cascading of
               relationships - it is assumed that ON DELETE CASCADE/SET
               NULL/etc. is configured for any foreign key references
-              which require it, otherwise the database_api may emit an
+              which require it, otherwise the database may emit an
               integrity violation if foreign key references are being
               enforced.
 
@@ -3686,7 +3686,7 @@ class Query(object):
     def update(self, values, synchronize_session="evaluate", update_args=None):
         r"""Perform a bulk update query.
 
-        Updates rows matched by this query in the database_api.
+        Updates rows matched by this query in the database.
 
         E.g.::
 
@@ -3704,11 +3704,11 @@ class Query(object):
 
         :param values: a dictionary with attributes names, or alternatively
          mapped attributes or SQL expressions, as keys, and literal
-         values or database_api expressions as values.   If :ref:`parameter-ordered
+         values or sql expressions as values.   If :ref:`parameter-ordered
          mode <updates_order_parameters>` is desired, the values can be
          passed as a list of 2-tuples;
          this requires that the
-         :paramref:`~sqlalchemy.database_api.expression.update.preserve_parameter_order`
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
          flag is passed to the :paramref:`.Query.update.update_args` dictionary
          as well.
 
@@ -3736,17 +3736,17 @@ class Query(object):
             implemented, an exception is raised.
 
             The expression evaluator currently doesn't account for differing
-            string collations between the database_api and Python.
+            string collations between the database and Python.
 
         :param update_args: Optional dictionary, if present will be passed
          to the underlying :func:`.update` construct as the ``**kw`` for
          the object.  May be used to pass dialect-specific arguments such
          as ``mysql_limit``, as well as other special arguments such as
-         :paramref:`~sqlalchemy.database_api.expression.update.preserve_parameter_order`.
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`.
 
          .. versionadded:: 1.0.0
 
-        :return: the count of rows matched as returned by the database_api's
+        :return: the count of rows matched as returned by the database's
          "row count" feature.
 
         .. warning:: **Additional Caveats for bulk query updates**
@@ -3754,7 +3754,7 @@ class Query(object):
             * The method does **not** offer in-Python cascading of
               relationships - it is assumed that ON UPDATE CASCADE is
               configured for any foreign key references which require
-              it, otherwise the database_api may emit an integrity
+              it, otherwise the database may emit an integrity
               violation if foreign key references are being enforced.
 
               After the UPDATE, dependent objects in the
@@ -4713,7 +4713,7 @@ class AliasOption(interfaces.MapperOption):
             results = query.from_statement(statement).all()
 
         :param alias: is the string name of an alias, or a
-         :class:`~.database_api.expression.Alias` object representing
+         :class:`~.sql.expression.Alias` object representing
          the alias.
 
         """

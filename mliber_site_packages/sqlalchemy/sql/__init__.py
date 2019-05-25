@@ -1,4 +1,4 @@
-# database_api/__init__.py
+# sql/__init__.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -98,7 +98,7 @@ def __go(lcls):
     _prepare_annotations(FromClause, AnnotatedFromClause)
     _prepare_annotations(ClauseList, Annotated)
 
-    _sa_util.dependencies.resolve_all("sqlalchemy.database_api")
+    _sa_util.dependencies.resolve_all("sqlalchemy.sql")
 
     from . import naming  # noqa
 

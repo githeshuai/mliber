@@ -234,8 +234,8 @@ class InstanceEvents(event.Events):
         This method is only called during a userland construction of
         an object, in conjunction with the object's constructor, e.g.
         its ``__init__`` method.  It is not called when an object is
-        loaded from the database_api; see the :meth:`.InstanceEvents.load`
-        event in order to intercept a database_api load.
+        loaded from the database; see the :meth:`.InstanceEvents.load`
+        event in order to intercept a database load.
 
         The event is called before the actual ``__init__`` constructor
         of the object is called.  The ``kwargs`` dictionary may be
@@ -266,7 +266,7 @@ class InstanceEvents(event.Events):
         This method is only called during a userland construction of
         an object, in conjunction with the object's constructor, e.g.
         its ``__init__`` method. It is not called when an object is loaded
-        from the database_api.
+        from the database.
 
         The event is invoked after an exception raised by the ``__init__``
         method is caught.  After the event
@@ -550,7 +550,7 @@ class MapperEvents(event.Events):
     :meth:`.SessionEvents.before_flush` and
     :meth:`.SessionEvents.after_flush` methods as more
     flexible and user-friendly hooks in which to apply
-    additional database_api state during a flush.
+    additional database state during a flush.
 
     When using :class:`.MapperEvents`, several modifiers are
     available to the :func:`.event.listen` function.
@@ -922,7 +922,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit INSERT statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being persisted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -968,7 +968,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit INSERT statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being persisted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -1033,7 +1033,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit UPDATE statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being persisted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -1097,7 +1097,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit UPDATE statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being persisted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -1137,7 +1137,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit DELETE statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being deleted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -1177,7 +1177,7 @@ class MapperEvents(event.Events):
         :param connection: the :class:`.Connection` being used to
          emit DELETE statements for this instance.  This
          provides a handle into the current transaction on the
-         target database_api specific to this instance.
+         target database specific to this instance.
         :param target: the mapped instance being deleted.  If
          the event is configured with ``raw=True``, this will
          instead be the :class:`.InstanceState` state-management
@@ -1264,7 +1264,7 @@ class SessionEvents(event.Events):
         This event differs from :meth:`~.SessionEvents.after_begin`
         in that it occurs for each :class:`.SessionTransaction`
         overall, as opposed to when transactions are begun
-        on individual database_api connections.  It is also invoked
+        on individual database connections.  It is also invoked
         for nested transactions and subtransactions, and is always
         matched by a corresponding
         :meth:`~.SessionEvents.after_transaction_end` event
@@ -1345,7 +1345,7 @@ class SessionEvents(event.Events):
         .. note::
 
             The :meth:`~.SessionEvents.before_commit` hook is *not* per-flush,
-            that is, the :class:`.Session` can emit SQL to the database_api
+            that is, the :class:`.Session` can emit SQL to the database
             many times within the scope of a transaction.
             For interception of these events, use the
             :meth:`~.SessionEvents.before_flush`,
@@ -1373,7 +1373,7 @@ class SessionEvents(event.Events):
         .. note::
 
             The :meth:`~.SessionEvents.after_commit` hook is *not* per-flush,
-            that is, the :class:`.Session` can emit SQL to the database_api
+            that is, the :class:`.Session` can emit SQL to the database
             many times within the scope of a transaction.
             For interception of these events, use the
             :meth:`~.SessionEvents.before_flush`,
@@ -1407,7 +1407,7 @@ class SessionEvents(event.Events):
         """Execute after a real DBAPI rollback has occurred.
 
         Note that this event only fires when the *actual* rollback against
-        the database_api occurs - it does *not* fire each time the
+        the database occurs - it does *not* fire each time the
         :meth:`.Session.rollback` method is called, if the underlying
         DBAPI transaction has already been rolled back.  In many
         cases, the :class:`.Session` will not be in
@@ -1772,7 +1772,7 @@ class SessionEvents(event.Events):
         """Intercept the "persistent to deleted" transition for a specific object.
 
         This event is invoked when a persistent object's identity
-        is deleted from the database_api within a flush, however the object
+        is deleted from the database within a flush, however the object
         still remains associated with the :class:`.Session` until the
         transaction completes.
 
@@ -1904,7 +1904,7 @@ class AttributeEvents(event.Events):
     :param active_history=False: When True, indicates that the
       "set" event would like to receive the "old" value being
       replaced unconditionally, even if this requires firing off
-      database_api loads. Note that ``active_history`` can also be
+      database loads. Note that ``active_history`` can also be
       set directly via :func:`.column_property` and
       :func:`.relationship`.
 
@@ -2096,7 +2096,7 @@ class AttributeEvents(event.Events):
           may also be the symbol ``NEVER_SET`` or ``NO_VALUE``.
           If the listener is registered with ``active_history=True``,
           the previous value of the attribute will be loaded from
-          the database_api if the existing value is currently unloaded
+          the database if the existing value is currently unloaded
           or expired.
         :param initiator: An instance of :class:`.attributes.Event`
           representing the initiation of the event.  May be modified
@@ -2162,7 +2162,7 @@ class AttributeEvents(event.Events):
         features:
 
         * By setting the value ``SOME_CONSTANT`` in the given ``dict_``,
-          we indicate that this value is to be persisted to the database_api.
+          we indicate that this value is to be persisted to the database.
           This supersedes the use of ``SOME_CONSTANT`` in the default generator
           for the :class:`.Column`.  The ``active_column_defaults.py``
           example given at :ref:`examples_instrumentation` illustrates using

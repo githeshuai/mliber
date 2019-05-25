@@ -22,7 +22,7 @@ PostgreSQL ``client_encoding`` parameter; by default this is the value in
 the ``postgresql.conf`` file, which often defaults to ``SQL_ASCII``.
 Typically, this can be changed to ``utf-8``, as a more useful default::
 
-    #client_encoding = sql_ascii # actually, defaults to database_api
+    #client_encoding = sql_ascii # actually, defaults to database
                                  # encoding
     client_encoding = utf8
 

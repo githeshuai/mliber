@@ -11,11 +11,11 @@ Synopsis
 ========
 
 Usage involves the creation of one or more
-:class:`~sqlalchemy.database_api.expression.ClauseElement` subclasses and one or
+:class:`~sqlalchemy.sql.expression.ClauseElement` subclasses and one or
 more callables defining its compilation::
 
     from sqlalchemy.ext.compiler import compiles
-    from sqlalchemy.database_api.expression import ColumnClause
+    from sqlalchemy.sql.expression import ColumnClause
 
     class MyColumn(ColumnClause):
         pass
@@ -24,7 +24,7 @@ more callables defining its compilation::
     def compile_mycolumn(element, compiler, **kw):
         return "[%s]" % element.name
 
-Above, ``MyColumn`` extends :class:`~sqlalchemy.database_api.expression.ColumnClause`,
+Above, ``MyColumn`` extends :class:`~sqlalchemy.sql.expression.ColumnClause`,
 the base expression element for named column objects. The ``compiles``
 decorator registers itself with the ``MyColumn`` class so that it is invoked
 when the object is compiled to a string::
@@ -71,11 +71,11 @@ The ``compiler`` argument is the
 :class:`~sqlalchemy.engine.interfaces.Compiled` object in use. This object
 can be inspected for any information about the in-progress compilation,
 including ``compiler.dialect``, ``compiler.statement`` etc. The
-:class:`~sqlalchemy.database_api.compiler.SQLCompiler` and
-:class:`~sqlalchemy.database_api.compiler.DDLCompiler` both include a ``process()``
+:class:`~sqlalchemy.sql.compiler.SQLCompiler` and
+:class:`~sqlalchemy.sql.compiler.DDLCompiler` both include a ``process()``
 method which can be used for compilation of embedded attributes::
 
-    from sqlalchemy.database_api.expression import Executable, ClauseElement
+    from sqlalchemy.sql.expression import Executable, ClauseElement
 
     class InsertFromSelect(Executable, ClauseElement):
         def __init__(self, table, select):
@@ -157,7 +157,7 @@ Currently a quick way to do this is to subclass :class:`.Executable`, then
 add the "autocommit" flag to the ``_execution_options`` dictionary (note this
 is a "frozen" dictionary which supplies a generative ``union()`` method)::
 
-    from sqlalchemy.database_api.expression import Executable, ClauseElement
+    from sqlalchemy.sql.expression import Executable, ClauseElement
 
     class MyInsertThing(Executable, ClauseElement):
         _execution_options = \
@@ -168,7 +168,7 @@ DELETE, :class:`.UpdateBase` can be used, which already is a subclass
 of :class:`.Executable`, :class:`.ClauseElement` and includes the
 ``autocommit`` flag::
 
-    from sqlalchemy.database_api.expression import UpdateBase
+    from sqlalchemy.sql.expression import UpdateBase
 
     class MyInsertThing(UpdateBase):
         def __init__(self, ...):
@@ -197,7 +197,7 @@ routine, use the appropriate visit_XXX method - this
 because compiler.process() will call upon the overriding routine and cause
 an endless loop.   Such as, to add "prefix" to all insert statements::
 
-    from sqlalchemy.database_api.expression import Insert
+    from sqlalchemy.sql.expression import Insert
 
     @compiles(Insert)
     def prefix_inserts(insert, compiler, **kw):
@@ -234,17 +234,17 @@ expression constructs. To make this easier, the expression and
 schema packages feature a set of "bases" intended for common tasks.
 A synopsis is as follows:
 
-* :class:`~sqlalchemy.database_api.expression.ClauseElement` - This is the root
+* :class:`~sqlalchemy.sql.expression.ClauseElement` - This is the root
   expression class. Any SQL expression can be derived from this base, and is
   probably the best choice for longer constructs such as specialized INSERT
   statements.
 
-* :class:`~sqlalchemy.database_api.expression.ColumnElement` - The root of all
+* :class:`~sqlalchemy.sql.expression.ColumnElement` - The root of all
   "column-like" elements. Anything that you'd place in the "columns" clause of
   a SELECT statement (as well as order by and group by) can derive from this -
   the object will automatically have Python "comparison" behavior.
 
-  :class:`~sqlalchemy.database_api.expression.ColumnElement` classes want to have a
+  :class:`~sqlalchemy.sql.expression.ColumnElement` classes want to have a
   ``type`` member which is expression's return type.  This can be established
   at the instance level in the constructor, or at the class level if its
   generally constant::
@@ -252,14 +252,14 @@ A synopsis is as follows:
       class timestamp(ColumnElement):
           type = TIMESTAMP()
 
-* :class:`~sqlalchemy.database_api.functions.FunctionElement` - This is a hybrid of a
+* :class:`~sqlalchemy.sql.functions.FunctionElement` - This is a hybrid of a
   ``ColumnElement`` and a "from clause" like object, and represents a SQL
   function or stored procedure type of call. Since most databases support
   statements along the line of "SELECT FROM <some function>"
   ``FunctionElement`` adds in the ability to be used in the FROM clause of a
   ``select()`` construct::
 
-      from sqlalchemy.database_api.expression import FunctionElement
+      from sqlalchemy.sql.expression import FunctionElement
 
       class coalesce(FunctionElement):
           name = 'coalesce'
@@ -281,7 +281,7 @@ A synopsis is as follows:
   ``execute_at()`` method, allowing the construct to be invoked during CREATE
   TABLE and DROP TABLE sequences.
 
-* :class:`~sqlalchemy.database_api.expression.Executable` - This is a mixin which
+* :class:`~sqlalchemy.sql.expression.Executable` - This is a mixin which
   should be used with any expression class that represents a "standalone"
   SQL statement that can be passed directly to an ``execute()`` method.  It
   is already implicit within ``DDLElement`` and ``FunctionElement``.
@@ -295,14 +295,14 @@ Further Examples
 A function that works like "CURRENT_TIMESTAMP" except applies the
 appropriate conversions so that the time is in UTC time.   Timestamps are best
 stored in relational databases as UTC, without time zones.   UTC so that your
-database_api doesn't think time has gone backwards in the hour when daylight
+database doesn't think time has gone backwards in the hour when daylight
 savings ends, without timezones because timezones are like character
 encodings - they're best applied only at the endpoints of an application
 (i.e. convert to UTC upon user input, re-apply desired timezone upon display).
 
 For PostgreSQL and Microsoft SQL Server::
 
-    from sqlalchemy.database_api import expression
+    from sqlalchemy.sql import expression
     from sqlalchemy.ext.compiler import compiles
     from sqlalchemy.types import DateTime
 
@@ -337,7 +337,7 @@ that is of the highest value - its equivalent to Python's ``max``
 function.  A SQL standard version versus a CASE based version which only
 accommodates two arguments::
 
-    from sqlalchemy.database_api import expression, case
+    from sqlalchemy.sql import expression, case
     from sqlalchemy.ext.compiler import compiles
     from sqlalchemy.types import Numeric
 
@@ -371,7 +371,7 @@ Example usage::
 Render a "false" constant expression, rendering as "0" on platforms that
 don't have a "false" constant::
 
-    from sqlalchemy.database_api import expression
+    from sqlalchemy.sql import expression
     from sqlalchemy.ext.compiler import compiles
 
     class sql_false(expression.ColumnElement):

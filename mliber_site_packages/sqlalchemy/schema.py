@@ -5,7 +5,7 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""Compatibility namespace for sqlalchemy.database_api.schema and related.
+"""Compatibility namespace for sqlalchemy.sql.schema and related.
 
 """
 

@@ -91,7 +91,7 @@ def foreign(expr):
 @util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
 class RelationshipProperty(StrategizedProperty):
     """Describes an object property that holds a single item or list
-    of items that correspond to a related database_api table.
+    of items that correspond to a related database table.
 
     Public constructor is the :func:`.orm.relationship` function.
 
@@ -449,7 +449,7 @@ class RelationshipProperty(StrategizedProperty):
             2. The :class:`.Table` being mapped does not actually have
                :class:`.ForeignKey` or :class:`.ForeignKeyConstraint`
                constructs present, often because the table
-               was reflected from a database_api that does not support foreign key
+               was reflected from a database that does not support foreign key
                reflection (MySQL MyISAM).
 
             3. The :paramref:`~.relationship.primaryjoin` argument is used to
@@ -640,13 +640,13 @@ class RelationshipProperty(StrategizedProperty):
            foreign key to the parent set to NULL.  Marking this flag as
            True usually implies an ON DELETE <CASCADE|SET NULL> rule is in
            place which will handle updating/deleting child rows on the
-           database_api side.
+           database side.
 
            Additionally, setting the flag to the string value 'all' will
            disable the "nulling out" of the child foreign keys, when the parent
            object is deleted and there is no delete or delete-orphan cascade
            enabled.  This is typically used when a triggering or error raise
-           scenario is in place on the database_api side.  Note that the foreign
+           scenario is in place on the database side.  Note that the foreign
            key attributes on in-session child objects will not be changed after
            a flush occurs so this is a very special use-case setting.
            Additionally, the "nulling out" will still occur if the child
@@ -663,20 +663,20 @@ class RelationshipProperty(StrategizedProperty):
           foreign key columns will also need their value changed.
 
           When True, it is assumed that ``ON UPDATE CASCADE`` is configured on
-          the foreign key in the database_api, and that the database_api will
+          the foreign key in the database, and that the database will
           handle propagation of an UPDATE from a source column to
           dependent rows.  When False, the SQLAlchemy :func:`.relationship`
           construct will attempt to emit its own UPDATE statements to
           modify related targets.  However note that SQLAlchemy **cannot**
           emit an UPDATE for more than one level of cascade.  Also,
           setting this flag to False is not compatible in the case where
-          the database_api is in fact enforcing referential integrity, unless
+          the database is in fact enforcing referential integrity, unless
           those constraints are explicitly "deferred", if the target backend
           supports it.
 
           It is highly advised that an application which is employing
           mutable primary keys keeps ``passive_updates`` set to True,
-          and instead uses the referential integrity features of the database_api
+          and instead uses the referential integrity features of the database
           itself in order to handle the change efficiently and fully.
 
           .. seealso::
@@ -821,7 +821,7 @@ class RelationshipProperty(StrategizedProperty):
           with a wider range of SQL operations within the
           :paramref:`~.relationship.primaryjoin` condition, including
           operations that feature the use of a variety of comparison operators
-          as well as SQL functions such as :func:`~.database_api.expression.cast`.  The
+          as well as SQL functions such as :func:`~.sql.expression.cast`.  The
           :paramref:`~.relationship.viewonly` flag is also of general use when
           defining any kind of :func:`~.relationship` that doesn't represent
           the full set of related objects, to prevent modifications of the

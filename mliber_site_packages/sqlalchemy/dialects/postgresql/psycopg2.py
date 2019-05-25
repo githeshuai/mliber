@@ -88,7 +88,7 @@ Empty DSN Connections / Environment Variable Connections
 
 The psycopg2 DBAPI can connect to PostgreSQL by passing an empty DSN to the
 libpq client library, which by default indicates to connect to a localhost
-PostgreSQL database_api that is open for "trust" connections.  This behavior can be
+PostgreSQL database that is open for "trust" connections.  This behavior can be
 further tailored using a particular set of environment variables which are
 prefixed with ``PG_...``, which are  consumed by ``libpq`` to take the place of
 any or all elements of the connection string.
@@ -181,7 +181,7 @@ Typically, this can be changed to ``utf8``, as a more useful default::
 
     # postgresql.conf file
 
-    # client_encoding = sql_ascii # actually, defaults to database_api
+    # client_encoding = sql_ascii # actually, defaults to database
                                  # encoding
     client_encoding = utf8
 
@@ -335,7 +335,7 @@ HSTORE type
 The ``psycopg2`` DBAPI includes an extension to natively handle marshalling of
 the HSTORE type.   The SQLAlchemy psycopg2 dialect will enable this extension
 by default when psycopg2 version 2.4 or greater is used, and
-it is detected that the target database_api has the HSTORE type set up for use.
+it is detected that the target database has the HSTORE type set up for use.
 In other words, when the dialect makes the first
 connection, a sequence like the following is performed:
 
@@ -769,14 +769,9 @@ class PGDialect_psycopg2(PGDialect):
             # send individual dbname, user, password, host, port
             # parameters to psycopg2.connect()
             return ([], opts)
-        elif url.query:
-            # any other connection arguments, pass directly
-            opts.update(url.query)
-            return ([], opts)
         else:
-            # no connection arguments whatsoever; psycopg2.connect()
-            # requires that "dsn" be present as a blank string.
-            return ([""], opts)
+            # send a blank string for "dsn" to psycopg2.connect()
+            return ([''], opts)
 
     def is_disconnect(self, e, connection, cursor):
         if isinstance(e, self.dbapi.Error):

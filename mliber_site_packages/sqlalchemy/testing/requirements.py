@@ -5,10 +5,10 @@
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""Global database_api feature support policy.
+"""Global database feature support policy.
 
 Provides decorators to mark tests requiring specific feature support from the
-target database_api.
+target database.
 
 External dialect test suites should subclass SuiteRequirements
 to provide specific inclusion/exclusions.
@@ -40,20 +40,20 @@ class SuiteRequirements(Requirements):
 
     @property
     def foreign_keys(self):
-        """Target database_api must support foreign keys."""
+        """Target database must support foreign keys."""
 
         return exclusions.open()
 
     @property
     def on_update_cascade(self):
-        """"target database_api must support ON UPDATE..CASCADE behavior in
+        """"target database must support ON UPDATE..CASCADE behavior in
         foreign keys."""
 
         return exclusions.open()
 
     @property
     def non_updating_cascade(self):
-        """target database_api must *not* support ON UPDATE..CASCADE behavior in
+        """target database must *not* support ON UPDATE..CASCADE behavior in
         foreign keys."""
         return exclusions.closed()
 
@@ -73,31 +73,31 @@ class SuiteRequirements(Requirements):
 
     @property
     def self_referential_foreign_keys(self):
-        """Target database_api must support self-referential foreign keys."""
+        """Target database must support self-referential foreign keys."""
 
         return exclusions.open()
 
     @property
     def foreign_key_ddl(self):
-        """Target database_api must support the DDL phrases for FOREIGN KEY."""
+        """Target database must support the DDL phrases for FOREIGN KEY."""
 
         return exclusions.open()
 
     @property
     def named_constraints(self):
-        """target database_api must support names for constraints."""
+        """target database must support names for constraints."""
 
         return exclusions.open()
 
     @property
     def subqueries(self):
-        """Target database_api must support subqueries."""
+        """Target database must support subqueries."""
 
         return exclusions.open()
 
     @property
     def offset(self):
-        """target database_api can render OFFSET, or an equivalent, in a
+        """target database can render OFFSET, or an equivalent, in a
         SELECT.
         """
 
@@ -105,7 +105,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def bound_limit_offset(self):
-        """target database_api can render LIMIT and/or OFFSET using a bound
+        """target database can render LIMIT and/or OFFSET using a bound
         parameter
         """
 
@@ -113,7 +113,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def parens_in_union_contained_select_w_limit_offset(self):
-        """Target database_api must support parenthesized SELECT in UNION
+        """Target database must support parenthesized SELECT in UNION
         when LIMIT/OFFSET is specifically present.
 
         E.g. (SELECT ...) UNION (SELECT ..)
@@ -125,7 +125,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def parens_in_union_contained_select_wo_limit_offset(self):
-        """Target database_api must support parenthesized SELECT in UNION
+        """Target database must support parenthesized SELECT in UNION
         when OFFSET/LIMIT is specifically not present.
 
         E.g. (SELECT ... LIMIT ..) UNION (SELECT .. OFFSET ..)
@@ -139,7 +139,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def boolean_col_expressions(self):
-        """Target database_api must support boolean expressions as columns"""
+        """Target database must support boolean expressions as columns"""
 
         return exclusions.closed()
 
@@ -151,7 +151,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def standalone_binds(self):
-        """target database_api/driver supports bound parameters as column expressions
+        """target database/driver supports bound parameters as column expressions
         without being in the context of a typed column.
 
         """
@@ -159,28 +159,28 @@ class SuiteRequirements(Requirements):
 
     @property
     def intersect(self):
-        """Target database_api must support INTERSECT or equivalent."""
+        """Target database must support INTERSECT or equivalent."""
         return exclusions.closed()
 
     @property
     def except_(self):
-        """Target database_api must support EXCEPT or equivalent (i.e. MINUS)."""
+        """Target database must support EXCEPT or equivalent (i.e. MINUS)."""
         return exclusions.closed()
 
     @property
     def window_functions(self):
-        """Target database_api must support window functions."""
+        """Target database must support window functions."""
         return exclusions.closed()
 
     @property
     def ctes(self):
-        """Target database_api supports CTEs"""
+        """Target database supports CTEs"""
 
         return exclusions.closed()
 
     @property
     def ctes_with_update_delete(self):
-        """target database_api supports CTES that ride on top of a normal UPDATE
+        """target database supports CTES that ride on top of a normal UPDATE
         or DELETE statement which refers to the CTE in a correlated subquery.
 
         """
@@ -189,7 +189,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def ctes_on_dml(self):
-        """target database_api supports CTES which consist of INSERT, UPDATE
+        """target database supports CTES which consist of INSERT, UPDATE
         or DELETE *within* the CTE, e.g. WITH x AS (UPDATE....)"""
 
         return exclusions.closed()
@@ -272,7 +272,7 @@ class SuiteRequirements(Requirements):
 
         return exclusions.only_if(
             lambda config: config.db.dialect.implicit_returning,
-            "%(database_api)s %(does_support)s 'returning'",
+            "%(database)s %(does_support)s 'returning'",
         )
 
     @property
@@ -292,7 +292,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def denormalized_names(self):
-        """Target database_api must have 'denormalized', i.e.
+        """Target database must have 'denormalized', i.e.
         UPPERCASE as case insensitive names."""
 
         return exclusions.skip_if(
@@ -302,7 +302,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def multivalues_inserts(self):
-        """target database_api must support multiple VALUES clauses in an
+        """target database must support multiple VALUES clauses in an
         INSERT statement."""
 
         return exclusions.skip_if(
@@ -321,7 +321,7 @@ class SuiteRequirements(Requirements):
     @property
     def emulated_lastrowid(self):
         """"target dialect retrieves cursor.lastrowid, or fetches
-        from a database_api-side function after an insert() construct executes,
+        from a database-side function after an insert() construct executes,
         within the get_lastrowid() method.
 
         Only dialects that "pre-execute", or need RETURNING to get last
@@ -340,13 +340,13 @@ class SuiteRequirements(Requirements):
 
     @property
     def views(self):
-        """Target database_api must support VIEWs."""
+        """Target database must support VIEWs."""
 
         return exclusions.closed()
 
     @property
     def schemas(self):
-        """Target database_api must support external schemas, and have one
+        """Target database must support external schemas, and have one
         named 'test_schema'."""
 
         return exclusions.closed()
@@ -362,7 +362,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def sequences(self):
-        """Target database_api must support SEQUENCEs."""
+        """Target database must support SEQUENCEs."""
 
         return exclusions.only_if(
             [lambda config: config.db.dialect.supports_sequences],
@@ -371,7 +371,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def sequences_optional(self):
-        """Target database_api supports sequences, but also optionally
+        """Target database supports sequences, but also optionally
         as a means of generating new PK values."""
 
         return exclusions.only_if(
@@ -396,7 +396,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def view_column_reflection(self):
-        """target database_api must support retrieval of the columns in a view,
+        """target database must support retrieval of the columns in a view,
         similarly to how a table is inspected.
 
         This does not include the full CREATE VIEW definition.
@@ -406,7 +406,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def view_reflection(self):
-        """target database_api must support inspection of the full CREATE VIEW definition.
+        """target database must support inspection of the full CREATE VIEW definition.
         """
         return self.views
 
@@ -441,12 +441,12 @@ class SuiteRequirements(Requirements):
 
     @property
     def temporary_tables(self):
-        """target database_api supports temporary tables"""
+        """target database supports temporary tables"""
         return exclusions.open()
 
     @property
     def temporary_views(self):
-        """target database_api supports temporary views"""
+        """target database supports temporary views"""
         return exclusions.closed()
 
     @property
@@ -455,7 +455,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def indexes_with_expressions(self):
-        """target database_api supports CREATE INDEX against SQL expressions."""
+        """target database supports CREATE INDEX against SQL expressions."""
         return exclusions.closed()
 
     @property
@@ -478,13 +478,13 @@ class SuiteRequirements(Requirements):
 
     @property
     def unbounded_varchar(self):
-        """Target database_api must support VARCHAR with no length"""
+        """Target database must support VARCHAR with no length"""
 
         return exclusions.open()
 
     @property
     def unicode_data(self):
-        """Target database_api/dialect must support Python unicode objects with
+        """Target database/dialect must support Python unicode objects with
         non-ASCII characters represented, delivered as bound parameters
         as well as in result rows.
 
@@ -572,7 +572,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def binary_comparisons(self):
-        """target database_api/driver can allow BLOB/BINARY fields to be compared
+        """target database/driver can allow BLOB/BINARY fields to be compared
         against a bound parameter value.
         """
 
@@ -661,7 +661,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def nested_aggregates(self):
-        """target database_api can select an aggregate from a subquery that's
+        """target database can select an aggregate from a subquery that's
         also using an aggregate
 
         """
@@ -669,7 +669,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def recursive_fk_cascade(self):
-        """target database_api must support ON DELETE CASCADE on a self-referential
+        """target database must support ON DELETE CASCADE on a self-referential
         foreign key
 
         """
@@ -712,14 +712,14 @@ class SuiteRequirements(Requirements):
 
     @property
     def text_type(self):
-        """Target database_api must support an unbounded Text() "
+        """Target database must support an unbounded Text() "
         "type such as TEXT or CLOB"""
 
         return exclusions.open()
 
     @property
     def empty_strings_varchar(self):
-        """target database_api can persist/return an empty string with a
+        """target database can persist/return an empty string with a
         varchar.
 
         """
@@ -727,14 +727,14 @@ class SuiteRequirements(Requirements):
 
     @property
     def empty_strings_text(self):
-        """target database_api can persist/return an empty string with an
+        """target database can persist/return an empty string with an
         unbounded text."""
 
         return exclusions.open()
 
     @property
     def expressions_against_unbounded_text(self):
-        """target database_api supports use of an unbounded textual field in a
+        """target database supports use of an unbounded textual field in a
         WHERE clause."""
 
         return exclusions.open()
@@ -746,13 +746,13 @@ class SuiteRequirements(Requirements):
 
     @property
     def savepoints(self):
-        """Target database_api must support savepoints."""
+        """Target database must support savepoints."""
 
         return exclusions.closed()
 
     @property
     def two_phase_transactions(self):
-        """Target database_api must support two-phase transactions."""
+        """Target database must support two-phase transactions."""
 
         return exclusions.closed()
 
@@ -784,7 +784,7 @@ class SuiteRequirements(Requirements):
 
     @property
     def mod_operator_as_percent_sign(self):
-        """target database_api must use a plain percent '%' as the 'modulus'
+        """target database must use a plain percent '%' as the 'modulus'
         operator."""
         return exclusions.closed()
 

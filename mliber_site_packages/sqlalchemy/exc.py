@@ -102,7 +102,7 @@ class ObjectNotExecutableError(ArgumentError):
 
 
 class NoSuchModuleError(ArgumentError):
-    """Raised when a dynamically-loaded module (usually a database_api dialect)
+    """Raised when a dynamically-loaded module (usually a database dialect)
     of a particular name cannot be located."""
 
 
@@ -154,14 +154,7 @@ class CompileError(SQLAlchemyError):
 class UnsupportedCompilationError(CompileError):
     """Raised when an operation is not supported by the given compiler.
 
-    .. seealso::
-
-        :ref:`faq_sql_expression_string`
-
-        :ref:`error_l7de`
     """
-
-    code = "l7de"
 
     def __init__(self, compiler, element_type):
         super(UnsupportedCompilationError, self).__init__(
@@ -193,7 +186,7 @@ class InvalidatePoolError(DisconnectionError):
 
     A subclass of :class:`.DisconnectionError` that indicates that the
     disconnect situation encountered on the connection probably means the
-    entire pool should be invalidated, as the database_api has been restarted.
+    entire pool should be invalidated, as the database has been restarted.
 
     This exception will be handled otherwise the same way as
     :class:`.DisconnectionError`, allowing three attempts to reconnect
@@ -281,7 +274,7 @@ class UnreflectableTableError(InvalidRequestError):
 
 
 class UnboundExecutionError(InvalidRequestError):
-    """SQL was attempted without a database_api connection to execute it on."""
+    """SQL was attempted without a database connection to execute it on."""
 
 
 class DontWrapMixin(object):
@@ -370,10 +363,10 @@ class StatementError(SQLAlchemyError):
 
 
 class DBAPIError(StatementError):
-    """Raised when the execution of a database_api operation fails.
+    """Raised when the execution of a database operation fails.
 
     Wraps exceptions raised by the DB-API underlying the
-    database_api operation.  Driver-specific implementations of the standard
+    database operation.  Driver-specific implementations of the standard
     DB-API exception types are wrapped by matching sub-types of SQLAlchemy's
     :class:`DBAPIError` when possible.  DB-API's ``Error`` type maps to
     :class:`DBAPIError` in SQLAlchemy, otherwise the names are identical.  Note

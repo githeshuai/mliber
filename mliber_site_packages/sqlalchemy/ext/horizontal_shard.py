@@ -128,7 +128,7 @@ class ShardedQuery(Query):
         """
 
         def _db_load_fn(query, primary_key_identity):
-            # load from the database_api.  The original db_load_fn will
+            # load from the database.  The original db_load_fn will
             # use the given Query object to load from the DB, so our
             # shard_id is what will indicate the DB that we query from.
             if self._shard_id is not None:

@@ -744,7 +744,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
             self.tables.email_addresses,
             self.tables.dingalings,
         )
-        # The database_api may decide to create indexes for foreign keys, etc.
+        # The database may decide to create indexes for foreign keys, etc.
         # so there may be more indexes than expected.
         insp = inspect(meta.bind)
         indexes = insp.get_indexes("users", schema=schema)

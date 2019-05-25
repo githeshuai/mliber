@@ -72,7 +72,7 @@ class MSDialect_adodbapi(MSDialect):
             )
         else:
             connectors.append("Data Source=%s" % keys.get("host"))
-        connectors.append("Initial Catalog=%s" % keys.get("database_api"))
+        connectors.append("Initial Catalog=%s" % keys.get("database"))
         user = keys.get("user")
         if user:
             connectors.append("User Id=%s" % user)

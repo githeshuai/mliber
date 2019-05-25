@@ -467,7 +467,7 @@ class SybaseExecutionContext(default.DefaultExecutionContext):
 
         if self.isddl:
             # TODO: to enhance this, we can detect "ddl in tran" on the
-            # database_api settings.  this error message should be improved to
+            # database settings.  this error message should be improved to
             # include a note about that.
             if not self.should_autocommit:
                 raise exc.InvalidRequestError(

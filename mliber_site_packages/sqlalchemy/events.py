@@ -26,7 +26,7 @@ class DDLEvents(event.Events):
 
     :class:`.MetaData` and :class:`.Table` support events
     specifically regarding when CREATE and DROP
-    DDL is emitted to the database_api.
+    DDL is emitted to the database.
 
     Attachment events are also provided to customize
     behavior whenever a child schema element is associated
@@ -233,13 +233,13 @@ class DDLEvents(event.Events):
             * ``default`` - the column's server default value.  This is
               normally specified as a plain string SQL expression, however the
               event can pass a :class:`.FetchedValue`, :class:`.DefaultClause`,
-              or :func:`.database_api.expression.text` object as well.
+              or :func:`.sql.expression.text` object as well.
 
               .. versionchanged:: 1.1.6
 
                     The :meth:`.DDLEvents.column_reflect` event allows a non
                     string :class:`.FetchedValue`,
-                    :func:`.database_api.expression.text`, or derived object to be
+                    :func:`.sql.expression.text`, or derived object to be
                     specified as the value of ``default`` in the column
                     dictionary.
 
@@ -357,13 +357,13 @@ class PoolEvents(event.Events):
         checked out from a particular :class:`.Pool`.
 
         The rationale for :meth:`.PoolEvents.first_connect` is to determine
-        information about a particular series of database_api connections based
+        information about a particular series of database connections based
         on the settings used for all connections.  Since a particular
         :class:`.Pool` refers to a single "creator" function (which in terms
         of a :class:`.Engine` refers to the URL and connection options used),
         it is typically valid to make observations about a single connection
         that can be safely assumed to be valid about all subsequent
-        connections, such as the database_api version, the server and client
+        connections, such as the database version, the server and client
         encoding settings, collation settings, and many others.
 
         :param dbapi_connection: a DBAPI connection.
@@ -555,7 +555,7 @@ class ConnectionEvents(event.Events):
     The :meth:`.before_execute` and :meth:`.before_cursor_execute`
     events can also be established with the ``retval=True`` flag, which
     allows modification of the statement and parameters to be sent
-    to the database_api.  The :meth:`.before_cursor_execute` event is
+    to the database.  The :meth:`.before_cursor_execute` event is
     particularly useful here to add ad-hoc string transformations, such
     as comments, to all executions::
 
@@ -651,7 +651,7 @@ class ConnectionEvents(event.Events):
         SQL constructs and other objects prior to rendering into SQL.
 
         This event is good for debugging SQL compilation issues as well
-        as early manipulation of the parameters being sent to the database_api,
+        as early manipulation of the parameters being sent to the database,
         as the parameter lists will be in a consistent format here.
 
         This event can be optionally established with the ``retval=True``
@@ -945,7 +945,7 @@ class ConnectionEvents(event.Events):
         the :meth:`.Engine.connect` method.
 
         It differs from the :meth:`.PoolEvents.connect` method, which
-        refers to the actual connection to a database_api at the DBAPI level;
+        refers to the actual connection to a database at the DBAPI level;
         a DBAPI connection may be pooled and reused for many operations.
         In contrast, this event refers only to the production of a higher level
         :class:`.Connection` wrapper around such a DBAPI connection.
@@ -976,7 +976,7 @@ class ConnectionEvents(event.Events):
             :ref:`pool_disconnects_pessimistic` - illustrates how to use
             :meth:`.ConnectionEvents.engine_connect`
             to transparently ensure pooled connections are connected to the
-            database_api.
+            database.
 
             :meth:`.PoolEvents.checkout` the lower-level pool checkout event
             for an individual DBAPI connection

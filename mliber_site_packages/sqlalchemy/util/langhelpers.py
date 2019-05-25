@@ -970,7 +970,7 @@ class dependencies(object):
     E.g.::
 
         @util.dependencies(
-            "sqlalchemy.database_api.widget",
+            "sqlalchemy.sql.widget",
             "sqlalchemy.engine.default"
         );
         def some_func(self, widget, default, arg1, arg2, **kw):

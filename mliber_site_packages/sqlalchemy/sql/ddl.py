@@ -1,4 +1,4 @@
-# database_api/ddl.py
+# sql/ddl.py
 # Copyright (C) 2009-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
@@ -165,7 +165,7 @@ class DDLElement(Executable, _DDLCompiles):
 
         :param dialect: May be a string, tuple or a callable
           predicate.  If a string, it will be compared to the name of the
-          executing database_api dialect::
+          executing database dialect::
 
             DDL('something').execute_if(dialect='postgresql')
 
@@ -260,7 +260,7 @@ class DDLElement(Executable, _DDLCompiles):
             and not util.callable(on)
         ):
             raise exc.ArgumentError(
-                "Expected the name of a database_api dialect, a tuple "
+                "Expected the name of a database dialect, a tuple "
                 "of names, or a callable for "
                 "'on' criteria, got type '%s'." % type(on).__name__
             )
@@ -283,7 +283,7 @@ class DDLElement(Executable, _DDLCompiles):
 class DDL(DDLElement):
     """A literal DDL statement.
 
-    Specifies literal SQL DDL to be executed by the database_api.  DDL objects
+    Specifies literal SQL DDL to be executed by the database.  DDL objects
     function as DDL event listeners, and can be subscribed to those events
     listed in :class:`.DDLEvents`, using either :class:`.Table` or
     :class:`.MetaData` objects as targets.   Basic templating support allows
@@ -341,7 +341,7 @@ class DDL(DDLElement):
 
           Optional filtering criteria.  May be a string, tuple or a callable
           predicate.  If a string, it will be compared to the name of the
-          executing database_api dialect::
+          executing database dialect::
 
             DDL('something', on='postgresql')
 
@@ -687,7 +687,7 @@ class SetTableComment(_CreateDropBase):
 class DropTableComment(_CreateDropBase):
     """Represent a COMMENT ON TABLE '' statement.
 
-    Note this varies a lot across database_api backends.
+    Note this varies a lot across database backends.
 
     """
 
@@ -1047,7 +1047,7 @@ def sort_tables(tables, skip_fn=None, extra_dependencies=None):
         To resolve these cycles, either the
         :paramref:`.ForeignKeyConstraint.use_alter` parameter may be applied
         to those constraints, or use the
-        :func:`.database_api.sort_tables_and_constraints` function which will break
+        :func:`.sql.sort_tables_and_constraints` function which will break
         out foreign key constraints involved in cycles separately.
 
     :param tables: a sequence of :class:`.Table` objects.

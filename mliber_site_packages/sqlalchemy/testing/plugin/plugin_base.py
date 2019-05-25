@@ -67,7 +67,7 @@ def setup_options(make_option):
         action="append",
         type="string",
         dest="db",
-        help="Use prefab database_api uri. Multiple OK, "
+        help="Use prefab database uri. Multiple OK, "
         "first one is run by default.",
     )
     make_option(
@@ -87,7 +87,7 @@ def setup_options(make_option):
         "--dropfirst",
         action="store_true",
         dest="dropfirst",
-        help="Drop all tables in the target database_api first",
+        help="Drop all tables in the target database first",
     )
     make_option(
         "--backend-only",
@@ -104,8 +104,8 @@ def setup_options(make_option):
     make_option(
         "--postgresql-templatedb",
         type="string",
-        help="name of template database_api to use for PostgreSQL "
-        "CREATE DATABASE (defaults to current database_api)",
+        help="name of template database to use for PostgreSQL "
+        "CREATE DATABASE (defaults to current database)",
     )
     make_option(
         "--low-connections",
@@ -178,7 +178,7 @@ def configure_follower(follower_ident):
     """Configure required state for a follower.
 
     This invokes in the parent process and typically includes
-    database_api creation.
+    database creation.
 
     """
     from sqlalchemy.testing import provision

@@ -1,4 +1,4 @@
-# database_api/crud.py
+# sql/crud.py
 # Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #

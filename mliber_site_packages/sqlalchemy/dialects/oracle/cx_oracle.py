@@ -9,7 +9,7 @@ r"""
     :name: cx-Oracle
     :dbapi: cx_oracle
     :connectstring: oracle+cx_oracle://user:pass@host:port/dbname[?key=value&key=value...]
-    :url: https://oracle.github.io/python-cx_Oracle/
+    :url: http://cx-oracle.sourceforge.net/
 
 Additional Connect Arguments
 ----------------------------
@@ -90,11 +90,11 @@ Explicit Unicode support is available by using the :class:`.Unicode` datatype
 with SQLAlchemy Core expression language, as well as the :class:`.UnicodeText`
 datatype.  These types correspond to the  VARCHAR2 and CLOB Oracle datatypes by
 default.   When using these datatypes with Unicode data, it is expected that
-the Oracle database_api is configured with a Unicode-aware character set, as well
+the Oracle database is configured with a Unicode-aware character set, as well
 as that the ``NLS_LANG`` environment variable is set appropriately, so that
 the VARCHAR2 and CLOB datatypes can accommodate the data.
 
-In the case that the Oracle database_api is not configured with a Unicode character
+In the case that the Oracle database is not configured with a Unicode character
 set, the two options are to use the :class:`.oracle.NCHAR` and
 :class:`.oracle.NCLOB` datatypes explicitly, or to pass the flag
 ``use_nchar_for_unicode=True`` to :func:`.create_engine`, which will cause the
@@ -982,7 +982,7 @@ class OracleDialect_cx_oracle(OracleDialect):
         database = url.database
         service_name = opts.pop("service_name", None)
         if database or service_name:
-            # if we have a database_api, then we have a remote host
+            # if we have a database, then we have a remote host
             port = url.port
             if port:
                 port = int(port)
@@ -992,7 +992,7 @@ class OracleDialect_cx_oracle(OracleDialect):
             if database and service_name:
                 raise exc.InvalidRequestError(
                     '"service_name" option shouldn\'t '
-                    'be used with a "database_api" part of the url'
+                    'be used with a "database" part of the url'
                 )
             if database:
                 makedsn_kwargs = {"sid": database}

@@ -26,7 +26,7 @@ from ..ext.declarative import DeclarativeMeta
 
 
 class TestBase(object):
-    # A sequence of database_api names to always run, regardless of the
+    # A sequence of database names to always run, regardless of the
     # constraints below.
     __whitelist__ = ()
 
