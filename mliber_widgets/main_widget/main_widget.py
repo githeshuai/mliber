@@ -22,6 +22,7 @@ class MainWidget(MainWidgetUI):
         super(MainWidget, self).__init__(parent)
         self._is_maximum = False
         self._drag_position = None
+        self._left_pressed_index = None
         # 无边框设置
         self.setMouseTracking(True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
@@ -419,19 +420,32 @@ class MainWidget(MainWidgetUI):
         tag_names = [tag.name for tag in tags]
         self.tag_widget.tag_list_view.append_tag(tag_names)
         
-    def _show_apply(self, assets):
+    def _show_apply(self, index):
         """
         显示右侧apply widget
         :return: 
         """
-        if not assets:
-            return
-        asset_id = assets[0].id
+        asset = self.asset_widget.asset_list_view.item_of_index(index)
         with mliber_global.db() as db:
-            asset = db.find_one("Asset", [["id", "=", asset_id]])
+            asset = db.find_one("Asset", [["id", "=", asset.id]])
+            self._left_pressed_index = index
             apply_widget = ApplyWidget(self)
             apply_widget.set_asset(asset)
+            apply_widget.modify_description_signal.connect(self._modify_description)
             self._add_right_side_widget(apply_widget)
+            
+    def _modify_description(self, description):
+        """
+        :param description: str
+        :return: 
+        """
+        if not self._left_pressed_index:
+            return
+        asset_proxy_model = self.asset_widget.asset_list_view.model()
+        src_index = asset_proxy_model.mapToSource(self._left_pressed_index)
+        asset_source_model = asset_proxy_model.sourceModel()
+        has_description = True if description else False
+        asset_source_model.setData(src_index, ["description", has_description])
 
     def _pre_add_right(self):
         """

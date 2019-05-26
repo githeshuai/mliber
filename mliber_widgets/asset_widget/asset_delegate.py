@@ -87,6 +87,12 @@ class CellAssetWidget(QWidget):
         """
         self.tag_flag.set_icon_color(color)
 
+    def dark_tag_flag(self):
+        """
+        :return:
+        """
+        self.tag_flag.set_icon_color(DEFAULT_COLOR)
+
     def light_store_flag(self, color):
         """
         点亮收藏flag
@@ -109,6 +115,12 @@ class CellAssetWidget(QWidget):
         :return:
         """
         self.description_flag.set_icon_color(color)
+
+    def dark_description_flag(self):
+        """
+        :return:
+        """
+        self.description_flag.set_icon_color(DEFAULT_COLOR)
 
     def set_name(self, text):
         """
@@ -167,8 +179,12 @@ class AssetDelegate(QStyledItemDelegate):
         editor.set_name(item.name)
         if item.has_tag:
             editor.light_tag_flag(QColor(50, 100, 255))
+        else:
+            editor.dark_tag_flag()
         if item.has_description:
             editor.light_description_flag(QColor(50, 255, 100))
+        else:
+            editor.dark_description_flag()
         if item.stored_by_me:
             editor.light_store_flag(QColor(255, 100, 50))
         else:

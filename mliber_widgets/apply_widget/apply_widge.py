@@ -1,16 +1,18 @@
 # -*- coding:utf-8 -*-
-
+from Qt.QtCore import Signal
 from apply_widget_ui import ApplyWidgetUI
 import mliber_global
 
 
 class ApplyWidget(ApplyWidgetUI):
+    modify_description_signal = Signal(basestring)
+
     def __init__(self, parent=None):
         super(ApplyWidget, self).__init__(parent)
         self._asset = None
-        self.set_signals()
+        self._set_signals()
 
-    def set_signals(self):
+    def _set_signals(self):
         self.description_widget.save_btn.clicked.connect(self._modify_description)
 
     def set_asset(self, asset):
@@ -101,6 +103,7 @@ class ApplyWidget(ApplyWidgetUI):
         description = self.description_widget.te.toPlainText()
         with mliber_global.db() as db:
             db.update("Asset", self._asset.id, {"description": description})
+        self.modify_description_signal.emit(description)
 
     def resizeEvent(self, event):
         super(ApplyWidget, self).resizeEvent(event)

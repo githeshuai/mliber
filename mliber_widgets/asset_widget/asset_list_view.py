@@ -65,7 +65,7 @@ class AssetListView(QListView):
     MAX_ICON_SIZE = 256
     MIN_ICON_SIZE = 128
     add_tag_signal = Signal(basestring)
-    left_pressed = Signal(list)
+    left_pressed = Signal(QModelIndex)
     selection_changed = Signal(int)
 
     def __init__(self, parent=None):
@@ -604,6 +604,4 @@ class AssetListView(QListView):
             return
         # if event.type() == QEvent.MouseButtonPress:
         if event.button() == Qt.LeftButton:
-            item = self.item_of_index(index)
-            asset = item.asset
-            self.left_pressed.emit([asset])
+            self.left_pressed.emit(index)
