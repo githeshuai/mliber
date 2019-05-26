@@ -1,0 +1,7 @@
+
+types:
+  - ms
+
+double_clicked:
+  type: ms
+  hook: maya_shader_import

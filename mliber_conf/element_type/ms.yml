@@ -1,0 +1,10 @@
+ext: ".ma"
+icon: "maya.png"
+maya:
+  import:
+    - name: maya shader imoprt
+      hook: maya_shader_import
+  export:
+    name: maya shader export
+    hook: maya_shader_export
+    default: True

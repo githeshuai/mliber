@@ -7,7 +7,7 @@ from mliber_qt_components.messagebox import MessageBox
 
 
 class MayaAssetWidget(CreateWidget):
-    library_type = "MayaAsset"
+    library_type = "MayaShader"
 
     def __init__(self, parent=None):
         super(MayaAssetWidget, self).__init__(self.library_type, parent)

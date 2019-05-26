@@ -43,6 +43,8 @@ class AssetUploader(AssetMaker):
         :return:
         """
         ext = self._get_ext_from_file(source_file)
+        if self.library.type == "MayaShader" and ext == "ma":
+            return "ms"  # maya shader首字母
         element_type = ext if ext in ELEMENT_TYPE else "source"
         return element_type
 
