@@ -188,3 +188,4 @@ class MayaTexture(object):
             mc.setAttr(attr, new_texture_path, type="string")
             if cs_attr and cs_value:
                 mc.setAttr(cs_attr, cs_value, type="string")
+

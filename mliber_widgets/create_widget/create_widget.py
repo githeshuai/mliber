@@ -425,7 +425,7 @@ class CreateWidget(QScrollArea):
 
     def preflight(self):
         """
-        在运行之前，检查是否合法
+        检查项
         :return:
         """
         return True

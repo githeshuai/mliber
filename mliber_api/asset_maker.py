@@ -123,7 +123,7 @@ class AssetMaker(object):
                 continue
             try:
                 hook = load_hook(action.hook)
-                hook_instance = hook.Hook(element_abs_path, self.objects, self.start, self.end)
+                hook_instance = hook.Hook(element_abs_path, self.objects, self.start, self.end, self.asset_name)
                 exported_path = hook_instance.main()
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))

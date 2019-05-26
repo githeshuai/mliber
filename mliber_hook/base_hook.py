@@ -36,6 +36,13 @@ class BaseHook(object):
         """
         return self.end - self.start
 
+    def append_error(self, error_str):
+        """
+        :param error_str: <str>
+        :return:
+        """
+        self._error_list.append(error_str)
+
     @property
     def error_str(self):
         """

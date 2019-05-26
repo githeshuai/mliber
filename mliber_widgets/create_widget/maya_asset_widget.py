@@ -64,16 +64,6 @@ class MayaAssetWidget(CreateWidget):
         """
         return self.recover_check.isChecked()
 
-    def preflight(self):
-        """
-        重写基类的preflight
-        :return:
-        """
-        if not self.thumbnail_files:
-            MessageBox.warning(self, "Warning", "No thumbnail")
-            return False
-        return True
-
     def run(self):
         """
         main execute function
@@ -126,7 +116,7 @@ class MayaAssetWidget(CreateWidget):
                 self.created_signal.emit([asset])
         except Exception as e:
             logging.error(str(e))
-            MessageBox.warning(None, "Code Error", str(e))
+            MessageBox.warning(self, "Code Error", str(e))
         finally:
             self.progress_bar.setValue(10)
             self.progress_bar.hide()

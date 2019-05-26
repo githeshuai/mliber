@@ -6,6 +6,7 @@ import maya.utils as mu
 from Qt import __binding__
 from Qt.QtCore import *
 from Qt.QtWidgets import *
+from mliber_libs.os_libs.path import Path
 
 
 def get_scene_name():
@@ -39,6 +40,22 @@ def load_plugin(plugin):
             print "Can not load plugin: %s" % plugin
             return False
     return True
+
+
+def export_selected(file_path, pr_flag=False):
+    """
+    :param file_path:a maya file path
+    :param pr_flag: if True: export still as reference, else: import
+    :return:
+    """
+    sel = mc.ls(sl=1)
+    if not sel:
+        print "[LIBER] info: Nothing selected."
+        return
+    parent_dir = Path(file_path).parent()
+    Path(parent_dir).makedirs()
+    maya_type = get_file_type(file_path)
+    mc.file(file_path, typ=maya_type, options="v=0", force=1, es=1, pr=pr_flag)
 
 
 def get_file_type(path):
@@ -157,6 +174,26 @@ def select_objects(objects):
 
     """
     mc.select(objects, r=1)
+
+
+def maya_import(file_path):
+    """
+    :param file_path: <str> a file path
+    :return:
+    """
+    file_type = get_file_type(file_path)
+    if file_path.endswith(".obj"):
+        file_type = "OBJ"
+    mc.file(file_path, i=1, type=file_type, ignoreVersion=1, ra=1,
+            mergeNamespacesOnClash=0, namespace=":", options="v=0", pr=1)
+
+
+def delete_unused_nodes():
+    """
+    删除无用节点
+    :return:
+    """
+    mel.eval("MLdeleteUnused;")
 
 
 def post_export_textures(temp_dict):
