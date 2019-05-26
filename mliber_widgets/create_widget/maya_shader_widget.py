@@ -5,11 +5,11 @@ from mliber_qt_components.input_text_edit import InputTextEdit
 from mliber_qt_components.messagebox import MessageBox
 
 
-class MayaAssetWidget(CreateWidget):
+class MayaShaderWidget(CreateWidget):
     library_type = "MayaShader"
 
     def __init__(self, parent=None):
-        super(MayaAssetWidget, self).__init__(self.library_type, parent)
+        super(MayaShaderWidget, self).__init__(self.library_type, parent)
         self.set_engine("maya")
         self.show_thumbnail()
         self.show_common()
