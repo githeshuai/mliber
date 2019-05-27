@@ -10,8 +10,9 @@ def render_ui():
     show a Qt widget
     :return:
     """
-    app = QApplication.instance()
-    if not app:
+    app = None
+    is_app_running = QApplication.instance()
+    if not is_app_running:
         app = QApplication(sys.argv)
     yield
     if app:

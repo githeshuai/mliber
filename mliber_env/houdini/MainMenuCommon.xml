@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menuBar>
+    <subMenu id="liber">
+      <label>LIBER</label>
+      
+      <scriptItem id="show liber">
+        <label>show...</label>
+        <scriptCode>import sys,os;sys.path.append(os.environ.get("MLIBER_PATH"));import mliber;reload(mliber);mliber.show()</scriptCode>
+      </scriptItem>
+
+    </subMenu>
+  </menuBar>
+</mainMenu>

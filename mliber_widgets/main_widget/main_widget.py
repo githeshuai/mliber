@@ -23,6 +23,7 @@ class MainWidget(MainWidgetUI):
         self._is_maximum = False
         self._drag_position = None
         self._left_pressed_index = None
+        self.setObjectName("MLIBER")
         # 无边框设置
         self.setMouseTracking(True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
@@ -78,7 +79,8 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
-        self.asset_widget.asset_list_view.left_pressed.connect(self._show_apply)
+        self.asset_widget.asset_list_view.left_pressed.connect(self._on_asset_pressed)
+        self.asset_widget.asset_list_view.show_detail_signal.connect(self._show_apply)
         self.asset_widget.asset_list_view.selection_changed.connect(self._show_selection_info)
         self.asset_widget.refresh_btn.clicked.connect(self._refresh_library)
 
@@ -419,10 +421,20 @@ class MainWidget(MainWidgetUI):
             return
         tag_names = [tag.name for tag in tags]
         self.tag_widget.tag_list_view.append_tag(tag_names)
+
+    def _on_asset_pressed(self, index):
+        """
+        当asset item被单击的时候
+        :param index: QModelIndex
+        :return:
+        """
+        if self._is_right_shown():
+            self._show_apply(index)
         
     def _show_apply(self, index):
         """
         显示右侧apply widget
+        :param index: QModelIndex
         :return: 
         """
         asset = self.asset_widget.asset_list_view.item_of_index(index)

@@ -65,6 +65,7 @@ class AssetListView(QListView):
     MAX_ICON_SIZE = 256
     MIN_ICON_SIZE = 128
     add_tag_signal = Signal(basestring)
+    show_detail_signal = Signal(QModelIndex)
     left_pressed = Signal(QModelIndex)
     selection_changed = Signal(int)
 
@@ -453,11 +454,14 @@ class AssetListView(QListView):
             return
         menu = QMenu(self)
         user = mliber_global.user()
+        open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
+        menu.addAction(open_action)
+        if len(selected_assets) == 1:
+            detail_action = QAction("Show Detail", self, triggered=self._show_detail)
+            menu.addAction(detail_action)
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
-        open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
-        menu.addAction(open_action)
         if user.asset_permission:
             delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self,
                                     triggered=self._show_delete_widget)
@@ -474,6 +478,13 @@ class AssetListView(QListView):
         for q_action in q_actions:
             menu.addAction(q_action)
         menu.exec_(QCursor.pos())
+
+    def _show_detail(self):
+        """
+        :return:
+        """
+        index = self._selected_indexes()[0]
+        self.show_detail_signal.emit(index)
 
     def _on_action_triggered(self):
         """

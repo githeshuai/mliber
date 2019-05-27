@@ -2,6 +2,7 @@
 from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame, QSpacerItem, QSizePolicy
 from Qt.QtCore import QSize, Qt
 import mliber_resource
+import mliber_version
 from mliber_qt_components.indicator_button import IndicatorButton
 from mliber_qt_components.toolbutton import ToolButton
 
@@ -20,7 +21,7 @@ class ToolbarUI(QFrame):
                                   "padding: 0px; color: #fff;")
         logo_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         logo_button.setIcon(mliber_resource.icon("logo.png"))
-        logo_button.setText("M-Liber")
+        logo_button.setText("M-Liber %s" % mliber_version.VERSION)
         # spacer item
         space_item_1 = QSpacerItem(20, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # login

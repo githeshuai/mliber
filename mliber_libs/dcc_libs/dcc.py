@@ -42,7 +42,9 @@ class Dcc(object):
         获取父窗口
         :return:
         """
-        return self._dcc.parent_win()
+        if self._dcc:
+            return self._dcc.parent_win()
+        return None
 
 
 if __name__ == "__main__":

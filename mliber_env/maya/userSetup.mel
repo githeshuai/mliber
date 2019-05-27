@@ -1,0 +1,5 @@
+print "Initialize Liber";
+python("import maya.utils as mu");
+python("import sys;import os");
+python("sys.path.insert(0, os.environ.get(\"MLIBER_PATH\"))");
+python("import mliber;reload(mliber);mliber.maya_start_up()");
