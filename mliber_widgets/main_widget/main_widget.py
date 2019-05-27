@@ -383,7 +383,6 @@ class MainWidget(MainWidgetUI):
         show_created = False
         if self.library_type and self.category:
             for cls_name, cls in create_widget.classes.iteritems():
-                print cls_name, cls.library_type
                 if cls.library_type == self.library_type:
                     widget = cls(parent=self)
                     widget.created_signal.connect(self._create_done)

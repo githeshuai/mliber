@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 from datetime import datetime
-from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QInputDialog
+from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
 from Qt.QtGui import QCursor
 from asset_model import AssetModel, AssetProxyModel
@@ -11,7 +11,7 @@ from mliber_conf import mliber_config
 import mliber_global
 import mliber_resource
 import mliber_utils
-from mliber_libs.dcc import Dcc
+from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_libs.os_libs.path import Path
 from mliber_api.api_utils import add_tag_of_asset
 from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer

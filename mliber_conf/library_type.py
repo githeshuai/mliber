@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 LIBRARY_TYPE = ["MayaAsset",
                 "MayaShader",
-                "NukeNodes",
+                "NukeNode",
                 "HDR",
-                "HoudiniAsset",
+                "HoudiniNode",
                 "ClarisseAsset",
                 "Source"]

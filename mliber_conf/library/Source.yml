@@ -1,3 +1,5 @@
+check_selected: False
+show_frame_range: False
 
 types:
   - source

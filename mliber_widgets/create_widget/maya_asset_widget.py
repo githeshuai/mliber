@@ -2,7 +2,6 @@
 import logging
 from Qt.QtWidgets import QCheckBox, QWidget, QHBoxLayout
 from create_widget import CreateWidget
-from mliber_qt_components.input_text_edit import InputTextEdit
 from mliber_qt_components.messagebox import MessageBox
 
 
@@ -11,15 +10,6 @@ class MayaAssetWidget(CreateWidget):
 
     def __init__(self, parent=None):
         super(MayaAssetWidget, self).__init__(self.library_type, parent)
-        self.set_engine("maya")
-        self.show_thumbnail()
-        self.show_common()
-        self.show_library_widget()
-        self.show_actions()
-        self.show_frame_range()
-        self.show_progress_bar()
-        self.show_create_button()
-        self.set_signals()
 
     def create_library_widget(self):
         """
@@ -63,21 +53,6 @@ class MayaAssetWidget(CreateWidget):
         :return:
         """
         return self.recover_check.isChecked()
-
-    def run(self):
-        """
-        main execute function
-        Returns:
-        """
-        if not self.preflight():
-            return
-        import maya.cmds as mc
-        objects = mc.ls(sl=1)
-        text_edit = InputTextEdit(self)
-        text_edit.set_title("Selected Nodes")
-        text_edit.set_data(objects)
-        text_edit.editTextFinished.connect(self._start_create)
-        text_edit.exec_()
 
     def _start_create(self, objects):
         """

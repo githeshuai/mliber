@@ -62,6 +62,20 @@ class Library(object):
         """
         return self._data.get("double_clicked", {}).get("hook")
 
+    def need_check_selected(self):
+        """
+        是否需要检查选择节点
+        :return:
+        """
+        return self._data.get("check_selected")
+
+    def show_frame_range(self):
+        """
+        是否需要显示frame range
+        :return:
+        """
+        return self._data.get("show_frame_range")
+
 
 if __name__ == "__main__":
     print Library("MayaAsset").double_clicked_hook()

@@ -1,15 +1,17 @@
 # -*- coding:utf-8 -*-
-from Qt.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QGridLayout, QLineEdit, QDialog, \
-    QTextEdit, QComboBox, QApplication, QPushButton, QFileDialog, QCompleter, QScrollArea, QCheckBox, \
-    QButtonGroup, QSizePolicy, QLayout, QProgressBar, QMenu, QWidgetAction
+import logging
+from Qt.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QGridLayout, QLineEdit, QTextEdit, QPushButton, \
+    QScrollArea, QCheckBox, \
+    QButtonGroup, QLayout, QProgressBar
 from Qt.QtCore import Qt, Signal
 from mliber_parse.library_parser import Library
 from mliber_parse.element_type_parser import ElementType
 from mliber_qt_components.thumbnail_widget import ThumbnailWidget
 from mliber_qt_components.messagebox import MessageBox
+from mliber_qt_components.input_text_edit import InputTextEdit
 import mliber_global
 import mliber_resource
-from mliber_libs.dcc import Dcc
+from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_api.database_api import Database
 from mliber_libs.os_libs.path import Path
 from mliber_conf import templates
@@ -115,7 +117,7 @@ class CreateWidget(QScrollArea):
     def __init__(self, library_type=None, parent=None):
         super(CreateWidget, self).__init__(parent)
         self._library_type = library_type
-        self._engine = None
+        self._engine = Dcc.engine()
         self.setStyleSheet("border: 0px solid;")
         # main widget
         widget = QWidget(self)
@@ -127,20 +129,21 @@ class CreateWidget(QScrollArea):
         self.main_layout = QVBoxLayout(widget)
         self.main_layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # show widgets
+        self._show_thumbnail()
+        self._show_common()
+        self._show_library_widget()
+        self._show_actions()
+        self._show_frame_range()
+        self._show_progress_bar()
+        self._show_create_button()
+        self._set_signals()
 
-    def set_signals(self):
-        self.asset_name_le.textChanged.connect(self.show_asset_dir)
-        self.create_btn.clicked.connect(self.on_create_btn_clicked)
+    def _set_signals(self):
+        self.asset_name_le.textChanged.connect(self._show_asset_dir)
+        self.create_btn.clicked.connect(self._on_create_btn_clicked)
         
-    def set_engine(self, engine):
-        """
-        设置当前运行软件
-        :param engine:
-        :return:
-        """
-        self._engine = engine
-    
-    def show_thumbnail(self):
+    def _show_thumbnail(self):
         """
         insert thumbnail widget
         Returns:
@@ -148,7 +151,7 @@ class CreateWidget(QScrollArea):
         self.thumbnail_widget = ThumbnailWidget(self)
         self.main_layout.addWidget(self.thumbnail_widget)
 
-    def show_common(self):
+    def _show_common(self):
         """
         common widget: include name、tag、 comment。。。。。
         Returns:
@@ -198,7 +201,7 @@ class CreateWidget(QScrollArea):
         """
         return None
 
-    def show_library_widget(self):
+    def _show_library_widget(self):
         """
         :return:
         """
@@ -206,49 +209,51 @@ class CreateWidget(QScrollArea):
         if library_widget:
             self.main_layout.addWidget(library_widget)
 
-    def show_actions(self):
+    def _show_actions(self):
         """
         从library.yml中读取信息， 创建checkbox widget
         Returns:
         """
-        engine = self._engine or Dcc.engine()
+        engine = self._engine
+        print engine
         self.actions_widget = ActionWidget(self._library_type, engine, self)
         self.main_layout.addWidget(self.actions_widget)
 
-    def show_frame_range(self):
+    def _show_frame_range(self):
         """
         创建frame range layout
         Returns: QVBoxLayout
         """
-        frame_range_layout = QVBoxLayout()
-        frame_range_layout.setContentsMargins(0, 0, 0, 0)
-        fr_label = QLabel(self)
-        fr_label.setText("<font color=#fff size=4><b>Frame Range</b></font>")
-        h_layout = QHBoxLayout()
-        h_layout.setContentsMargins(0, 0, 0, 0)
-        start_label = QLabel("Start")
-        self.start_le = QLineEdit()
-        self.start_le.setText("1")
-        end_label = QLabel("End")
-        self.end_le = QLineEdit()
-        self.end_le.setText("1")
-        h_layout.addWidget(start_label)
-        h_layout.addWidget(self.start_le)
-        h_layout.addWidget(end_label)
-        h_layout.addWidget(self.end_le)
-        h_layout.setSpacing(0)
-        frame_range_layout.addWidget(fr_label)
-        frame_range_layout.addLayout(h_layout)
-        frame_range_layout.setSpacing(5)
-        self.main_layout.addLayout(frame_range_layout)
+        if Library(self._library_type).show_frame_range():
+            frame_range_layout = QVBoxLayout()
+            frame_range_layout.setContentsMargins(0, 0, 0, 0)
+            fr_label = QLabel(self)
+            fr_label.setText("<font color=#fff size=4><b>Frame Range</b></font>")
+            h_layout = QHBoxLayout()
+            h_layout.setContentsMargins(0, 0, 0, 0)
+            start_label = QLabel("Start")
+            self.start_le = QLineEdit()
+            self.start_le.setText("1")
+            end_label = QLabel("End")
+            self.end_le = QLineEdit()
+            self.end_le.setText("1")
+            h_layout.addWidget(start_label)
+            h_layout.addWidget(self.start_le)
+            h_layout.addWidget(end_label)
+            h_layout.addWidget(self.end_le)
+            h_layout.setSpacing(0)
+            frame_range_layout.addWidget(fr_label)
+            frame_range_layout.addLayout(h_layout)
+            frame_range_layout.setSpacing(5)
+            self.main_layout.addLayout(frame_range_layout)
 
-    def show_progress_bar(self):
+    def _show_progress_bar(self):
         self.progress_bar = QProgressBar(self)
         self.progress_bar.hide()
         self.progress_bar.setTextVisible(False)
         self.main_layout.addWidget(self.progress_bar)
 
-    def show_create_button(self):
+    def _show_create_button(self):
         """
         显示create button
         :return:
@@ -398,21 +403,14 @@ class CreateWidget(QScrollArea):
         types = [checked_button.type for checked_button in checked_buttons]
         return types
 
-    def show_asset_dir(self):
+    def _show_asset_dir(self):
         """
         显示资产将要存放的路径
         Returns:
         """
         self.asset_dir_te.setText(self.asset_dir)
 
-    def create_thumbnail(self):
-        """
-        创建缩略图
-        Returns:
-        """
-        self.thumbnail_widget.convert_to(self.thumbnail_path)
-
-    def on_create_btn_clicked(self):
+    def _on_create_btn_clicked(self):
         """
         create按钮按下的时候，执行的操作
         :return:
@@ -435,14 +433,51 @@ class CreateWidget(QScrollArea):
         点击create按钮运行的函数，子类需要继承需要重写
         Returns:
         """
-        return
+        if Library(self._library_type).need_check_selected():
+            objects = Dcc(self._engine).selected_objects()
+            text_edit = InputTextEdit(self)
+            text_edit.set_title("Selected Nodes")
+            text_edit.set_data(objects)
+            text_edit.editTextFinished.connect(self.start_create)
+            text_edit.exec_()
+        else:
+            self.start_create()
 
-
-if __name__ == "__main__":
-    from mliber_libs.qt_libs.render_ui import render_ui
-    with render_ui():
-        s = CreateWidget("MayaAsset")
-        s.show_thumbnail()
-        s.show_actions()
-        s.show_frame_range()
-        s.show()
+    def start_create(self, objects=list()):
+        """
+        :param objects: 需要导出的物体
+        :return:
+        """
+        if not objects:
+            MessageBox.warning(self, "Warning", "No objects selected.")
+            return
+        from mliber_api.asset_maker import AssetMaker
+        # database_name, library_id, category_id, asset_name, objects, types = list(), start = 1, end = 1,
+        # thumbnail_files = list(), tag_names = list(), description = "", overwrite = True, created_by = None
+        data = dict(database_name=self.database,
+                    library_id=self.library.id,
+                    category_id=self.category.id,
+                    asset_name=self.asset_name,
+                    objects=objects,
+                    types=self.types,
+                    start=self.start,
+                    end=self.end,
+                    thumbnail_files=self.thumbnail_files,
+                    tag_names=self.tags,
+                    description=self.description,
+                    overwrite=self.overwrite,
+                    created_by=self.user.id)
+        self.progress_bar.show()
+        self.progress_bar.setRange(0, 10)
+        self.progress_bar.setValue(6)
+        try:
+            asset_maker = AssetMaker(**data)
+            asset = asset_maker.make()
+            if asset:
+                self.created_signal.emit([asset])
+        except Exception as e:
+            logging.error(str(e))
+            MessageBox.warning(self, "Code Error", str(e))
+        finally:
+            self.progress_bar.setValue(10)
+            self.progress_bar.hide()

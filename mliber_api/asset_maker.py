@@ -4,7 +4,7 @@ import pysnooper
 from mliber_api.api_utils import find_library, find_category, find_asset, \
     get_asset_relative_dir, get_thumbnail_pattern, get_element_relative_path, add_tag_of_asset
 import mliber_global
-from mliber_libs.dcc import Dcc
+from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_libs.python_libs.sequence_converter import Converter
 from mliber_libs.os_libs.path import Path
 from mliber_parse.element_type_parser import ElementType

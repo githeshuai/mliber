@@ -1,3 +1,5 @@
+check_selected: True
+show_frame_range: True
 
 types:
   - ms

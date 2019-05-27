@@ -96,5 +96,26 @@ def load_hook(name):
     return mod
 
 
+def get_engine():
+    """
+    get engine
+    :return:
+    """
+    app = sys.executable
+    app_basename = os.path.basename(app)
+    app_name = os.path.splitext(app_basename)[0]
+    if "Nuke" in app_name:
+        app_name = "nuke"
+    elif "houdini" in app_name:
+        app_name = "houdini"
+    elif "maya" in app_name:
+        app_name = "maya"
+    elif "clarisse" in app_name:
+        app_name = "clarisse"
+    else:
+        app_name = "standalone"
+    return app_name
+
+
 if __name__ == "__main__":
     print load_hook("maya_ma_export")

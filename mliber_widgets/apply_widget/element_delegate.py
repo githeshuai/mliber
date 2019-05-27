@@ -6,7 +6,7 @@ from Qt.QtCore import Qt, QSize
 from mliber_qt_components.icon_line_edit import IconLineEdit
 import mliber_resource
 import mliber_utils
-from mliber_libs.dcc import Dcc
+from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_parse.element_type_parser import ElementType
 
 
