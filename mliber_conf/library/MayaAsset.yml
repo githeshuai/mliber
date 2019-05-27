@@ -20,3 +20,6 @@ double_clicked:
   standalone:
     type: ma
     hook: open_in_explorer
+  houdini:
+    type: abc
+    hook: houdini_abc_import

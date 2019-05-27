@@ -1,0 +1,19 @@
+ext: ".hdr"
+icon: "default.png"
+maya:
+  import:
+    - name: arnold dome light
+      hook: maya_arnold_dome
+    - name: redshift dome light
+      hook: maya_rs_dome
+
+nuke:
+  import:
+    - name: import texture
+      hook: nuke_texture_import
+
+
+houdini:
+  import:
+    - name: houdini sky light
+      hook: houdini_sky_light

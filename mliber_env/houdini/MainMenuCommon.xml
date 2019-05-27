@@ -2,7 +2,7 @@
 <mainMenu>
   <menuBar>
     <subMenu id="liber">
-      <label>LIBER</label>
+      <label>MLIBER</label>
       
       <scriptItem id="show liber">
         <label>show...</label>

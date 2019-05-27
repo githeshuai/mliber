@@ -3,7 +3,7 @@ import os
 
 
 def liber_dir():
-    return os.getenv("LIBER_PATH")
+    return os.getenv("MLIBER_PATH")
 
 
 def main():
@@ -14,8 +14,8 @@ def main():
     app = QtWidgets.QApplication.instance()
     if not app:
         app = QtWidgets.QApplication(["Clarisse"])
-    from liberScripts.widgets.liberwidget import FramelessLiberWidget
-    fw = FramelessLiberWidget()
+    from mliber_widgets.main_widget import MainWidget
+    fw = MainWidget()
     fw.show()
     pyqt_clarisse.exec_(app)
 

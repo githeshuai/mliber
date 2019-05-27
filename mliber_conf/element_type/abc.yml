@@ -22,3 +22,8 @@ maya:
     name: abc export
     hook: maya_abc_export
     default: False
+
+houdini:
+  import:
+    - name: abc import
+      hook: houdini_abc_import

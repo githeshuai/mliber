@@ -1,0 +1,20 @@
+check_selected: False
+show_frame_range: False
+
+
+types:
+  - hdr
+
+double_clicked:
+  maya:
+    type: hdr
+    hook: maya_arnold_dome
+  nuke:
+    type: hdr
+    hook: nuke_texture_import
+  standalone:
+    type: hdr
+    hook: open_in_explorer
+  houdini:
+    type: hdr
+    hook: houdini_sky_light
