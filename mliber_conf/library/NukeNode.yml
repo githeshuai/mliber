@@ -2,12 +2,12 @@ check_selected: True
 show_frame_range: False
 
 types:
-  - ms
+  - nk
 
 double_clicked:
-  maya:
-    type: ms
-    hook: maya_shader_import
+  nuke:
+    type: nk
+    hook: nuke_node_import
   standalone:
-    type: ms
+    type: nk
     hook: open_in_explorer

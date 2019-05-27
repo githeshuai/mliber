@@ -133,7 +133,7 @@ class AssetMaker(object):
             plugin = hook_instance.plugin_version()
             relative_dir = Path(element_relative_path).parent()
             element_relative_path = Path(relative_dir).join(Path(exported_path).basename())  # element relative path
-            element = self._create_element(self.db, element_type, element_relative_path, Dcc.software(), plugin)
+            element = self._create_element(self.db, element_type, element_relative_path, Dcc().software(), plugin)
             elements.append(element)
             logging.info("[MLIBER] info: Export %s done." % element_type)
         return elements

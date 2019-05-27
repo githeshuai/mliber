@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from mliber_libs.os_libs.path import Path
 
 
 class BaseHook(object):
@@ -58,16 +59,30 @@ class BaseHook(object):
         """
         pass
 
+    def create_parent_dir(self):
+        """
+        :return:
+        """
+        Path(self.path).make_parent_dir()
+
+    def directory(self):
+        """
+        :return:
+        """
+        parent_dir = Path(self.path).parent()
+        return str(parent_dir)
+
     def main(self, *args, **kwargs):
         """
         main function
         :return:
         """
         try:
+            Path(self.path).make_parent_dir()
             result = self.execute(*args, **kwargs)
         except RuntimeError as e:
             self._error_list.append(str(e))
             result = None
         if self.error_str:
             self.logger.error(self.error_str)
-        return result
+        return result or self.path

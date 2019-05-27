@@ -53,14 +53,14 @@ class Library(object):
         双击运行的type
         :return:
         """
-        return self._data.get("double_clicked", {}).get("type")
+        return self._data.get("double_clicked", {}).get(mliber_utils.get_engine(), {}).get("type")
 
     def double_clicked_hook(self):
         """
         双击运行的hook
         :return:
         """
-        return self._data.get("double_clicked", {}).get("hook")
+        return self._data.get("double_clicked", {}).get(mliber_utils.get_engine(), {}).get("hook")
 
     def need_check_selected(self):
         """
@@ -78,6 +78,6 @@ class Library(object):
 
 
 if __name__ == "__main__":
-    print Library("MayaAsset").double_clicked_hook()
+    print Library("Source").double_clicked_hook()
 
 

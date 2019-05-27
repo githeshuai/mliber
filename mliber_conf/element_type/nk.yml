@@ -1,0 +1,10 @@
+ext: ".nk"
+icon: "default.png"
+nuke:
+  import:
+    - name: nuke node import
+      hook: nuke_node_import
+  export:
+    name: nuke node export
+    hook: nuke_node_export
+    default: True

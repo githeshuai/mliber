@@ -5,5 +5,12 @@ types:
   - source
 
 double_clicked:
-  type: source
-  hook: open_in_explorer
+  standalone:
+    type: source
+    hook: open_in_explorer
+  maya:
+    type: source
+    hook: maya_texture_import
+  nuke:
+    type: source
+    hook: nuke_texture_import

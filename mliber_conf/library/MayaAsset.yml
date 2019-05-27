@@ -14,5 +14,9 @@ types:
   - xarc
 
 double_clicked:
-  type: ma
-  hook: maya_ma_import
+  maya:
+    type: ma
+    hook: maya_ma_import
+  standalone:
+    type: ma
+    hook: open_in_explorer

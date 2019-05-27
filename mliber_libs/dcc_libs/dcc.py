@@ -30,6 +30,13 @@ class Dcc(object):
         """
         return self._dcc.selected_objects()
 
+    def selected_object_names(self):
+        """
+        获取选择物体的名字
+        :return:
+        """
+        return self._dcc.selected_object_names()
+
     def parent_win(self):
         """
         获取父窗口

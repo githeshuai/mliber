@@ -367,7 +367,9 @@ class CreateWidget(QScrollArea):
         起始帧
         :return:
         """
-        return int(self.start_le.text())
+        if hasattr(self, "start_le"):
+            return int(self.start_le.text())
+        return 1
 
     @property
     def end(self):
@@ -375,7 +377,9 @@ class CreateWidget(QScrollArea):
         结束帧
         :return:
         """
-        return int(self.end_le.text())
+        if hasattr(self, "end_le"):
+            return int(self.end_le.text())
+        return 1
 
     @property
     def description(self):
@@ -434,23 +438,24 @@ class CreateWidget(QScrollArea):
         Returns:
         """
         if Library(self._library_type).need_check_selected():
-            objects = Dcc(self._engine).selected_objects()
             text_edit = InputTextEdit(self)
             text_edit.set_title("Selected Nodes")
-            text_edit.set_data(objects)
+            text_edit.set_data(Dcc(self._engine).selected_object_names())
             text_edit.editTextFinished.connect(self.start_create)
             text_edit.exec_()
         else:
             self.start_create()
 
-    def start_create(self, objects=list()):
+    def start_create(self):
         """
-        :param objects: 需要导出的物体
         :return:
         """
-        if not objects:
-            MessageBox.warning(self, "Warning", "No objects selected.")
-            return
+        objects = list()
+        if Library(self._library_type).need_check_selected():
+            objects = Dcc(self._engine).selected_objects()
+            if not objects:
+                MessageBox.warning(self, "Warning", "No objects selected.")
+                return
         from mliber_api.asset_maker import AssetMaker
         # database_name, library_id, category_id, asset_name, objects, types = list(), start = 1, end = 1,
         # thumbnail_files = list(), tag_names = list(), description = "", overwrite = True, created_by = None

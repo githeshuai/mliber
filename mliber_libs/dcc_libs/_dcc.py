@@ -12,6 +12,9 @@ class Dcc(object):
     def parent_win(self):
         return
 
+    def selected_object_names(self):
+        return self.selected_objects()
+
     def open(self):
         return
 

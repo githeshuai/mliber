@@ -3,6 +3,7 @@ import logging
 from Qt.QtWidgets import QCheckBox, QWidget, QHBoxLayout
 from create_widget import CreateWidget
 from mliber_qt_components.messagebox import MessageBox
+from mliber_libs.dcc_libs.dcc import Dcc
 
 
 class MayaAssetWidget(CreateWidget):
@@ -54,11 +55,12 @@ class MayaAssetWidget(CreateWidget):
         """
         return self.recover_check.isChecked()
 
-    def _start_create(self, objects):
+    def start_create(self):
         """
-        :param objects: 需要导出的物体
+        重写基类的start create
         :return:
         """
+        objects = Dcc("maya").selected_objects()
         if not objects:
             MessageBox.warning(self, "Warning", "No objects selected.")
             return

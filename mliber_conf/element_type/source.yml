@@ -4,7 +4,9 @@ maya:
   import:
     - name: import texture
       hook: maya_texture_import
-  export:
-    name: redshift prorxy export
-    hook: maya_rs_export
-    default: False
+
+
+nuke:
+  import:
+    - name: import texture
+      hook: nuke_texture_import

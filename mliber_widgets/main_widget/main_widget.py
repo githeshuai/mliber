@@ -390,7 +390,7 @@ class MainWidget(MainWidgetUI):
                     show_created = True
                     break
         if not show_created:
-            MessageBox.warning(self, "Warning", "Choose category first.")
+            self._show_lazy_widget()
 
     def _show_lazy_widget(self):
         """
