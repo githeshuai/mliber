@@ -1,5 +1,5 @@
 ext: ".ass"
-icon: "default.png"
+icon: "ass.png"
 maya:
   import:
     - name: arnold proxy import

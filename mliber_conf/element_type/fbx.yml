@@ -1,5 +1,5 @@
 ext: ".fbx"
-icon: "default.png"
+icon: "fbx.png"
 maya:
   import:
     - name: fbx import

@@ -1,5 +1,5 @@
 ext: ".nk"
-icon: "default.png"
+icon: "nuke.png"
 nuke:
   import:
     - name: nuke node import

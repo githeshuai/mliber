@@ -1,5 +1,5 @@
 ext: ".hdr"
-icon: "default.png"
+icon: "hdr.png"
 maya:
   import:
     - name: arnold dome light

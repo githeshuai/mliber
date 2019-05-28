@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex
-from Qt.QtGui import QCursor
+from Qt.QtGui import QCursor, QIcon
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
@@ -413,35 +413,25 @@ class AssetListView(QListView):
             self._remove_asset_from_user(user, asset.id)
             self.model().sourceModel().setData(index, ["store", False], Qt.UserRole)
 
-    def _single_selection_actions(self, asset):
+    def _get_context_actions(self, assets):
         """
         选择一个资产的时候，右键菜单的action
         :return:
         """
+        if len(assets) == 1:
+            element_types = [element.type for element in assets[0].elements]
+        else:
+            element_types = Library(self.library.type).types()
         q_actions = list()
-        elements = asset.elements
-        for element in elements:
-            actions = ElementType(element.type).import_actions_of_engine(self._engine)
+        for element_type in element_types:
+            element_type_parser = ElementType(element_type)
+            actions = element_type_parser.import_actions_of_engine(self._engine)
             for action in actions:
-                q_action = QAction(action.name, self, triggered=self._on_action_triggered)
-                q_action.type = element.type
+                q_action = QAction(QIcon(element_type_parser.icon), action.name, self,
+                                   triggered=self._on_action_triggered)
+                q_action.type = element_type
                 q_action.hook = action.hook
                 q_actions.append(q_action)
-        return q_actions
-
-    def _multi_selection_actions(self):
-        """
-        :return:
-        """
-        q_actions = list()
-        support_types = Library(self.library.type).types()
-        for typ in support_types:
-            actions = ElementType(typ).import_actions_of_engine(self._engine)
-            for action in actions:
-                q_action = QAction(action.name, self, triggered=self._on_action_triggered)
-                q_actions.append(q_action)
-                q_action.type = typ
-                q_action.hook = action.hook
         return q_actions
 
     def _show_context_menu(self):
@@ -462,7 +452,6 @@ class AssetListView(QListView):
         if user.asset_permission:
             add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
-        if user.asset_permission:
             delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self,
                                     triggered=self._show_delete_widget)
             menu.addAction(delete_action)
@@ -471,12 +460,9 @@ class AssetListView(QListView):
         asset_ids = [asset.id for asset in selected_assets]
         with mliber_global.db() as db:
             assets = db.find("Asset", [["id", "in", asset_ids]])
-            if len(assets) == 1:
-                q_actions = self._single_selection_actions(assets[0])
-            else:
-                q_actions = self._multi_selection_actions()
-        for q_action in q_actions:
-            menu.addAction(q_action)
+            q_actions = self._get_context_actions(assets)
+            for q_action in q_actions:
+                menu.addAction(q_action)
         menu.exec_(QCursor.pos())
 
     def _show_detail(self):

@@ -115,9 +115,10 @@ class CellElementWidget(QWidget):
         """
         menu = QMenu(self)
         engine = Dcc.engine()
-        actions = ElementType(self._element_type).import_actions_of_engine(engine)
+        element_type_parser = ElementType(self._element_type)
+        actions = element_type_parser.import_actions_of_engine(engine)
         for action in actions:
-            q_action = QAction(action.name, self, triggered=self._run_hook)
+            q_action = QAction(QIcon(element_type_parser.icon), action.name, self, triggered=self._run_hook)
             q_action.hook = action.hook
             menu.addAction(q_action)
         show_in_explorer_action = QAction("open in explorer", self, triggered=self._run_hook)

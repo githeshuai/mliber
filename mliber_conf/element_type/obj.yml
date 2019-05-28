@@ -1,5 +1,5 @@
 ext: ".obj"
-icon: "default.png"
+icon: "obj.png"
 maya:
   import:
     - name: obj import

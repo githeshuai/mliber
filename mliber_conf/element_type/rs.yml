@@ -1,5 +1,5 @@
 ext: ".ass"
-icon: "default.png"
+icon: "rs.png"
 maya:
   import:
     - name: redshift proxy import

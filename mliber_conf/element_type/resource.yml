@@ -1,5 +1,5 @@
 ext: ".*"
-icon: "default.png"
+icon: "resource.png"
 maya:
   import:
     - name: import texture

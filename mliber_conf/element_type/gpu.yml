@@ -1,5 +1,5 @@
 ext: ".abc"
-icon: "default.png"
+icon: "gpu.png"
 maya:
   import:
     - name: gpu cache import

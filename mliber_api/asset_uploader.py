@@ -45,7 +45,7 @@ class AssetUploader(AssetMaker):
         ext = self._get_ext_from_file(source_file)
         if self.library.type == "MayaShader" and ext == "ma":
             return "ms"  # maya shader首字母
-        element_type = ext if ext in ELEMENT_TYPE else "source"
+        element_type = ext if ext in ELEMENT_TYPE else "resource"
         return element_type
 
     def _get_element_type_from_files(self, source_files):

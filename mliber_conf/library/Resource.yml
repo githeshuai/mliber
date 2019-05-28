@@ -2,15 +2,15 @@ check_selected: False
 show_frame_range: False
 
 types:
-  - source
+  - resource
 
 double_clicked:
   standalone:
-    type: source
+    type: resource
     hook: open_in_explorer
   maya:
-    type: source
+    type: resource
     hook: maya_texture_import
   nuke:
-    type: source
+    type: resource
     hook: nuke_texture_import

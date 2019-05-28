@@ -13,5 +13,5 @@ ELEMENT_TYPE = ["abc",
                 "nk",
                 "hip",
                 "project",
-                "source",
+                "resource",
                 ]
