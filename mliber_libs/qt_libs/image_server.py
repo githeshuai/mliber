@@ -4,7 +4,7 @@ import time
 from Qt.QtCore import Signal, QThread, Qt, QSize, QObject
 from Qt.QtGui import QImageReader, QIcon, QPixmap
 
-THREAD_COUNT = 10
+THREAD_COUNT = 50
 
 
 class ImageCacheThread(QThread):
@@ -81,9 +81,9 @@ class ImageCacheThread(QThread):
             return
         img_data = self.__img_dict.get(image_path, None)
         if img_data:
-            cached, item = img_data
+            cached, q_icon = img_data
             if cached:
-                return item
+                return q_icon
             else:
                 return None
         else:

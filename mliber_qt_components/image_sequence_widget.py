@@ -189,11 +189,11 @@ class ImageSequenceWidget(QToolButton):
     def __init__(self, parent=None):
         super(ImageSequenceWidget, self).__init__(parent)
         self.setStyleSheet("border: 0px solid; padding: 0px; background: transparent;")
-        self._view = None
         self._filename = None
         self._imageSequence = ImageSequence(self)
         self._imageSequence.frameChanged.connect(self._frameChanged)
         self._sequencePixMap = self.sequencePixMap()
+        self._defaultIconPath = mliber_resource.icon("image.png")
         self.setMouseTracking(True)
 
     def hasSequence(self):
@@ -219,14 +219,6 @@ class ImageSequenceWidget(QToolButton):
         self.setIconSize(self._size)
         self.setFixedSize(self._size)
 
-    def setView(self, view):
-        """
-        set parent view
-        :param view: QListView
-        :return:
-        """
-        self._view = view
-
     def currentIcon(self):
         """
         Return a icon object from the current icon path.
@@ -234,17 +226,6 @@ class ImageSequenceWidget(QToolButton):
         :rtype: QIcon
         """
         return QIcon(self._imageSequence.currentFilename())
-
-    def thumbnailIcon(self):
-        """
-        return thumbnail icon
-        :return:
-        """
-        image = self._view.image_server.get_image(self._imageSequence.centralFrame())
-        if image:
-            return QIcon(QPixmap.fromImage(image))
-        else:
-            return QIcon(mliber_resource.icon("image.png"))
 
     def setDirname(self, dirname):
         """
@@ -254,7 +235,6 @@ class ImageSequenceWidget(QToolButton):
         :rtype: None
         """
         self._imageSequence.setDirname(dirname)
-        self.setIcon(self.thumbnailIcon())
 
     def enterEvent(self, event):
         """

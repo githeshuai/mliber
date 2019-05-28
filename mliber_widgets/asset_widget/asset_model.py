@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 from Qt.QtCore import QModelIndex, Qt, QSortFilterProxyModel, QAbstractListModel, QRegExp
+from Qt.QtGui import QIcon, QPixmap
 
 
 class AssetModel(QAbstractListModel):
     def __init__(self, model_data=[], parent=None):
         super(AssetModel, self).__init__(parent)
         self.model_data = model_data
-        self.view = None
+        self._view = None
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.model_data)
@@ -16,6 +17,9 @@ class AssetModel(QAbstractListModel):
             return
         row = index.row()
         item = self.model_data[row]
+        image = self._view.image_server.get_image(item.icon_path)
+        if image:
+            item.icon = QIcon(QPixmap.fromImage(image))
         if role == Qt.UserRole:
             return item
 
@@ -65,6 +69,12 @@ class AssetModel(QAbstractListModel):
     def remove_all(self):
         for i in xrange(self.rowCount()):
             self.removeRows(0, 1)
+
+    def set_view(self, view):
+        """
+        :return:
+        """
+        self._view = view
 
 
 class AssetProxyModel(QSortFilterProxyModel):

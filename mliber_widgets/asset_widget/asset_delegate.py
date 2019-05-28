@@ -6,6 +6,7 @@ from Qt.QtCore import QSize, Qt, Signal, QModelIndex
 from mliber_qt_components.icon import Icon
 from mliber_qt_components.image_sequence_widget import ImageSequenceWidget
 import mliber_resource
+from mliber_libs.os_libs.path import Path
 
 FONT_HEIGHT = 18
 DEFAULT_COLOR = QColor(138, 138, 138)
@@ -50,6 +51,7 @@ class FlagWidget(QToolButton):
 class CellAssetWidget(QWidget):
     def __init__(self, parent=None):
         super(CellAssetWidget, self).__init__(parent)
+        self._icon = mliber_resource.icon("image.png")
         self.setAutoFillBackground(True)
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(3, 0, 3, 0)
@@ -129,12 +131,19 @@ class CellAssetWidget(QWidget):
         """
         self.name_label.setText("<font size=3>%s</font>" % text)
 
-    def set_icon(self, icon_path):
+    def set_dir_name(self, icon_path):
         """
-        设置显示图片
+        设置显示图片路径
         :return:
         """
         self.icon_widget.setDirname(icon_path)
+
+    def set_icon(self, icon):
+        """
+        :param icon: QIcon
+        :return:
+        """
+        self.icon_widget.setIcon(icon)
 
     def set_icon_size(self, size):
         """
@@ -143,14 +152,6 @@ class CellAssetWidget(QWidget):
         :return:
         """
         self.icon_widget.setSize(size)
-
-    def set_view(self, view):
-        """
-        set parent view
-        :param view: QListView
-        :return:
-        """
-        self.icon_widget.setView(view)
 
 
 class AssetDelegate(QStyledItemDelegate):
@@ -164,7 +165,6 @@ class AssetDelegate(QStyledItemDelegate):
 
     def createEditor(self, parent, option, index):
         editor = CellAssetWidget(parent)
-        editor.set_view(self.__parent)
         editor.store_flag.clicked.connect(partial(self.store_clicked.emit, index))
         return editor
 
@@ -172,10 +172,8 @@ class AssetDelegate(QStyledItemDelegate):
         editor.blockSignals(True)
         item = self._get_item(index)
         editor.set_icon_size(item.icon_size)
-        # image = self.__parent.image_server.get_image(item.icon_path)
-        # if image:
-        #     editor.set_icon(QIcon(QPixmap.fromImage(image)))
-        editor.set_icon(item.icon_path)
+        editor.set_icon(item.icon)
+        editor.set_dir_name(Path(item.icon_path).parent())
         editor.set_name(item.name)
         if item.has_tag:
             editor.light_tag_flag(QColor(50, 100, 255))

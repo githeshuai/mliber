@@ -31,6 +31,7 @@ class AssetListItem(object):
         """
         self.asset = asset
         self.icon_path = None
+        self.icon = mliber_resource.icon("image.png")
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
@@ -115,13 +116,6 @@ class AssetListView(QListView):
         :param args:
         :return:
         """
-        # source_model = self.model().sourceModel()
-        # for row in xrange(source_model.rowCount()):
-        #     index = source_model.index(row, 0)
-        #     try:
-        #         source_model.dataChanged.emit(index, index)
-        #     except:
-        #         source_model.dataChanged.emit(index, index, 0)
         self.setUpdatesEnabled(False)
         self.repaint()
         self.setUpdatesEnabled(True)
@@ -183,7 +177,7 @@ class AssetListView(QListView):
         """
         asset_path = self._get_asset_path(asset)
         thumbnail_pattern = templates.THUMBNAIL_PATH.format(asset_dir=asset_path, asset_name=asset.name)
-        return Path(thumbnail_pattern).parent()
+        return thumbnail_pattern.replace("####", "0000")
 
     def set_assets(self, assets):
         """
@@ -216,6 +210,7 @@ class AssetListView(QListView):
         """
         model_data = self._get_model_data(assets)
         model = AssetModel(model_data, self)
+        model.set_view(self)
         proxy_model = AssetProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
@@ -238,8 +233,9 @@ class AssetListView(QListView):
         show delegate
         :return:
         """
-        for row in xrange(self.model().rowCount()):
-            self.openPersistentEditor(self.model().index(row, 0))
+        model = self.model()
+        for row in xrange(model.rowCount()):
+            self.openPersistentEditor(model.index(row, 0))
 
     def add_asset(self, asset):
         """
