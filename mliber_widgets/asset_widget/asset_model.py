@@ -56,7 +56,10 @@ class AssetModel(QAbstractListModel):
                     self.model_data[row].has_description = data
                 if typ == "store":
                     self.model_data[row].stored_by_me = data
-                self.dataChanged.emit(index, index)
+                try:
+                    self.dataChanged.emit(index, index)
+                except:
+                    self.dataChanged.emit(index, index, 0)
             return True
 
     def remove_all(self):

@@ -45,7 +45,10 @@ class UserManageModel(QAbstractTableModel):
             column = index.column()
             if value:
                 self.model_data[row][column] = value
-                self.dataChanged.emit(index, index)
+                try:
+                    self.dataChanged.emit(index, index)
+                except:
+                    self.dataChanged.emit(index, index, 0)
             return True
         return False
 

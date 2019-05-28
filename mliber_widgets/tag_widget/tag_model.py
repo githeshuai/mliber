@@ -44,7 +44,10 @@ class TagModel(QAbstractListModel):
                 self.model_data[row].text = value
             elif isinstance(value, QColor):
                 self.model_data[row].color = value
-            self.dataChanged.emit(index, index)
+            try:
+                self.dataChanged.emit(index, index)
+            except:
+                self.dataChanged.emit(index, index, 0)
             return True
 
     def remove_all(self):

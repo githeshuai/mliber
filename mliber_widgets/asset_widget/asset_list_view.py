@@ -115,10 +115,16 @@ class AssetListView(QListView):
         :param args:
         :return:
         """
-        source_model = self.model().sourceModel()
-        for row in xrange(source_model.rowCount()):
-            index = source_model.index(row, 0)
-            source_model.dataChanged.emit(index, index)
+        # source_model = self.model().sourceModel()
+        # for row in xrange(source_model.rowCount()):
+        #     index = source_model.index(row, 0)
+        #     try:
+        #         source_model.dataChanged.emit(index, index)
+        #     except:
+        #         source_model.dataChanged.emit(index, index, 0)
+        self.setUpdatesEnabled(False)
+        self.repaint()
+        self.setUpdatesEnabled(True)
 
     def _set_style(self):
         """

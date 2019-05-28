@@ -47,7 +47,10 @@ class ElementModel(QAbstractListModel):
         if value:
             if role == Qt.UserRole:
                 self.model_data[row] = value
-                self.dataChanged.emit(index, index)
+                try:
+                    self.dataChanged.emit(index, index)
+                except:
+                    self.dataChanged.emit(index, index, 0)
             return True
 
     def remove_all(self):
