@@ -389,6 +389,14 @@ class AssetListView(QListView):
             self._remove_asset_from_user(user, asset.id)
             self.model().sourceModel().setData(index, ["store", False], Qt.UserRole)
 
+    def _store_selected_assets(self):
+        """
+        :return:
+        """
+        selected_indexes = self._selected_indexes()
+        for index in selected_indexes:
+            self._store(index)
+
     def _get_context_actions(self, assets):
         """
         选择一个资产的时候，右键菜单的action
@@ -421,12 +429,16 @@ class AssetListView(QListView):
         menu = QMenu(self)
         user = mliber_global.user()
         open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
+        store_action = QAction(mliber_resource.icon("store.png"), "As my Favorite", self,
+                               triggered=self._store_selected_assets)
         menu.addAction(open_action)
+        menu.addAction(store_action)
         if len(selected_assets) == 1:
             detail_action = QAction("Show Detail", self, triggered=self._show_detail)
             menu.addAction(detail_action)
         if user.asset_permission:
-            add_tag_action = QAction("Add Tag", self, triggered=self._show_add_tag_widget)
+            add_tag_action = QAction(mliber_resource.icon("tag.png"), "Add Tag", self,
+                                     triggered=self._show_add_tag_widget)
             menu.addAction(add_tag_action)
             delete_action = QAction(mliber_resource.icon("delete.png"), "Send to Trash", self,
                                     triggered=self._show_delete_widget)
