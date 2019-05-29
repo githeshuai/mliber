@@ -71,7 +71,6 @@ class AssetListView(QListView):
 
     def __init__(self, parent=None):
         super(AssetListView, self).__init__(parent)
-        self.image_server = None
         self._engine = Dcc.engine()
         self._mouse_hover_index = None
         self._image_widget = None
@@ -157,6 +156,7 @@ class AssetListView(QListView):
         :param assets:
         :return:
         """
+        mliber_global.image_server().clear()
         self.assets = assets
         self._set_model(self.assets)
         self._set_delegate()
