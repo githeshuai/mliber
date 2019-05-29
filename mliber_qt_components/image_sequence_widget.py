@@ -188,13 +188,14 @@ class ImageSequenceWidget(QToolButton):
 
     def __init__(self, parent=None):
         super(ImageSequenceWidget, self).__init__(parent)
-        self.setStyleSheet("border: 0px solid; padding: 0px; background: transparent;")
+        self.setStyleSheet("border: 0px solid; padding: 0px; background: #8a8a8a;")
         self._filename = None
         self._imageSequence = ImageSequence(self)
         self._imageSequence.frameChanged.connect(self._frameChanged)
         self._sequencePixMap = self.sequencePixMap()
         self._defaultIconPath = mliber_resource.icon("image.png")
         self.setMouseTracking(True)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
     def hasSequence(self):
         """
@@ -334,11 +335,12 @@ class ImageSequenceWidget(QToolButton):
                 x = r.x()
                 y = self.height() - playheadHeight
                 painter.setPen(Qt.NoPen)
-                painter.setBrush(QBrush(self.DEFAULT_PLAYHEAD_COLOR))
+                painter.setBrush(QBrush(QColor(200, 150, 50)))
                 painter.drawRect(x, y, playheadPosition, playheadHeight)
             painter.end()
 
     def mousePressEvent(self, event):
+        self.deleteLater()
         event.ignore()
 
 

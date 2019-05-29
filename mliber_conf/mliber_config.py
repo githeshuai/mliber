@@ -17,7 +17,7 @@ TITLE_COLOR = "#373b44"
 MENU_COLOR = "#2d2f37"
 # button icon color
 ICON_COLOR = QColor(160, 160, 160)
-ICON_HOVER_COLOR = QColor(57, 255, 255)
+ICON_HOVER_COLOR = QColor(46, 204, 204)
 ACCENT_COLOR = "rgb(57, 255, 255)"
 
 # comments color

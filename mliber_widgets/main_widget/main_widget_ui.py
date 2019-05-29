@@ -7,11 +7,17 @@ from mliber_widgets.category_widget import CategoryWidget
 from mliber_widgets.tag_widget import TagWidget
 from mliber_widgets.asset_widget import AssetWidget
 from mliber_widgets.statusbar import StatusBar
+import mliber_global
+from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 
 
 class MainWidgetUI(QDialog):
     def __init__(self, parent=None):
         super(MainWidgetUI, self).__init__(parent)
+        # start image server
+        image_server = ImageCacheThreadsServer()
+        mliber_global.app().set_value(mliber_image_server=image_server)
+        # setup ui
         self.resize(1120, 900)
         self.setWindowFlags(Qt.Window)
         main_layout = QVBoxLayout(self)

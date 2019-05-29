@@ -52,11 +52,15 @@ class AssetWidget(QWidget):
         :param assets:
         :return:
         """
+        import time
+        start = time.time()
         self.assets = assets
         self.asset_list_view.set_assets(assets)
+        print time.time() - start
         self.search_le.setText("")
         # set completer
         self.set_completer(self.asset_list_view.asset_names)
+        print time.time() - start
 
     def set_completer(self, asset_list):
         """
@@ -74,7 +78,6 @@ class AssetWidget(QWidget):
         """
         model = self.asset_list_view.model()
         model.set_filter(filter_str)
-        self.asset_list_view.show_delegate()
 
     def clear(self):
         """

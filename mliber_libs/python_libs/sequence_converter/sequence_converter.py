@@ -47,7 +47,7 @@ class SequenceConverter(object):
         frames = self.frames()
         for index, frame in enumerate(frames):
             src_file = files[index]
-            dst_file = self.dst.replace("####", str(frame).zfill(4))
+            dst_file = self.dst.replace("####", str(frame+1).zfill(4))
             ImageConverter(src_file, dst_file).convert()
 
 

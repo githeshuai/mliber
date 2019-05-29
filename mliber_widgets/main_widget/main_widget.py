@@ -437,7 +437,7 @@ class MainWidget(MainWidgetUI):
         :param index: QModelIndex
         :return: 
         """
-        asset = self.asset_widget.asset_list_view.item_of_index(index)
+        asset = self.asset_widget.asset_list_view.item_at_index(index)
         with mliber_global.db() as db:
             asset = db.find_one("Asset", [["id", "=", asset.id]])
             self._left_pressed_index = index

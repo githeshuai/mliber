@@ -7,19 +7,18 @@ from Qt.QtGui import QCursor, QIcon
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
-from mliber_conf import mliber_config
 import mliber_global
 import mliber_resource
 import mliber_utils
 from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_libs.os_libs.path import Path
 from mliber_api.api_utils import add_tag_of_asset
-from mliber_libs.qt_libs.image_server import ImageCacheThreadsServer
 from mliber_conf import templates
 from mliber_parse.element_type_parser import ElementType
 from mliber_parse.library_parser import Library
 from mliber_qt_components.delete_widget import DeleteWidget
 from mliber_qt_components.messagebox import MessageBox
+from mliber_qt_components.image_sequence_widget import ImageSequenceWidget
 
 DEFAULT_ICON_SIZE = 128
 
@@ -31,8 +30,8 @@ class AssetListItem(object):
         """
         self.asset = asset
         self.icon_path = None
-        self.icon = mliber_resource.icon("image.png")
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
+        self.has_sequence = False
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
         self.stored_by_me = self.is_stored_by_me()
@@ -74,6 +73,8 @@ class AssetListView(QListView):
         super(AssetListView, self).__init__(parent)
         self.image_server = None
         self._engine = Dcc.engine()
+        self._mouse_hover_index = None
+        self._image_widget = None
         self.assets = []
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
@@ -87,12 +88,8 @@ class AssetListView(QListView):
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        # set style
-        self._set_style()
         # set signals
         self._set_signals()
-        # start image cache thread
-        self._start_image_cache_thread()
 
     @property
     def library(self):
@@ -101,31 +98,6 @@ class AssetListView(QListView):
     @property
     def user(self):
         return mliber_global.user()
-
-    def _start_image_cache_thread(self):
-        """
-        获取刷新图片线程
-        :return:
-        """
-        self.image_server = ImageCacheThreadsServer()
-        self.image_server.cache_done_signal.connect(self._img_cached_done)
-
-    def _img_cached_done(self, *args):
-        """
-        当图片缓存成功，刷新ui
-        :param args:
-        :return:
-        """
-        self.setUpdatesEnabled(False)
-        self.repaint()
-        self.setUpdatesEnabled(True)
-
-    def _set_style(self):
-        """
-        set style sheet
-        :return:
-        """
-        self.setStyleSheet(mliber_config.LIST_VIEW_STYLE)
 
     def _set_signals(self):
         """
@@ -142,7 +114,7 @@ class AssetListView(QListView):
         :param index:
         :return:
         """
-        if index.row() < 0:
+        if not index or index.row() < 0:
             return
         source_model = self.model().sourceModel()
         source_index = self.model().mapToSource(index)
@@ -177,7 +149,7 @@ class AssetListView(QListView):
         """
         asset_path = self._get_asset_path(asset)
         thumbnail_pattern = templates.THUMBNAIL_PATH.format(asset_dir=asset_path, asset_name=asset.name)
-        return thumbnail_pattern.replace("####", "0000")
+        return thumbnail_pattern
 
     def set_assets(self, assets):
         """
@@ -198,7 +170,10 @@ class AssetListView(QListView):
         for asset in assets:
             item = AssetListItem(asset)
             icon_path = self._get_asset_icon_path(asset)
-            item.icon_path = icon_path
+            item.icon_path = icon_path.replace("####", "0001")
+            next_frame = icon_path.replace("####", "0002")
+            if Path(next_frame).isfile():
+                item.has_sequence = True
             item.icon_size = self.iconSize()
             model_data.append(item)
         return model_data
@@ -210,7 +185,6 @@ class AssetListView(QListView):
         """
         model_data = self._get_model_data(assets)
         model = AssetModel(model_data, self)
-        model.set_view(self)
         proxy_model = AssetProxyModel(self)
         proxy_model.setSourceModel(model)
         self.setModel(proxy_model)
@@ -224,9 +198,7 @@ class AssetListView(QListView):
         :return:
         """
         delegate = AssetDelegate(self)
-        delegate.store_clicked.connect(self._store)
         self.setItemDelegate(delegate)
-        self.show_delegate()
 
     def show_delegate(self):
         """
@@ -246,11 +218,13 @@ class AssetListView(QListView):
             return
         item = AssetListItem(asset)
         icon_path = self._get_asset_icon_path(asset)
-        item.icon_path = icon_path
+        item.icon_path = icon_path.replace("####", "0001")
+        next_frame = icon_path.replace("####", "0002")
+        if Path(next_frame).isfile():
+            item.has_sequence = True
         item.icon_size = self.iconSize()
         source_model = self.model().sourceModel()
         source_model.insertRows(source_model.rowCount(), 1, [item])
-        self.show_delegate()
 
     def _set_item_size(self, size):
         """
@@ -316,7 +290,7 @@ class AssetListView(QListView):
         asset_names = [asset.name for asset in self.assets]
         return asset_names
     
-    def item_of_index(self, index):
+    def item_at_index(self, index):
         """
         根据index 获取item
         :param index: <QModelIndex>
@@ -405,7 +379,7 @@ class AssetListView(QListView):
         :param index: QModelIndex
         :return:
         """
-        item = self.item_of_index(index)
+        item = self.item_at_index(index)
         user = self.user
         asset = item.asset
         if not item.stored_by_me:
@@ -568,6 +542,9 @@ class AssetListView(QListView):
         :param event:
         :return:
         """
+        try:
+            self._image_widget.deleteLater()
+        except:pass
         zoom_amount = self.iconSize().width()
         modifiers = QApplication.keyboardModifiers()
         if modifiers == Qt.ControlModifier or modifiers == Qt.AltModifier:
@@ -604,3 +581,29 @@ class AssetListView(QListView):
         # if event.type() == QEvent.MouseButtonPress:
         if event.button() == Qt.LeftButton:
             self.left_pressed.emit(index)
+
+    def mouseMoveEvent(self, event):
+        """
+        当鼠标移动的时候，如果有序列显示序列
+        :return:
+        """
+        point = event.pos()
+        index = self.indexAt(point)
+        if index.row() < 0:
+            super(AssetListView, self).mouseMoveEvent(event)
+            self._mouse_hover_index = None
+            try:
+                self._image_widget.deleteLater()
+            except:pass
+            return
+        item = self.item_at_index(index)
+        if item.has_sequence:
+            if index != self._mouse_hover_index:
+                self._image_widget = ImageSequenceWidget(self)
+                self._mouse_hover_index = index
+                rect = self.rectForIndex(index)
+                self._image_widget.setDirname(Path(item.icon_path).parent())
+                self._image_widget.setSize(self.iconSize())
+                self._image_widget.move(rect.topLeft().x(), rect.topLeft().y())
+                self._image_widget.show()
+        super(AssetListView, self).mouseMoveEvent(event)

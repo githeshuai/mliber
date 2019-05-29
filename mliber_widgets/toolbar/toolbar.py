@@ -65,7 +65,7 @@ class Toolbar(ToolbarUI):
         """
         self.user_manage_action_triggered.emit()
 
-    def _show_library_manage(self):
+    def _show_library_manage(self, *args):
         """
         显示library manage窗口
         :return:

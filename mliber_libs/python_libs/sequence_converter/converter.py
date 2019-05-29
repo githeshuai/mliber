@@ -44,7 +44,7 @@ class Converter(object):
             return
         if typ in ["image", "sequence"]:
             for index, src_file in enumerate(src_files):
-                dst_file = dst_pattern.replace("####", str(index).zfill(4))
+                dst_file = dst_pattern.replace("####", str(index+1).zfill(4))
                 ImageConverter(src_file, dst_file).convert()
         elif typ in ["video"]:
             src_file = src_files[0]
