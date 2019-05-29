@@ -335,7 +335,7 @@ class ImageSequenceWidget(QToolButton):
                 x = r.x()
                 y = self.height() - playheadHeight
                 painter.setPen(Qt.NoPen)
-                painter.setBrush(QBrush(QColor(200, 150, 50)))
+                painter.setBrush(QBrush(QColor(46, 204, 204)))
                 painter.drawRect(x, y, playheadPosition, playheadHeight)
             painter.end()
 
