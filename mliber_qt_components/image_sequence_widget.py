@@ -46,7 +46,7 @@ class ImageSequence(QObject):
 
     def centralFrame(self):
         """
-        第一帧
+        中间帧
         :return:
         """
         if self._frames:
@@ -181,6 +181,13 @@ class ImageSequence(QObject):
             frame = 0
         self._frame = frame
         self.frameChanged.emit()
+
+    def hasSequence(self):
+        """
+        判断缩略图是否有序列
+        :return:
+        """
+        return True if self.duration() > 1 else False
 
 
 class ImageSequenceWidget(QToolButton):

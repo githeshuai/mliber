@@ -18,7 +18,7 @@ from mliber_parse.element_type_parser import ElementType
 from mliber_parse.library_parser import Library
 from mliber_qt_components.delete_widget import DeleteWidget
 from mliber_qt_components.messagebox import MessageBox
-from mliber_qt_components.image_sequence_widget import ImageSequenceWidget
+from mliber_qt_components.image_sequence_widget import ImageSequence
 
 DEFAULT_ICON_SIZE = 128
 
@@ -29,12 +29,30 @@ class AssetListItem(object):
         :param asset: <Asset>
         """
         self.asset = asset
-        self.icon_path = None
+        self.image_sequence = None
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.has_sequence = False
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
         self.stored_by_me = self.is_stored_by_me()
+
+    def set_image_sequence(self, sequence_dir):
+        """
+        set image sequence
+        :return:
+        """
+        if not self.image_sequence:
+            self.image_sequence = ImageSequence()
+            self.image_sequence.setDirname(sequence_dir)
+            # self.image_sequence.frameChanged.connect(self._frameChanged)
+        # self.imageSequence().start()
+
+    def central_frame(self):
+        """
+        :rtype: None
+        """
+        filename = self.image_sequence.centralFrame()
+        return filename
 
     def is_stored_by_me(self):
         """
@@ -73,7 +91,6 @@ class AssetListView(QListView):
         super(AssetListView, self).__init__(parent)
         self._engine = Dcc.engine()
         self._mouse_hover_index = None
-        self._image_widget = None
         self.assets = []
         icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(icon_size)
@@ -170,10 +187,7 @@ class AssetListView(QListView):
         for asset in assets:
             item = AssetListItem(asset)
             icon_path = self._get_asset_icon_path(asset)
-            item.icon_path = icon_path.replace("####", "0001")
-            next_frame = icon_path.replace("####", "0002")
-            if Path(next_frame).isfile():
-                item.has_sequence = True
+            item.set_image_sequence(Path(icon_path).parent())
             item.icon_size = self.iconSize()
             model_data.append(item)
         return model_data
@@ -554,9 +568,6 @@ class AssetListView(QListView):
         :param event:
         :return:
         """
-        try:
-            self._image_widget.deleteLater()
-        except:pass
         zoom_amount = self.iconSize().width()
         modifiers = QApplication.keyboardModifiers()
         if modifiers == Qt.ControlModifier or modifiers == Qt.AltModifier:
@@ -603,19 +614,5 @@ class AssetListView(QListView):
         index = self.indexAt(point)
         if index.row() < 0:
             super(AssetListView, self).mouseMoveEvent(event)
-            self._mouse_hover_index = None
-            try:
-                self._image_widget.deleteLater()
-            except:pass
             return
-        item = self.item_at_index(index)
-        if item.has_sequence:
-            if index != self._mouse_hover_index:
-                self._image_widget = ImageSequenceWidget(self)
-                self._mouse_hover_index = index
-                rect = self.rectForIndex(index)
-                self._image_widget.setDirname(Path(item.icon_path).parent())
-                self._image_widget.setSize(self.iconSize())
-                self._image_widget.move(rect.topLeft().x(), rect.topLeft().y())
-                self._image_widget.show()
         super(AssetListView, self).mouseMoveEvent(event)

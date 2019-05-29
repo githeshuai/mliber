@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
+from functools import partial
 from Qt.QtWidgets import QStyledItemDelegate, QStyle
-from Qt.QtGui import QColor, QIcon, QPixmap, QPainter, QFont
+from Qt.QtGui import QColor, QIcon, QPixmap, QPainter, QFont, QPen, QBrush
 from Qt.QtCore import QSize, Qt, QModelIndex, QRect
 import mliber_global
 import mliber_resource
@@ -39,21 +40,51 @@ class AssetDelegate(QStyledItemDelegate):
         return size
 
     def paint(self, painter, option, index):
-        painter.fillRect(option.rect, QColor(57, 60, 70))
-        if option.state & QStyle.State_MouseOver:
-            painter.fillRect(option.rect, mliber_config.ICON_HOVER_COLOR)
-        if option.state & QStyle.State_Selected:
-            painter.fillRect(option.rect, QColor(57, 255, 255))
-        item = self._parent.item_at_index(index)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
-        img_path = item.icon_path
-        img_item = self._image_server.get_image(img_path)
-        # img_item in the dict ,don't know if cached
-        image = img_item or self._default_img
-        rect = self._draw_centralized_pic(painter, option.rect, image)
-        self._draw_text(painter, option, item.name)
+        painter.save()
+        try:
+            painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+            self.paintBackground(painter, option, index)
+            item = self._parent.item_at_index(index)
+            image_sequence = item.image_sequence
+            if item.image_sequence.hasSequence():
+                if option.state & QStyle.State_MouseOver:
+                    image_sequence.start()
+                    current_icon_path = item.image_sequence.currentFilename()
+                    print current_icon_path
+                    image = QPixmap(current_icon_path)
+                    item.image_sequence.frameChanged.connect(partial(self._draw_centralized_pic, painter, option, image))
+            img_item = self._image_server.get_image(item.central_frame())
+            # img_item in the dict ,don't know if cached
+            image = img_item or self._default_img
+            rect = self._draw_centralized_pic(painter, option, image)
+            self._draw_text(painter, option, item.name)
+        finally:
+            painter.restore()
 
-    def _draw_centralized_pic(self, painter, rect, img):
+    def paintBackground(self, painter, option, index):
+        """
+        Draw the background for the item.
+
+        :type painter: QtWidgets.QPainter
+        :type option: QtWidgets.QStyleOptionViewItem
+        :type index: QtCore.QModelIndex
+        :rtype: None
+        """
+        is_selected = option.state & QStyle.State_Selected
+        is_mouse_over = option.state & QStyle.State_MouseOver
+        painter.setPen(QPen(Qt.NoPen))
+        if is_selected:
+            color = QColor(57, 255, 255)
+            painter.setBrush(QBrush(color))
+        elif is_mouse_over:
+            color = mliber_config.ICON_HOVER_COLOR
+            painter.setBrush(QBrush(color))
+        else:
+            color = QColor(57, 60, 70)
+            painter.setBrush(QBrush(color))
+        painter.drawRect(option.rect)
+
+    def _draw_centralized_pic(self, painter, option, img):
         """
         画图
         :param painter:
@@ -61,37 +92,31 @@ class AssetDelegate(QStyledItemDelegate):
         :param img:
         :return:
         """
-        try:
-            painter.save()
-            rect_margin = [0, 0, 0, -20]
-            img_rect = rect.adjusted(
-                self._margin + rect_margin[0], self._margin + rect_margin[1],
-                -self._margin + rect_margin[2], -self._margin + rect_margin[3])
-            img_rect_width, img_rect_height = float(img_rect.width()), float(img_rect.height())
-            cur_img = img
-            cur_img_width, cur_img_height = float(cur_img.width()), float(cur_img.height())
-            cur_img_w_h_ratio = cur_img_width / cur_img_height
-            if cur_img_w_h_ratio > 1:
-                scale_ratio = img_rect_width / cur_img_width
-            else:
-                scale_ratio = img_rect_height / cur_img_height
-            img_adjusted_rect = QRect(
-                img_rect.x() + (img_rect_width - cur_img_width * scale_ratio) / 2,
-                img_rect.y() + (img_rect_height - cur_img_height * scale_ratio) / 2,
-                cur_img_width * scale_ratio, cur_img_height * scale_ratio
-            )
-            if type(img) == QPixmap:
-                painter.drawPixmap(img_adjusted_rect, img)
-            else:
-                painter.drawImage(img_adjusted_rect, img)
-            painter.restore()
-            return img
-        except:pass
+        rect_margin = [0, 0, 0, -20]
+        img_rect = option.rect.adjusted(
+            self._margin + rect_margin[0], self._margin + rect_margin[1],
+            -self._margin + rect_margin[2], -self._margin + rect_margin[3])
+        img_rect_width, img_rect_height = float(img_rect.width()), float(img_rect.height())
+        cur_img = img
+        cur_img_width, cur_img_height = float(cur_img.width()), float(cur_img.height())
+        cur_img_w_h_ratio = cur_img_width / cur_img_height
+        if cur_img_w_h_ratio > 1:
+            scale_ratio = img_rect_width / cur_img_width
+        else:
+            scale_ratio = img_rect_height / cur_img_height
+        img_adjusted_rect = QRect(
+            img_rect.x() + (img_rect_width - cur_img_width * scale_ratio) / 2,
+            img_rect.y() + (img_rect_height - cur_img_height * scale_ratio) / 2,
+            cur_img_width * scale_ratio, cur_img_height * scale_ratio
+        )
+        if type(img) == QPixmap:
+            painter.drawPixmap(img_adjusted_rect, img)
+        else:
+            painter.drawImage(img_adjusted_rect, img)
+        return img
 
     @staticmethod
     def _draw_text(painter, option, text):
-        painter.save()
-        # draw text
         rect = option.rect
         font = QFont("Arial", 8, QFont.Bold)
         painter.setFont(font)
@@ -102,5 +127,3 @@ class AssetDelegate(QStyledItemDelegate):
             painter.setPen(QColor(0, 0, 0))
         text_rect = QRect(rect.adjusted(0, 0, 0, -20).bottomLeft(), rect.bottomRight())
         painter.drawText(text_rect, Qt.AlignCenter, text)
-        painter.restore()
-        return text_rect
