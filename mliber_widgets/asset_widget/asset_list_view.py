@@ -2,7 +2,7 @@
 import logging
 from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction
-from Qt.QtCore import QSize, Signal, Qt, QModelIndex
+from Qt.QtCore import QSize, Signal, Qt, QModelIndex, QItemSelectionModel
 from Qt.QtGui import QCursor, QIcon
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
@@ -159,15 +159,6 @@ class AssetListView(QListView):
         delegate = AssetDelegate(self)
         self.setItemDelegate(delegate)
 
-    def show_delegate(self):
-        """
-        show delegate
-        :return:
-        """
-        model = self.model()
-        for row in xrange(model.rowCount()):
-            self.openPersistentEditor(model.index(row, 0))
-
     def add_asset(self, asset):
         """
         :param asset: Asset instance
@@ -182,6 +173,10 @@ class AssetListView(QListView):
         source_model = self.model().sourceModel()
         item.row = source_model.rowCount()
         source_model.insertRows(source_model.rowCount(), 1, [item])
+        # scroll
+        index = source_model.index(item.row, 0)
+        self.selectionModel().select(index, QItemSelectionModel.Select)
+        self.scrollTo(index, QAbstractItemView.PositionAtCenter)
 
     def _set_item_size(self, size):
         """
@@ -272,8 +267,12 @@ class AssetListView(QListView):
             asset = item.asset
             with mliber_global.db() as db:
                 add_tag_of_asset(db, asset, tag_names)
-            model.setData(index, ["tag", True], Qt.UserRole)
-        self.add_tag_signal.emit(tag_names)
+            if tag_names:
+                model.setData(index, ["tag", True], Qt.UserRole)
+            else:
+                model.setData(index, ["tag", False], Qt.UserRole)
+        if tag_names:
+            self.add_tag_signal.emit(tag_names)
 
     def _show_add_tag_widget(self):
         """

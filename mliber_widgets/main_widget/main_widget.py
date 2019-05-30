@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import time
 from Qt.QtWidgets import QMenu, QAction, QApplication, QInputDialog, QLineEdit
 from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
@@ -198,6 +199,7 @@ class MainWidget(MainWidgetUI):
         当category选择改变的时候
         :return:
         """
+        start = time.time()
         category_ids = [category.id for category in categories]
         category_ids = list(set(category_ids))
         with mliber_global.db() as db:
@@ -205,7 +207,7 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         # status bar info
-        self.status_bar.info("%s assets found." % (len(assets)))
+        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time() - start))
 
     def _on_tag_selection_changed(self, tags):
         """
@@ -213,6 +215,7 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         # category tree取消选择
+        start = time.time()
         self.category_widget.category_tree.clearSelection()
         library_assets = []
         if tags:
@@ -236,7 +239,7 @@ class MainWidget(MainWidgetUI):
                 library_assets = db.find("Asset", [["library_id", "=", self.library.id], ["status", "=", "Active"]])
         self.asset_widget.set_assets(library_assets)
         # status bar show info
-        self.status_bar.info("%s assets found." % len(library_assets))
+        self.status_bar.info("{} assets found  /  cast {}'s".format(len(library_assets), time.time() - start))
 
     def _refresh_library(self):
         """
@@ -252,6 +255,7 @@ class MainWidget(MainWidgetUI):
             self.asset_widget.clear()
             return
         # toolbar 上显示当前library
+        start = time.time()
         self._show_library_on_toolbar()
         # 列出所有的category
         self.category_widget.refresh_ui()
@@ -262,7 +266,7 @@ class MainWidget(MainWidgetUI):
         tags = self._tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
         # status bar
-        self.status_bar.info("%s assets found." % len(assets))
+        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time()-start))
 
     def _show_library_on_toolbar(self):
         """
@@ -287,6 +291,7 @@ class MainWidget(MainWidgetUI):
         显示我的收藏
         :return: 
         """
+        start = time.time()
         filters = [["library_id", "=", self.library.id]]
         with mliber_global.db() as db:
             library_assets = db.find("Asset", filters)
@@ -299,6 +304,7 @@ class MainWidget(MainWidgetUI):
             self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         self.category_widget.category_tree.clearSelection()
+        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time() - start))
 
     def _show_clear_trash_widget(self):
         """
