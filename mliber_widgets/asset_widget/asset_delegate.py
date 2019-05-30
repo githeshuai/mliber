@@ -46,12 +46,12 @@ class AssetDelegate(QStyledItemDelegate):
             self.paintBackground(painter, option, index)
             item = self._parent.item_at_index(index)
             if option.state & QStyle.State_MouseOver:
-                if not item.started:
+                if item.has_sequence and not item.started:
                     item.start()
             else:
                 if item.started:
                     item.pause()
-            if item.has_sequence():
+            if item.has_sequence:
                 img_item = QPixmap(item.current_filename)
             else:
                 img_item = self._image_server.get_image(item.current_filename)
@@ -118,6 +118,13 @@ class AssetDelegate(QStyledItemDelegate):
 
     @staticmethod
     def _draw_text(painter, option, text):
+        """
+        painter 文字
+        :param painter:
+        :param option:
+        :param text:
+        :return:
+        """
         rect = option.rect
         font = QFont("Arial", 8, QFont.Bold)
         painter.setFont(font)
@@ -128,9 +135,3 @@ class AssetDelegate(QStyledItemDelegate):
             painter.setPen(QColor(0, 0, 0))
         text_rect = QRect(rect.adjusted(0, 0, 0, -20).bottomLeft(), rect.bottomRight())
         painter.drawText(text_rect, Qt.AlignCenter, text)
-
-    def draw_sequence(self, option, image):
-        painter = QPainter(self._parent)
-        painter.save()
-        self._draw_centralized_pic(painter, option, image)
-        painter.restore()

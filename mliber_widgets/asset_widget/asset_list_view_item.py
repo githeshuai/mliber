@@ -16,16 +16,11 @@ class AssetListItem(object):
         self.image_sequence_dir = None
         self.current_filename = None
         self.started = False
+        self.has_sequence = False
         self.icon_size = self._parent.iconSize()
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
         self.stored_by_me = self.is_stored_by_me()
-
-    def has_sequence(self):
-        """
-        :return:
-        """
-        return self.image_sequence.hasSequence()
 
     def start(self):
         """
@@ -57,6 +52,7 @@ class AssetListItem(object):
         self.image_sequence_dir = sequence_dir
         self.current_filename = self.image_sequence.currentFilename()
         self.image_sequence.frameChanged.connect(self._frame_changed)
+        self.has_sequence = self.image_sequence.hasSequence()
 
     def _frame_changed(self):
         """
