@@ -53,6 +53,7 @@ class AssetDelegate(QStyledItemDelegate):
                     item.pause()
             if item.has_sequence:
                 img_item = QPixmap(item.current_filename)
+                self._draw_progress(painter, option, item)
             else:
                 img_item = self._image_server.get_image(item.current_filename)
             image = img_item or self._default_img
@@ -135,3 +136,27 @@ class AssetDelegate(QStyledItemDelegate):
             painter.setPen(QColor(0, 0, 0))
         text_rect = QRect(rect.adjusted(0, 0, 0, -20).bottomLeft(), rect.bottomRight())
         painter.drawText(text_rect, Qt.AlignCenter, text)
+
+    def _draw_progress(self, painter, option, item):
+        """
+        画进度条
+        :param painter:
+        :param option:
+        :param item:
+        :return:
+        """
+        if item.current_filename:
+            r = option.rect
+            brush_color = QColor(57, 255, 255)
+            image_sequence = item.image_sequence
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QBrush(brush_color))
+            if image_sequence.percent() <= 0:
+                width = 0
+            elif image_sequence.percent() >= 1:
+                width = r.width()
+            else:
+                width = image_sequence.percent() * r.width() + 1
+            height = 2
+            y = r.y() + r.height() - (height - 1)
+            painter.drawRect(r.x(), y, width, height)
