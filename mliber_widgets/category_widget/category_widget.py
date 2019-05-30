@@ -68,7 +68,7 @@ class CategoryWidget(QWidget):
         menu = QMenu(self)
         user = mliber_global.user()
         if user.category_permission:
-            add_category_action = QAction("Add Category", self, triggered=self._add_top_level_category)
+            add_category_action = QAction("Add Category", self, triggered=self._add_category)
             menu.addAction(add_category_action)
         collapse_all_action = QAction("Collapse All", self, triggered=self.collapse_all)
         expand_all_action = QAction("Expand All", self, triggered=self.expand_all)
@@ -99,12 +99,12 @@ class CategoryWidget(QWidget):
         """
         self.category_tree.expandAll()
 
-    def _add_top_level_category(self):
+    def _add_category(self):
         """
         增加顶级的category
         :return:
         """
-        self.category_tree.clearSelection()
+        # self.category_tree.clearSelection()
         self.category_tree.add_category()
 
     def _search(self, text):
