@@ -30,29 +30,45 @@ class AssetListItem(object):
         """
         self.asset = asset
         self.image_sequence = None
+        self.image_sequence_dir = None
+        self.current_filename = None
         self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
-        self.has_sequence = False
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
         self.stored_by_me = self.is_stored_by_me()
+
+    def has_sequence(self):
+        """
+        :return:
+        """
+        return self.image_sequence.hasSequence()
 
     def set_image_sequence(self, sequence_dir):
         """
         set image sequence
         :return:
         """
-        if not self.image_sequence:
-            self.image_sequence = ImageSequence()
-            self.image_sequence.setDirname(sequence_dir)
-            # self.image_sequence.frameChanged.connect(self._frameChanged)
-        # self.imageSequence().start()
+        self.image_sequence = ImageSequence()
+        self.image_sequence.setDirname(sequence_dir)
+        self.image_sequence_dir = sequence_dir
+        self.current_filename = self.image_sequence.currentFilename()
+        if self.image_sequence.hasSequence():
+            self.image_sequence.start()
+            self.image_sequence.frameChanged.connect(self._frame_changed)
+
+    def _frame_changed(self):
+        """
+
+        :return:
+        """
+        self.current_filename = self.image_sequence.currentFilename()
 
     def central_frame(self):
         """
-        :rtype: None
+        中间帧
+        :return:
         """
-        filename = self.image_sequence.centralFrame()
-        return filename
+        return self.image_sequence.centralFrame()
 
     def is_stored_by_me(self):
         """
@@ -232,10 +248,7 @@ class AssetListView(QListView):
             return
         item = AssetListItem(asset)
         icon_path = self._get_asset_icon_path(asset)
-        item.icon_path = icon_path.replace("####", "0001")
-        next_frame = icon_path.replace("####", "0002")
-        if Path(next_frame).isfile():
-            item.has_sequence = True
+        item.set_image_sequence(Path(icon_path).parent())
         item.icon_size = self.iconSize()
         source_model = self.model().sourceModel()
         source_model.insertRows(source_model.rowCount(), 1, [item])

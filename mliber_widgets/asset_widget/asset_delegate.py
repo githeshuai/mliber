@@ -45,16 +45,13 @@ class AssetDelegate(QStyledItemDelegate):
             painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
             self.paintBackground(painter, option, index)
             item = self._parent.item_at_index(index)
-            image_sequence = item.image_sequence
-            if item.image_sequence.hasSequence():
-                if option.state & QStyle.State_MouseOver:
-                    image_sequence.start()
-                    current_icon_path = item.image_sequence.currentFilename()
-                    print current_icon_path
-                    image = QPixmap(current_icon_path)
-                    item.image_sequence.frameChanged.connect(partial(self._draw_centralized_pic, painter, option, image))
-            img_item = self._image_server.get_image(item.central_frame())
-            # img_item in the dict ,don't know if cached
+            if option.state & QStyle.State_MouseOver:
+                img_item = QPixmap(item.current_filename)
+            else:
+                if item.has_sequence():
+                    img_item = self._image_server.get_image(item.central_frame())
+                else:
+                    img_item = self._image_server.get_image(item.current_filename)
             image = img_item or self._default_img
             rect = self._draw_centralized_pic(painter, option, image)
             self._draw_text(painter, option, item.name)
@@ -113,6 +110,7 @@ class AssetDelegate(QStyledItemDelegate):
             painter.drawPixmap(img_adjusted_rect, img)
         else:
             painter.drawImage(img_adjusted_rect, img)
+        self._img_cached_done()
         return img
 
     @staticmethod
@@ -127,3 +125,9 @@ class AssetDelegate(QStyledItemDelegate):
             painter.setPen(QColor(0, 0, 0))
         text_rect = QRect(rect.adjusted(0, 0, 0, -20).bottomLeft(), rect.bottomRight())
         painter.drawText(text_rect, Qt.AlignCenter, text)
+
+    def draw_sequence(self, option, image):
+        painter = QPainter(self._parent)
+        painter.save()
+        self._draw_centralized_pic(painter, option, image)
+        painter.restore()
