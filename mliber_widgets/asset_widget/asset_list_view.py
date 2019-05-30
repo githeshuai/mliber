@@ -7,6 +7,7 @@ from Qt.QtGui import QCursor, QIcon
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
+from asset_list_view_item import AssetListItem
 import mliber_global
 import mliber_resource
 import mliber_utils
@@ -18,81 +19,8 @@ from mliber_parse.element_type_parser import ElementType
 from mliber_parse.library_parser import Library
 from mliber_qt_components.delete_widget import DeleteWidget
 from mliber_qt_components.messagebox import MessageBox
-from mliber_qt_components.image_sequence_widget import ImageSequence
 
 DEFAULT_ICON_SIZE = 128
-
-
-class AssetListItem(object):
-    def __init__(self, asset):
-        """
-        :param asset: <Asset>
-        """
-        self.asset = asset
-        self.image_sequence = None
-        self.image_sequence_dir = None
-        self.current_filename = None
-        self.icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
-        self.has_tag = True if self.asset.tags else False
-        self.has_description = True if self.asset.description else False
-        self.stored_by_me = self.is_stored_by_me()
-
-    def has_sequence(self):
-        """
-        :return:
-        """
-        return self.image_sequence.hasSequence()
-
-    def set_image_sequence(self, sequence_dir):
-        """
-        set image sequence
-        :return:
-        """
-        self.image_sequence = ImageSequence()
-        self.image_sequence.setDirname(sequence_dir)
-        self.image_sequence_dir = sequence_dir
-        self.current_filename = self.image_sequence.currentFilename()
-        if self.image_sequence.hasSequence():
-            self.image_sequence.start()
-            self.image_sequence.frameChanged.connect(self._frame_changed)
-
-    def _frame_changed(self):
-        """
-
-        :return:
-        """
-        self.current_filename = self.image_sequence.currentFilename()
-
-    def central_frame(self):
-        """
-        中间帧
-        :return:
-        """
-        return self.image_sequence.centralFrame()
-
-    def is_stored_by_me(self):
-        """
-        是否被自己收藏
-        :return:
-        """
-        masters = self.asset.master
-        if masters:
-            master_ids = [master.id for master in masters]
-            user = mliber_global.user()
-            if user.id in master_ids:
-                return True
-        return False
-
-    def __getattr__(self, item):
-        """
-        :param item:
-        :return:
-        """
-        if item == "path":
-            library = mliber_global.library()
-            root_path = library.root_path()
-            return self.asset.path.format(root=root_path)
-        return getattr(self.asset, item)
 
 
 class AssetListView(QListView):
@@ -200,8 +128,9 @@ class AssetListView(QListView):
         :return:
         """
         model_data = list()
-        for asset in assets:
-            item = AssetListItem(asset)
+        for index, asset in enumerate(assets):
+            item = AssetListItem(asset, self)
+            item.row = index
             icon_path = self._get_asset_icon_path(asset)
             item.set_image_sequence(Path(icon_path).parent())
             item.icon_size = self.iconSize()
@@ -246,11 +175,12 @@ class AssetListView(QListView):
         """
         if asset.id in [a.id for a in self.assets]:
             return
-        item = AssetListItem(asset)
+        item = AssetListItem(asset, self)
         icon_path = self._get_asset_icon_path(asset)
         item.set_image_sequence(Path(icon_path).parent())
         item.icon_size = self.iconSize()
         source_model = self.model().sourceModel()
+        item.row = source_model.rowCount()
         source_model.insertRows(source_model.rowCount(), 1, [item])
 
     def _set_item_size(self, size):

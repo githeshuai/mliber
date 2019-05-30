@@ -189,6 +189,13 @@ class ImageSequence(QObject):
         """
         return True if self.duration() > 1 else False
 
+    def nextFrameFilename(self):
+        """
+        :return:
+        """
+        self.setCurrentFrame(self._frame + 1)
+        return self.currentFilename()
+
 
 class ImageSequenceWidget(QToolButton):
     DEFAULT_PLAYHEAD_COLOR = QColor(180, 180, 180, 200)

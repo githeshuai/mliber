@@ -46,12 +46,15 @@ class AssetDelegate(QStyledItemDelegate):
             self.paintBackground(painter, option, index)
             item = self._parent.item_at_index(index)
             if option.state & QStyle.State_MouseOver:
+                if not item.started:
+                    item.start()
+            else:
+                if item.started:
+                    item.pause()
+            if item.has_sequence():
                 img_item = QPixmap(item.current_filename)
             else:
-                if item.has_sequence():
-                    img_item = self._image_server.get_image(item.central_frame())
-                else:
-                    img_item = self._image_server.get_image(item.current_filename)
+                img_item = self._image_server.get_image(item.current_filename)
             image = img_item or self._default_img
             rect = self._draw_centralized_pic(painter, option, image)
             self._draw_text(painter, option, item.name)

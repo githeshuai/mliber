@@ -55,6 +55,8 @@ class AssetModel(QAbstractListModel):
                     self.model_data[row].has_description = data
                 if typ == "store":
                     self.model_data[row].stored_by_me = data
+                if typ == "started":
+                    self.model_data[row].started = data
                 try:
                     self.dataChanged.emit(index, index)
                 except:
