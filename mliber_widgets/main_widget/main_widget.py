@@ -248,6 +248,7 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         # 获取所有的assets, 显示在asset list view中
+        self.asset_widget.clear()
         if not self.library:
             self.tool_bar.library_button.setHidden(True)
             self.category_widget.clear()
@@ -261,7 +262,7 @@ class MainWidget(MainWidgetUI):
         self.category_widget.refresh_ui()
         # 求出所有资产
         assets = self._assets_of_library(self.library.id)
-        self.asset_widget.set_assets(assets)
+        # self.asset_widget.set_assets(assets)
         # 列出所有的tag
         tags = self._tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
