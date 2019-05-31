@@ -10,6 +10,15 @@ DATABASES = {
         "PASSWORD": "Digisky_2019",
     },
 
+    'liber': {
+        "TYPE": "mysql",
+        "ENGINE": "mysql",
+        'NAME': "liber",
+        "USER": "root",
+        "HOST": "192.168.2.203",
+        "PASSWORD": "Digisky_2019",
+    },
+
     'postgresql': {
         "TYPE": "postgresql",
         "ENGINE": "postgresql",
