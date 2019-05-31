@@ -125,10 +125,11 @@ class ImageCacheThreadsServer(QObject):
         """
         if not image_path:
             return
+        if image_path not in self._img_list:
+            self._img_list.append(image_path)
         image_index = self._img_list.index(image_path)
         cur_img_thread_index = image_index % self._thread_count
         self.thread_pool[cur_img_thread_index].update(image_path)
-        return self.thread_pool[cur_img_thread_index].get_cahce(image_path)
 
     def clear(self):
         """

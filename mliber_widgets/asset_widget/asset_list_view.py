@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 from datetime import datetime
-from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction
+from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QDialogButtonBox
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex, QItemSelectionModel
 from Qt.QtGui import QCursor, QIcon
 from asset_model import AssetModel, AssetProxyModel
@@ -19,6 +19,9 @@ from mliber_parse.element_type_parser import ElementType
 from mliber_parse.library_parser import Library
 from mliber_qt_components.delete_widget import DeleteWidget
 from mliber_qt_components.messagebox import MessageBox
+from mliber_libs.python_libs.sequence_converter import Converter
+from mliber_qt_components.screen_shot import ScreenShotWidget
+from mliber_libs.python_libs.temp import Temporary
 
 DEFAULT_ICON_SIZE = 128
 
@@ -391,7 +394,9 @@ class AssetListView(QListView):
         menu.addAction(store_action)
         if len(selected_assets) == 1:
             detail_action = QAction("Show Detail", self, triggered=self._show_detail)
+            replace_thumbnail_action = QAction("Replace Thumbnail", self, triggered=self._replace_thumbnail)
             menu.addAction(detail_action)
+            menu.addAction(replace_thumbnail_action)
         if user.asset_permission:
             add_tag_action = QAction(mliber_resource.icon("tag.png"), "Add Tag", self,
                                      triggered=self._show_add_tag_widget)
@@ -547,14 +552,49 @@ class AssetListView(QListView):
         if event.button() == Qt.LeftButton:
             self.left_pressed.emit(index)
 
-    def mouseMoveEvent(self, event):
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        index = self.indexAt(event.pos())
+        if not index.isValid():
+            return
+        drop_files = list()
+        for url in event.mimeData().urls():
+            file_ = str(url.toLocalFile())
+            drop_files.append(file_)
+        self._modify_thumbnail(index, drop_files)
+
+    def _modify_thumbnail(self, index, thumbnail_files):
         """
-        当鼠标移动的时候，如果有序列显示序列
+        更换缩略图
         :return:
         """
-        point = event.pos()
-        index = self.indexAt(point)
-        if index.row() < 0:
-            super(AssetListView, self).mouseMoveEvent(event)
-            return
-        super(AssetListView, self).mouseMoveEvent(event)
+        item = self.item_at_index(index)
+        thumbnail_pattern = self._get_asset_icon_path(item.asset)
+        Converter().convert(thumbnail_files, thumbnail_pattern)
+        current_file_name = thumbnail_pattern.replace("####", "0001")
+        mliber_global.image_server().update(current_file_name)
+
+    def _replace_thumbnail(self):
+        """
+        替换缩略图
+        :return:
+        """
+        selected_indexes = self._selected_indexes()
+        index = selected_indexes[0]
+        pixmap = ScreenShotWidget(self)._on_screenshot()
+        result = MessageBox.question(self, "Replace", "Do you really want to replace thumbnail?")
+        if result == QDialogButtonBox.Yes:
+            with Temporary(suffix=".png", mode="mktemp") as tmp:
+                pixmap.save(tmp)
+                self._modify_thumbnail(index, [tmp])
