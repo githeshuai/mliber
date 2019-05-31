@@ -4,7 +4,7 @@ import time
 from Qt.QtCore import Signal, QThread, Qt, QSize, QObject
 from Qt.QtGui import QImageReader, QIcon, QPixmap
 
-THREAD_COUNT = 50
+THREAD_COUNT = 10
 
 
 class ImageCacheThread(QThread):
