@@ -121,7 +121,8 @@ class LibraryListView(QListView):
         获取library 图标路径
         :return:
         """
-        icon_path = Path(mliber_global.public_dir()).join("library/%s.png" % library_name)
+        public_dir = mliber_global.public_dir()
+        icon_path = Path(public_dir).join("library/%s/%s.png" % (mliber_global.database(), library_name))
         return icon_path
 
     def _get_model_data(self):
