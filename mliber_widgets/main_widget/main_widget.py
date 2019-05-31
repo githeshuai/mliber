@@ -207,7 +207,7 @@ class MainWidget(MainWidgetUI):
         self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         # status bar info
-        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time() - start))
+        self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
 
     def _on_tag_selection_changed(self, tags):
         """
@@ -239,7 +239,7 @@ class MainWidget(MainWidgetUI):
                 library_assets = db.find("Asset", [["library_id", "=", self.library.id], ["status", "=", "Active"]])
         self.asset_widget.set_assets(library_assets)
         # status bar show info
-        self.status_bar.info("{} assets found  /  cast {}'s".format(len(library_assets), time.time() - start))
+        self.status_bar.info("{} assets found  /  cost {}'s".format(len(library_assets), time.time() - start))
 
     def _refresh_library(self):
         """
@@ -267,7 +267,7 @@ class MainWidget(MainWidgetUI):
         tags = self._tags_of_assets(assets)
         self.tag_widget.set_tags(tags)
         # status bar
-        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time()-start))
+        self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time()-start))
 
     def _show_library_on_toolbar(self):
         """
@@ -305,7 +305,7 @@ class MainWidget(MainWidgetUI):
             self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
         self.category_widget.category_tree.clearSelection()
-        self.status_bar.info("{} assets found  /  cast {}'s".format(len(assets), time.time() - start))
+        self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
 
     def _show_clear_trash_widget(self):
         """
