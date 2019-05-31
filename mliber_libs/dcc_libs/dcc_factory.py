@@ -20,6 +20,7 @@ class DccFactory(object):
             from _clarisse import Clarisse
             dcc_instance = Clarisse()
         else:
-            logging.warning("%s not supported" % self._engine)
+            if self._engine != "standalone":
+                logging.warning("%s not supported" % self._engine)
             return
         return dcc_instance
