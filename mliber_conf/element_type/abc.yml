@@ -27,3 +27,9 @@ houdini:
   import:
     - name: abc import
       hook: houdini_abc_import
+
+clarisse:
+  import:
+    - name: abc import
+      hook: clarisse_abc_import
+

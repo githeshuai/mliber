@@ -17,3 +17,9 @@ houdini:
   import:
     - name: houdini sky light
       hook: houdini_sky_light
+
+
+clarisse:
+  import:
+    - name: clarisse ibl light
+      hook: clarisse_ibl_light

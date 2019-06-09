@@ -4,7 +4,7 @@
 注意： 该路径一定要是所有人都有777的权限。
 """
 PUBLIC_PATH = {
-    "windows": "X:/Library/liber_repo",
+    "windows": "D:/mliber_repo",
     "linux": "/media/X/mliber_repo",
     "mac": ""
 }

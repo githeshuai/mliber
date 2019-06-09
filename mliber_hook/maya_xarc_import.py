@@ -9,4 +9,4 @@ class Hook(BaseHook):
         self.maya_object = MayaXgenProxy(self.path)
 
     def execute(self, *args, **kwargs):
-        return self.maya_object.import_in()
+        self.maya_object.import_in()

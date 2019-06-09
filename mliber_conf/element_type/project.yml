@@ -1,0 +1,11 @@
+ext: ".project"
+icon: "project.png"
+
+clarisse:
+  import:
+    - name: project import
+      hook: clarisse_project_import
+  export:
+    name: Export Context As Project
+    hook: clarisse_context_export
+    default: True

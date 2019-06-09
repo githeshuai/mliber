@@ -1,0 +1,13 @@
+check_selected: True
+show_frame_range: True
+
+types:
+  - project
+
+double_clicked:
+  clarisse:
+    type: project
+    hook: clarisse_project_import
+  standalone:
+    type: project
+    hook: open_in_explorer

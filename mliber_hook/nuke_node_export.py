@@ -9,3 +9,4 @@ class Hook(BaseHook):
 
     def execute(self, *args, **kwargs):
         export_selected(self.path)
+        return self.path

@@ -8,3 +8,9 @@ maya:
     name: obj export
     hook: maya_obj_export
     default: False
+
+
+clarisse:
+  import:
+    - name: obj import
+      hook: clarisse_obj_import

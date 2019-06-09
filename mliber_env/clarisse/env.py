@@ -7,8 +7,8 @@ def liber_dir():
 
 
 def main():
-    liber = liber_dir()
-    sys.path.append(liber)
+    mliber = liber_dir()
+    sys.path.append(mliber)
     from Qt import QtWidgets
     import pyqt_clarisse
     app = QtWidgets.QApplication.instance()

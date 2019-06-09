@@ -7,8 +7,10 @@ mliber_path = os.path.dirname(__file__)
 mliber_path = mliber_path.replace("\\", "/")
 site_packages = os.path.join(mliber_path, "mliber_site_packages")
 site_packages = site_packages.replace("\\", "/")
-sys.path.insert(0, mliber_path)
-sys.path.append(site_packages)
+if mliber_path not in sys.path:
+    sys.path.insert(0, mliber_path)
+if site_packages not in sys.path:
+    sys.path.append(site_packages)
 
 from mliber_libs.qt_libs.render_ui import render_ui
 from mliber_libs.dcc_libs.dcc import Dcc
