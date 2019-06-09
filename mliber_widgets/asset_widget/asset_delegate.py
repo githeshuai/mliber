@@ -72,7 +72,7 @@ class AssetDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         item = self._parent.item_at_index(index)
-        size = QSize(item.icon_size.width(), item.icon_size.height())
+        size = QSize(item.icon_size.width(), item.icon_size.height() + 40)
         return size
 
     def paint(self, painter, option, index):
@@ -134,7 +134,7 @@ class AssetDelegate(QStyledItemDelegate):
         :param img:
         :return:
         """
-        rect_margin = [0, 0, 0, -20]
+        rect_margin = [0, 20, 0, -20]
         img_rect = option.rect.adjusted(
             self._margin + rect_margin[0], self._margin + rect_margin[1],
             -self._margin + rect_margin[2], -self._margin + rect_margin[3])
