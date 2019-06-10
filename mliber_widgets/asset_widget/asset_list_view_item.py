@@ -60,6 +60,7 @@ class AssetListItem(object):
         :return:
         """
         self.current_filename = self.image_sequence.currentFilename()
+        self._parent.update()
 
     def central_frame(self):
         """

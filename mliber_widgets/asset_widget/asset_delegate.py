@@ -94,7 +94,7 @@ class AssetDelegate(QStyledItemDelegate):
             else:
                 q_image = self._image_server.get_image(item.current_filename)
             image = q_image or self._default_img
-            rect = self._draw_centralized_pic(painter, option, image)
+            self._draw_centralized_pic(painter, option, image)
             self._draw_text(painter, option, item.name)
             self._draw_stored_flag(painter, option, item)
             self._draw_description_flag(painter, option, item)
@@ -117,13 +117,11 @@ class AssetDelegate(QStyledItemDelegate):
         painter.setPen(QPen(Qt.NoPen))
         if is_selected:
             color = QColor(57, 255, 255)
-            painter.setBrush(QBrush(color))
         elif is_mouse_over:
             color = mliber_config.ICON_HOVER_COLOR
-            painter.setBrush(QBrush(color))
         else:
             color = QColor(57, 60, 70)
-            painter.setBrush(QBrush(color))
+        painter.setBrush(QBrush(color))
         painter.drawRect(option.rect)
 
     def _draw_centralized_pic(self, painter, option, img):
@@ -155,7 +153,6 @@ class AssetDelegate(QStyledItemDelegate):
             painter.drawPixmap(img_adjusted_rect, img)
         else:
             painter.drawImage(img_adjusted_rect, img)
-        self._img_cached_done()
         return img
 
     @staticmethod
