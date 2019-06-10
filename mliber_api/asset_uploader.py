@@ -108,8 +108,8 @@ class AssetUploader(AssetMaker):
                 for index, frame in enumerate(frames):
                     dst_file = dst_path.replace("####", str(frame).zfill(4))
                     src_file = source_files[index]
-                    if index >= len(source_files) - 1:  # dayu_path获取的是所有的帧数，如果只是序列的一部分，不判断会报错
-                        break
+                    # if index >= len(source_files) - 1:  # dayu_path获取的是所有的帧数，如果只是序列的一部分，不判断会报错
+                    #     break
                     Path(src_file).copy_to(dst_file)
             else:
                 for index, src_file in enumerate(source_files):
