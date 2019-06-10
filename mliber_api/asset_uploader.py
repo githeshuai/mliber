@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import os
+import pysnooper
 import logging
 from dayu_path import DayuPath
 from asset_maker import AssetMaker
@@ -81,6 +82,7 @@ class AssetUploader(AssetMaker):
                                                                  asset_name=asset_name, ext="."+ext)
         return element_relative_path
 
+    @pysnooper.snoop()
     def _copy_source_files(self, source_files, dst_path):
         """
         拷贝文件
@@ -98,11 +100,11 @@ class AssetUploader(AssetMaker):
             scan_list = list(scan_gen)
             frames = scan_list[0].frames
             missing = scan_list[0].missing
-            if frames:
+            if frames and len(frames) > 1:
                 self.start = frames[0]
                 self.end = frames[-1]
                 if missing:
-                    logging.warning("Has missing frames：%s" % ",".join(missing))
+                    logging.warning("Has missing frames")
                 for index, frame in enumerate(frames):
                     dst_file = dst_path.replace("####", str(frame).zfill(4))
                     src_file = source_files[index]
