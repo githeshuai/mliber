@@ -177,7 +177,7 @@ class AssetListView(QListView):
         item.row = source_model.rowCount()
         source_model.insertRows(source_model.rowCount(), 1, [item])
         # scroll
-        index = source_model.index(item.row, 0)
+        index = self.model().index(item.row, 0)
         self.selectionModel().select(index, QItemSelectionModel.Select)
         self.scrollTo(index, QAbstractItemView.PositionAtCenter)
 
