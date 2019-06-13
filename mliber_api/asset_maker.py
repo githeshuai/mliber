@@ -196,7 +196,8 @@ class AssetMaker(object):
             if not result:
                 return
             self.library, self.category, self.asset_info = result
-            if self.asset_info and not self.overwrite:  # 如果资产存在，并且不允许覆盖
+            # if asset exist and not overwrite
+            if self.asset_info and not self.overwrite:
                 logging.error("[MLIBER] error: Asset already exist.")
                 return
             # 转换缩略图
