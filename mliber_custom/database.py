@@ -1,21 +1,19 @@
 # -*- coding:utf-8 -*-
 
 DATABASES = {
-    'default': {
+
+    'sqlite': {
+        "TYPE": "sqlite",
+        "ENGINE": "sqlite",
+        "PATH": "D:/test.db"
+    },
+
+    'mysql': {
         "TYPE": "mysql",
         "ENGINE": "mysql",
         'NAME': "test",
         "USER": "root",
         "HOST": "192.168.202.128",
-        "PASSWORD": "Digisky_2019",
-    },
-
-    'liber': {
-        "TYPE": "mysql",
-        "ENGINE": "mysql",
-        'NAME': "liber",
-        "USER": "root",
-        "HOST": "192.168.2.203",
         "PASSWORD": "Digisky_2019",
     },
 
@@ -28,9 +26,4 @@ DATABASES = {
         "PASSWORD": "Digisky_2019",
     },
 
-    'sqlite': {
-        "TYPE": "sqlite",
-        "ENGINE": "sqlite",
-        "PATH": "D:/test.db"
-    },
 }

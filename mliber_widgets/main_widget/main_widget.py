@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import time
+import logging
 from Qt.QtWidgets import QMenu, QAction, QApplication, QInputDialog, QLineEdit
 from Qt.QtCore import Qt
 from main_widget_ui import MainWidgetUI
@@ -350,19 +351,22 @@ class MainWidget(MainWidgetUI):
         need_remember = mliber_utils.read_history("need_remember")
         auto_login = mliber_utils.read_history("auto_login")
         if need_remember and auto_login:
+            database = mliber_utils.read_history("database")
+            user_name = mliber_utils.read_history("user")
+            password = mliber_utils.read_history("password")
             try:
-                database = mliber_utils.read_history("database")
-                user_name = mliber_utils.read_history("user")
-                password = mliber_utils.read_history("password")
                 db = Database(database)
+            except:
+                db = None
+            if db:
                 app.set_value(mliber_database=database)
                 user = db.find_one("User", [["name", "=", user_name], ["status", "=", "Active"]])
                 if user and user.password == password:
                     app.set_value(mliber_user=user)
                     self._on_login_succeed(user_name)
                 return True
-            except RuntimeError as e:
-                MessageBox.critical(self, "Login Failed", str(e))
+            else:
+                logging.error("[M-Liber] error: Can not connect database: %s" % database)
                 return False
         return False
 

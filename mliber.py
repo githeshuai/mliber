@@ -15,6 +15,7 @@ if site_packages not in sys.path:
 from mliber_libs.qt_libs.render_ui import render_ui
 from mliber_libs.dcc_libs.dcc import Dcc
 from mliber_widgets.main_widget import MainWidget
+from mliber_qt_components.splash import splash
 
 
 PARENT_WINDOW = Dcc().parent_win()
@@ -23,10 +24,12 @@ PARENT_WINDOW = Dcc().parent_win()
 # ######################################################################################
 # ##################################### show standalone ################################
 # ######################################################################################
+@splash
 def show():
     with render_ui():
         mliber_widget = MainWidget(PARENT_WINDOW)
         mliber_widget.show()
+        return mliber_widget
 
 
 # ######################################################################################
