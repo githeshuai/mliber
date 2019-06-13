@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import mliber_global
 from mliber_qt_components.image_sequence_widget import ImageSequence
+from Qt.QtCore import QModelIndex
 
 
 class AssetListItem(object):
@@ -60,7 +61,7 @@ class AssetListItem(object):
         :return:
         """
         self.current_filename = self.image_sequence.currentFilename()
-        self._parent.update()
+        self._parent.repaint()
 
     def central_frame(self):
         """
