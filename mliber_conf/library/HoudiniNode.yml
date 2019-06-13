@@ -1,0 +1,13 @@
+check_selected: True
+show_frame_range: False
+
+types:
+  - hnode
+
+double_clicked:
+  standalone:
+    type: hnode
+    hook: open_in_explorer
+  houdini:
+    type: hnode
+    hook: houdini_node_import

@@ -14,4 +14,5 @@ ELEMENT_TYPE = ["abc",
                 "hip",
                 "project",
                 "resource",
+                "hnode"
                 ]

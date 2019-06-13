@@ -19,6 +19,6 @@ class Houdini(Dcc):
         selected_nodes = self.selected_objects()
         if selected_nodes:
             for node in selected_nodes:
-                node_names.append(node.name())
+                node_names.append(node.path())
         return node_names
 

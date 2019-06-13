@@ -1,0 +1,12 @@
+ext: ".hnode"
+icon: "houdini.png"
+houdini:
+  import:
+    - name: houdini node import
+      hook: houdini_node_import
+    - name: show node path
+      hook: houdini_node_path
+  export:
+    name: node export
+    hook: houdini_node_export
+    default: True
