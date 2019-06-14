@@ -41,6 +41,9 @@ class PressLabel(QLabel):
     def dropEvent(self, event):
         paths = list()
         for url in event.mimeData().urls():
-            path = str(url.toLocalFile())
+            try:
+                path = str(url.toLocalFile())
+            except Exception as e:
+                print str(e)
             paths.append(path)
         self.clicked.emit(paths)

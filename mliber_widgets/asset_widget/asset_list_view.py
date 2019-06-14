@@ -482,7 +482,6 @@ class AssetListView(QListView):
                 db.update("Asset", asset.id, {"status": "Disable",
                                               "updated_by": self.user.id,
                                               "updated_at": datetime.now()})
-                source_model.removeRows(row - index, 1)
                 elements = db.find("Element", [["asset_id", "=", asset.id], ["status", "=", "Active"]])
                 for element in elements:
                     db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
@@ -494,6 +493,9 @@ class AssetListView(QListView):
                 except WindowsError as e:
                     print str(e)
                     deleted = False
+        for index, row in enumerate(self._selected_rows()):
+            source_model.removeRows(row - index, 1)
+        self.repaint()
         if not deleted:
             MessageBox.warning(self, "Warning", "Storage files delete Failed，Please delete it manual.")
 

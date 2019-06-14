@@ -68,8 +68,11 @@ class FileListWidget(QListWidget):
         all_items_text = list()
         if self.count():
             for i in xrange(self.count()):
-                all_items_text.append(str(self.item(i).text()))
-                all_items_text = [item.replace("\\", "/") for item in all_items_text]
+                try:
+                    all_items_text.append(str(self.item(i).text()))
+                except Exception as e:
+                    print str(e)
+            all_items_text = [item.replace("\\", "/") for item in all_items_text]
         return all_items_text
 
     def append_file(self, file_path):
