@@ -318,7 +318,7 @@ class MainWidget(MainWidgetUI):
         delete_widget.accept_signal.connect(self._clear_trash)
         delete_widget.exec_()
 
-    def _clear_trash(self):
+    def _clear_trash(self, *args):
         with mliber_global.db() as db:
             disable_libraries = db.find("Library", [["status", "=", "Disable"]])
             for library in disable_libraries:
