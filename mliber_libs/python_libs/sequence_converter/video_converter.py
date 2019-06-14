@@ -19,7 +19,7 @@ class VideoConverter(object):
         """
         Path(self.dst).make_parent_dir()
         cmd = "ffmpeg -i \"{0}\" -vf scale=256:ih/iw*256 -y \"{1}\" -hide_banner".format(self.src, self.dst)
-        p = subprocess.Popen(cmd)
+        p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
 
