@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 # 缩略图的路径
-THUMBNAIL_PATH = "{asset_dir}/.thumbnail/{asset_name}.####.png"
+THUMBNAIL_PATH = "{asset_dir}/.thumbnail/{asset_name}.####.jpg"
 
 # element dir
 ELEMENT_DIR = "{asset_dir}/{element_type}"
