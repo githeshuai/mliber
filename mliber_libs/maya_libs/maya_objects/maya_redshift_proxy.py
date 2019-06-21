@@ -6,7 +6,6 @@ from mliber_libs.maya_libs.maya_utils import load_plugin, select_objects
 
 
 class MayaRedshiftProxy(MayaObject):
-    plugin = "redshift4maya.mll"
     
     def __init__(self, path):
         """
@@ -17,6 +16,7 @@ class MayaRedshiftProxy(MayaObject):
         Returns:
         """
         super(MayaRedshiftProxy, self).__init__(path)
+        self.plugin = "redshift4maya.mll"
 
     def get_rs_sequence_pattern(self, start, end):
         """
