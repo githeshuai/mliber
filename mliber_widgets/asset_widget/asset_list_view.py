@@ -388,7 +388,7 @@ class AssetListView(QListView):
         menu = QMenu(self)
         user = mliber_global.user()
         open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
-        store_action = QAction(mliber_resource.icon("store.png"), "As my Favorite", self,
+        store_action = QAction(mliber_resource.icon("store.png"), "Add to Favorites", self,
                                triggered=self._store_selected_assets)
         menu.addAction(open_action)
         menu.addAction(store_action)
