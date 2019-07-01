@@ -3,6 +3,7 @@ import os
 import subprocess
 from mliber_libs.python_libs.temp import Temporary
 from mliber_libs.os_libs.path import Path
+from mliber_custom.thumbnail_size import THUMBNAIL_SIZE
 
 
 class ImageConverter(object):
@@ -66,7 +67,8 @@ class ImageConverter(object):
         转换普通的贴图
         :return:
         """
-        cmd = "ffmpeg -i \"{0}\" -vf scale=256:ih/iw*256 -y \"{1}\"".format(self.src, self.dst)
+        cmd = "ffmpeg -i \"{input}\" -vf scale={thumbnail_size}:ih/iw*{thumbnail_size} -y \"{output}\"".\
+            format(input=self.src, thumbnail_size=THUMBNAIL_SIZE, output=self.dst)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
@@ -75,7 +77,8 @@ class ImageConverter(object):
         转换exr
         :return:
         """
-        cmd = "ffmpeg -apply_trc iec61966_2_1 -i \"{0}\" -vf scale=256:ih/iw*256 -y \"{1}\"".format(self.src, self.dst)
+        cmd = "ffmpeg -apply_trc iec61966_2_1 -i \"{input}\" -vf scale={thumbnail_size}:ih/iw*{thumbnail_size} -y \"{output}\"".\
+            format(input=self.src, thumbnail_size=THUMBNAIL_SIZE, output=self.dst)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 

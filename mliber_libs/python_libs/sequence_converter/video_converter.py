@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import subprocess
 from mliber_libs.os_libs.path import Path
+from mliber_custom.thumbnail_size import THUMBNAIL_SIZE
 
 
 class VideoConverter(object):
@@ -18,7 +19,8 @@ class VideoConverter(object):
         :return:
         """
         Path(self.dst).make_parent_dir()
-        cmd = "ffmpeg -i \"{0}\" -vf scale=256:ih/iw*256 -y \"{1}\" -hide_banner".format(self.src, self.dst)
+        cmd = "ffmpeg -i \"{input}\" -vf scale={thumbnail_size}:ih/iw*{thumbnail_size} -y \"{output}\" -hide_banner"\
+            .format(input=self.src, thumbnail_size=THUMBNAIL_SIZE, output=self.dst)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 

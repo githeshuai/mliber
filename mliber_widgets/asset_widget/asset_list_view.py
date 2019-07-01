@@ -22,12 +22,13 @@ from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.python_libs.sequence_converter import Converter
 from mliber_qt_components.screen_shot import ScreenShotWidget
 from mliber_libs.python_libs.temp import Temporary
+from mliber_custom.thumbnail_size import THUMBNAIL_SIZE
 
 DEFAULT_ICON_SIZE = 128
 
 
 class AssetListView(QListView):
-    MAX_ICON_SIZE = 256
+    MAX_ICON_SIZE = THUMBNAIL_SIZE
     MIN_ICON_SIZE = 128
     add_tag_signal = Signal(basestring)
     show_detail_signal = Signal(QModelIndex)
