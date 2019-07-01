@@ -33,7 +33,7 @@ class ElementType(object):
         获取配置文件路径
         :return:
         """
-        path = "element_type/%s.yml" % self._type
+        path = "element_types/%s.yml" % self._type
         return path
 
     def parse(self):
