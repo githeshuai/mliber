@@ -7,10 +7,13 @@ mliber_path = os.path.dirname(__file__)
 mliber_path = mliber_path.replace("\\", "/")
 site_packages = os.path.join(mliber_path, "mliber_site_packages")
 site_packages = site_packages.replace("\\", "/")
+qt_path = "C:/Python27/Lib/site-packages"
 if mliber_path not in sys.path:
     sys.path.insert(0, mliber_path)
 if site_packages not in sys.path:
     sys.path.append(site_packages)
+if qt_path not in sys.path:
+    sys.path.append(qt_path)
 
 from mliber_libs.qt_libs.render_ui import render_ui
 from mliber_libs.dcc_libs.dcc import Dcc
@@ -69,8 +72,21 @@ def maya_start_up():
 # ######################################################################################
 # ##################################### show in houdini ################################
 # ######################################################################################
+@splash
 def show_in_houdini():
     show()
+
+
+# ######################################################################################
+# ##################################### show in unreal #################################
+# ######################################################################################
+@splash
+def show_in_unreal():
+    from mliber_libs.unreal_libs import init_qt_app
+    init_qt_app.init_qt_app()
+    mliber_widget = MainWidget()
+    mliber_widget.show()
+    return mliber_widget
 
 
 if __name__ == "__main__":

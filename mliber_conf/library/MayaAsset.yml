@@ -23,3 +23,6 @@ double_clicked:
   houdini:
     type: abc
     hook: houdini_abc_import
+  unreal:
+    type: fbx
+    hook: unreal_fbx_import

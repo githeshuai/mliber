@@ -1,0 +1,17 @@
+check_selected: True
+show_frame_range: False
+
+
+types:
+  - fbx
+
+double_clicked:
+  maya:
+    type: fbx
+    hook: maya_fbx_import
+  standalone:
+    type: fbx
+    hook: open_in_explorer
+  unreal:
+    type: fbx
+    hook: unreal_fbx_import

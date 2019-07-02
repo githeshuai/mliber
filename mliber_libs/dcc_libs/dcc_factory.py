@@ -19,6 +19,9 @@ class DccFactory(object):
         elif self._engine == "clarisse":
             from _clarisse import Clarisse
             dcc_instance = Clarisse()
+        elif self._engine == "unreal":
+            from _unreal import Unreal
+            dcc_instance = Unreal()
         else:
             if self._engine != "standalone":
                 logging.warning("%s not supported" % self._engine)

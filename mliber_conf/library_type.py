@@ -5,4 +5,5 @@ LIBRARY_TYPE = ["MayaAsset",
                 "HDR",
                 "HoudiniNode",
                 "ClarisseAsset",
+                "UnrealAsset",
                 "Resource"]

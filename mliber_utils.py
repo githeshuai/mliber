@@ -112,6 +112,8 @@ def get_engine():
         app_name = "maya"
     elif "clarisse" in app_name:
         app_name = "clarisse"
+    elif "UE4" in app_name:
+        app_name = "unreal"
     else:
         app_name = "standalone"
     return app_name

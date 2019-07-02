@@ -8,3 +8,13 @@ maya:
     name: fbx export
     hook: maya_fbx_export
     default: False
+
+
+unreal:
+  import:
+    - name: fbx import
+      hook: unreal_fbx_import
+  export:
+    name: fbx export
+    hook: unreal_fbx_export
+    default: True

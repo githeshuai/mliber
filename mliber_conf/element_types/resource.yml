@@ -10,3 +10,9 @@ nuke:
   import:
     - name: import texture
       hook: nuke_texture_import
+
+
+unreal:
+  import:
+    - name: import texutre
+      hook: unreal_texture_import

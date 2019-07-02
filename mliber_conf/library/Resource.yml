@@ -14,3 +14,6 @@ double_clicked:
   nuke:
     type: resource
     hook: nuke_texture_import
+  unreal:
+    type: resource
+    hook: unreal_texture_import

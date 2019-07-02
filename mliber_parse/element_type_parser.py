@@ -74,9 +74,9 @@ class ElementType(object):
         """
         engine_actions = self.actions_of_engine(engine)
         if engine_actions:
-            export_action_list = engine_actions.get("import", [])
-            if export_action_list:
-                actions = [Action(action) for action in export_action_list]
+            import_action_list = engine_actions.get("import", [])
+            if import_action_list:
+                actions = [Action(action) for action in import_action_list]
                 return actions
         return []
 
@@ -104,5 +104,5 @@ class ElementType(object):
 
 
 if __name__ == "__main__":
-    p = ElementType("ma").actions_of_engine("maya")
+    p = ElementType("fbx").actions_of_engine("unreal")
     print p
