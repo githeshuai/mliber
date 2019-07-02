@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QDialog, QGridLayout, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QPushButton
+import mliber_resource
 
 
 class UnrealImportOptionsWidget(QDialog):
@@ -38,6 +39,7 @@ class UnrealImportOptionsWidget(QDialog):
         main_layout.setSpacing(15)
         # set signals
         self._set_signals()
+        self._set_style()
 
     def _set_signals(self):
         """
@@ -47,6 +49,13 @@ class UnrealImportOptionsWidget(QDialog):
         self.import_btn.clicked.connect(self._on_import_btn_clicked)
         self.cancel_btn.clicked.connect(self._on_cancel_btn_clicked)
         self.accepted.connect(self._set_attr)
+
+    def _set_style(self):
+        """
+        set stylesheet
+        :return:
+        """
+        self.setStyleSheet(mliber_resource.style())
 
     def _import_materials(self):
         """

@@ -536,7 +536,11 @@ QTabBar::tab:hover
 */
 QToolTip
 {
-    color: #ffffff; background-color: BACKGROUND_COLOR; border: 1px solid MENU_COLOR;
+    color: #ffffff;
+    background-color: #2A2A2A;
+    border: 2px solid #FF6347;
+    border-radius: 0px;
+    padding: 4px 4px 4px 4px;
 }
 
 
