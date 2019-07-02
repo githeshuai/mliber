@@ -29,7 +29,7 @@ class CategoryTreeItem(QTreeWidgetItem):
         library = mliber_global.library()
         path = category.path.format(root=library.root_path())
         html = "<p><font size=3 color=#8a8a8a>id:</font><font color=#fff> %s</font></p>" \
-               "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" % (id, path)
+               "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" % (self.category.id, path)
         self.setToolTip(0, html)
 
 
