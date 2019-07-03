@@ -21,7 +21,11 @@ class LibraryManageModel(QAbstractListModel):
         if role == Qt.UserRole:
             return item
         if role == Qt.ToolTipRole:
-            return "windows: {}\nlinux: {}\nmac: {}".format(library.windows_path, library.linux_path, library.mac_path)
+            html = "<p><font size=3 color=#8a8a8a>windows:</font><font color=#fff> %s</font></p>" \
+                   "<p><font size=3 color=#8a8a8a>linux:</font><font color=#fff> %s</font></p>" \
+                    "<p><font size=3 color=#8a8a8a>mac:</font><font color=#fff> %s</font></p>" \
+                    % (library.windows_path, library.linux_path, library.mac_path)
+            return html
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
