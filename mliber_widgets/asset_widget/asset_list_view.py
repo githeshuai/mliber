@@ -22,7 +22,7 @@ from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.python_libs.sequence_converter import Converter
 from mliber_qt_components.screen_shot import ScreenShotWidget
 from mliber_libs.python_libs.temp import Temporary
-from mliber_custom.thumbnail_size import THUMBNAIL_SIZE
+from mliber_custom import THUMBNAIL_SIZE
 
 DEFAULT_ICON_SIZE = 128
 

@@ -467,8 +467,7 @@ class MainWidget(MainWidgetUI):
         asset_proxy_model = self.asset_widget.asset_list_view.model()
         src_index = asset_proxy_model.mapToSource(self._left_pressed_index)
         asset_source_model = asset_proxy_model.sourceModel()
-        has_description = True if description else False
-        asset_source_model.setData(src_index, ["description", has_description])
+        asset_source_model.setData(src_index, ["description", description])
 
     def _pre_add_right(self):
         """

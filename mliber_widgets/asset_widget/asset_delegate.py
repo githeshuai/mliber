@@ -5,6 +5,7 @@ from Qt.QtCore import QSize, Qt, QModelIndex, QRect
 import mliber_global
 import mliber_resource
 from mliber_conf import mliber_config
+from mliber_custom import PAINT_DESCRIPTION, DESCRIPTION_COLOR, DESCRIPTION_FONT_SIZE
 
 
 PADDING = 2
@@ -46,7 +47,7 @@ class AssetDelegate(QStyledItemDelegate):
         :param item:
         :return:
         """
-        if item.has_description:
+        if item.description:
             return self._description_img
         return self._no_description_img
 
@@ -94,11 +95,13 @@ class AssetDelegate(QStyledItemDelegate):
             else:
                 q_image = self._image_server.get_image(item.current_filename)
             image = q_image or self._default_img
-            self._draw_centralized_pic(painter, option, image)
+            image_rect = self._draw_centralized_pic(painter, option, image)
             self._draw_text(painter, option, item.name)
             self._draw_stored_flag(painter, option, item)
             self._draw_description_flag(painter, option, item)
             self._draw_tag_flag(painter, option, item)
+            if PAINT_DESCRIPTION:
+                self._draw_description(painter, image_rect, item)
         finally:
             painter.restore()
 
@@ -153,7 +156,7 @@ class AssetDelegate(QStyledItemDelegate):
             painter.drawPixmap(img_adjusted_rect, img)
         else:
             painter.drawImage(img_adjusted_rect, img)
-        return img
+        return img_adjusted_rect
 
     @staticmethod
     def _draw_text(painter, option, text):
@@ -255,5 +258,13 @@ class AssetDelegate(QStyledItemDelegate):
         rect = QRect(x, y, 14, 14)
         painter.drawPixmap(rect, image)
 
-
-
+    def _draw_description(self, painter, rect, item):
+        """
+        将资产描述打印在图片上
+        :return:
+        """
+        font = QFont("Arial", DESCRIPTION_FONT_SIZE, QFont.Bold)
+        painter.setFont(font)
+        painter.setPen(QColor(*DESCRIPTION_COLOR))
+        flags = Qt.AlignBottom | Qt.AlignHCenter | Qt.TextWordWrap
+        painter.drawText(rect, flags, item.description)

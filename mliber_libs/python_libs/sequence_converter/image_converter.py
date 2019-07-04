@@ -3,7 +3,7 @@ import os
 import subprocess
 from mliber_libs.python_libs.temp import Temporary
 from mliber_libs.os_libs.path import Path
-from mliber_custom.thumbnail_size import THUMBNAIL_SIZE
+from mliber_custom import THUMBNAIL_SIZE
 
 
 class ImageConverter(object):

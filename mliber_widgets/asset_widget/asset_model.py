@@ -18,20 +18,10 @@ class AssetModel(QAbstractListModel):
         if role == Qt.UserRole:
             return item
         if role == Qt.ToolTipRole:
-            name = item.name
-            description = item.description
-            elements = item.elements
-            element_types = ", ".join([element.type for element in elements])
-            tags = item.tags
-            tag_names = ", ".join([tag.name for tag in tags])
-            path = item.path
-            html = "<p><font size=4 color=#fff><b>%s</b></font></p>" \
-                   "<p><font size=3 color=#8a8a8a>elements:</font><font color=#fff> %s</font></p>" \
-                   "<p><font size=3 color=#8a8a8a>    tags:</font><font color=#fff> %s</font></p>" \
-                   "<p><font size=3 color=#8a8a8a>description:</font><font color=#fff> %s</font></p>" \
-                   "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" \
-                   % (name, element_types, tag_names, description, path)
-            return html
+            try:
+                return self._build_html_for_tooltip(item)
+            except:
+                pass
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -67,7 +57,7 @@ class AssetModel(QAbstractListModel):
                 if typ == "tag":
                     self.model_data[row].has_tag = data
                 if typ == "description":
-                    self.model_data[row].has_description = data
+                    self.model_data[row].description = data
                 if typ == "store":
                     self.model_data[row].stored_by_me = data
                 if typ == "started":
@@ -81,6 +71,28 @@ class AssetModel(QAbstractListModel):
     def remove_all(self):
         for i in xrange(self.rowCount()):
             self.removeRows(0, 1)
+
+    @staticmethod
+    def _build_html_for_tooltip(item):
+        """
+        创建html for tooltip
+        :param item: <AssetItem>
+        :return:
+        """
+        name = item.name
+        description = item.description
+        elements = item.elements
+        element_types = ", ".join([element.type for element in elements])
+        tags = item.tags
+        tag_names = ", ".join([tag.name for tag in tags])
+        path = item.path
+        html = "<p><font size=4 color=#fff><b>%s</b></font></p>" \
+               "<p><font size=3 color=#8a8a8a>elements:</font><font color=#fff> %s</font></p>" \
+               "<p><font size=3 color=#8a8a8a>    tags:</font><font color=#fff> %s</font></p>" \
+               "<p><font size=3 color=#8a8a8a>description:</font><font color=#fff> %s</font></p>" \
+               "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" \
+               % (name, element_types, tag_names, description, path)
+        return html
 
 
 class AssetProxyModel(QSortFilterProxyModel):
