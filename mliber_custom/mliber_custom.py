@@ -60,4 +60,3 @@ THUMBNAIL_SIZE = 256
 PAINT_DESCRIPTION = True                # 是否将描述打印在资产图片上
 DESCRIPTION_COLOR = [255, 255, 0]       # 打印描述的颜色
 DESCRIPTION_FONT_SIZE = 10              # 打印描述的字体大小
-
