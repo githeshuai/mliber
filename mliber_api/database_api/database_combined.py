@@ -57,7 +57,10 @@ class DatabaseCombined(object):
         :return:
         """
         db = self.db
-        categories = db.find("Category", [["parent_id", "=", parent_id]])
+        if parent_id is None:
+            categories = db.find("Category", [["parent_id", "is", parent_id]])
+        else:
+            categories = db.find("Category", [["parent_id", "=", parent_id]])
         category_names = [category.name for category in categories]
         if name in category_names:
             category = db.find_one("Category", [["name", "=", name]])
@@ -122,4 +125,6 @@ class DatabaseCombined(object):
 
 
 if __name__ == "__main__":
-    print DatabaseCombined("default").db
+    db = DatabaseCombined("sqlite")
+    # parent_id, relative_path, library_id, created_by
+    db.create_category("test", None, "{root}/test", 2, 1)
