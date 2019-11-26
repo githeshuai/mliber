@@ -122,7 +122,7 @@ class LibraryListView(QListView):
         :return:
         """
         public_dir = mliber_global.public_dir()
-        icon_path = Path(public_dir).join("library/%s/%s.png" % (mliber_global.database(), library_name))
+        icon_path = Path(public_dir).join("library/%s/%s.jpg" % (mliber_global.database(), library_name))
         return icon_path
 
     def _get_model_data(self):

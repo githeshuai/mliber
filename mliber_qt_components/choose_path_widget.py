@@ -5,8 +5,11 @@ from Qt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QPushButton, Q
 class ChoosePathWidget(QWidget):
     def __init__(self, parent=None):
         super(ChoosePathWidget, self).__init__(parent)
+
+        self._filter = "*.png"
+
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0 ,0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.label = QLabel(self)
         self.label.setMinimumWidth(30)
         self.label.setScaledContents(True)
@@ -18,6 +21,14 @@ class ChoosePathWidget(QWidget):
         layout.addWidget(self.btn)
         # set signals
         self._set_signals()
+
+    def set_filter(self, filter_str):
+        """
+        set choose path filter
+        :param filter_str:
+        :return:
+        """
+        self._filter = filter_str
 
     def set_label_text(self, text):
         """
@@ -64,13 +75,12 @@ class ChoosePathWidget(QWidget):
         """
         self.btn.clicked.connect(self.choose_path)
 
-    def choose_path(self, filter_="*.png"):
+    def choose_path(self):
         """
         选择路径
-        :param filter_: <str>
         :return:
         """
-        path, ext = QFileDialog.getOpenFileName(self, "image", filter="Files (%s)" % filter_)
+        path, ext = QFileDialog.getOpenFileName(self, "image", filter="Files (%s)" % self._filter)
         if path:
             self.le.setText(path)
 

@@ -53,7 +53,7 @@ HOOK_DIR = []
 
 
 # 缩略图的最大尺寸
-THUMBNAIL_SIZE = 256
+THUMBNAIL_SIZE = 1024
 
 
 # 是否将描述打印在资产上

@@ -43,6 +43,7 @@ class CreateLibraryDialog(QDialog):
         # path widget
         self.path_widget = PathWidget(self)
         self.choose_path_widget = ChoosePathWidget(self)
+        self.choose_path_widget.set_filter("Images (*.png *.jpg)")
         self.choose_path_widget.set_label_text(u"icon")
         # description
         description_layout = QHBoxLayout()
