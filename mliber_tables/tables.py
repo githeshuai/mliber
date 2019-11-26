@@ -189,6 +189,33 @@ class AssetTagLink(Base):
     tag_id = Column(Integer, ForeignKey("tag.id"))
 
 
+class Favorite(Base):
+    """
+    收藏夹
+    """
+    __tablename__ = "favorite"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(300), nullable=False)
+    parent_id = Column(Integer)
+    created_at = Column(DateTime, default=this_moment())
+    updated_at = Column(DateTime)
+    description = Column(Text)
+    status = Column(Enum("Active", "Disable"), default="Active")
+    user_id = Column(Integer, ForeignKey("user.id"))
+    # assets
+    assets = relationship("Asset", backref="favorite", secondary="asset_favorite_link")
+
+
+class AssetFavoriteLink(Base):
+    """
+    资产与收藏夹的链接关系表
+    """
+    __tablename__ = "asset_favorite_link"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    asset_id = Column(Integer, ForeignKey("asset.id"))
+    favorite_id = Column(Integer, ForeignKey("favorite.id"))
+
+
 class Store(Base):
     """
     个人收藏链接

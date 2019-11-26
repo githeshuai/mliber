@@ -2,6 +2,7 @@ import logging
 import imp
 import sys
 import os
+import pkgutil
 import mliber_custom
 from Qt.QtCore import QSettings
 from mliber_libs.os_libs.path import Path
@@ -97,27 +98,29 @@ def load_hook(name):
 
 
 def get_engine():
-    """
-    get engine
-    :return:
-    """
-    app = sys.executable
-    app_basename = os.path.basename(app)
-    app_name = os.path.splitext(app_basename)[0]
-    if "Nuke" in app_name:
-        app_name = "nuke"
-    elif "houdini" in app_name:
-        app_name = "houdini"
-    elif "maya" in app_name:
-        app_name = "maya"
-    elif "clarisse" in app_name:
-        app_name = "clarisse"
-    elif "UE4" in app_name:
-        app_name = "unreal"
-    else:
-        app_name = "standalone"
-    return app_name
+    try:
+        if pkgutil.find_loader("maya"):
+            engine = "maya"
+        elif pkgutil.find_loader("nuke"):
+            engine = "nuke"
+        elif pkgutil.find_loader("hou"):
+            engine = "houdini"
+        elif pkgutil.find_loader("hiero"):
+            engine = "nukestudio"
+        elif pkgutil.find_loader("ix"):
+            engine = "clarisse"
+        elif pkgutil.find_loader("PyUtilModule.KatanaFile"):
+            # because pkgutil.find_loader("Katana") is None
+            engine = "katana"
+        elif pkgutil.find_loader("unreal"):
+            engine = "unreal"
+        else:
+            engine = "standalone"
+    except:
+        engine = "standalone"
+    return engine
 
 
 if __name__ == "__main__":
     print load_hook("maya_ma_export")
+    print get_engine()

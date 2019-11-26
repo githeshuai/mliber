@@ -2,7 +2,7 @@
 from contextlib import contextmanager
 from sqlalchemy.sql import and_, or_  # do not delete
 from mliber_libs.sql_libs.database_factory import DataBaseFactory
-from mliber_tables.tables import User, Library, Category, Asset, Tag, Element
+from mliber_tables.tables import User, Library, Category, Asset, Tag, Element, Favorite
 
 
 ENTITY_MAPPING = {"User": User,
@@ -10,7 +10,8 @@ ENTITY_MAPPING = {"User": User,
                   "Category": Category,
                   "Asset": Asset,
                   "Tag": Tag,
-                  "Element": Element}
+                  "Element": Element,
+                  "Favorite": Favorite}
 
 RELATION_MAPPING = {"is": "is_",
                     "is_not": "isnot",
@@ -199,4 +200,4 @@ if __name__ == "__main__":
     # db.create("Library", {"name": "nukeasset1", "type": "NukeAsset", "windows_path": "D:/NukeAsset1"})
     assets = db.find("Asset", [["library_id", "=", 1]])
     for asset in assets:
-        print asset.name
+        print asset.library_id
