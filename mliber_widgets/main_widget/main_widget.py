@@ -10,6 +10,7 @@ from mliber_widgets.library_manage import LibraryManage
 from mliber_widgets.apply_widget import ApplyWidget
 from mliber_widgets.lazy_widget import LazyWidget
 from mliber_widgets.password_widget import PasswordWidget
+from mliber_widgets.favorite_widget import FavoriteWidget
 import mliber_utils
 import mliber_global
 import mliber_resource
@@ -293,20 +294,22 @@ class MainWidget(MainWidgetUI):
         显示我的收藏
         :return: 
         """
-        start = time.time()
-        filters = [["library_id", "=", self.library.id]]
-        with mliber_global.db() as db:
-            library_assets = db.find("Asset", filters)
-            assets = list()
-            for asset in library_assets:
-                users = asset.master
-                for user in users:
-                    if user.id == self.user.id:
-                        assets.append(asset)
-            self.asset_widget.set_assets(assets)
-        self.tag_widget.deselect_all()
-        self.category_widget.category_tree.clearSelection()
-        self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
+        # start = time.time()
+        # filters = [["user_id", "=", self.user.id]]
+        # with mliber_global.db() as db:
+        #     library_assets = db.find("Favorite", filters)
+        #     assets = list()
+        #     for asset in library_assets:
+        #         users = asset.master
+        #         for user in users:
+        #             if user.id == self.user.id:
+        #                 assets.append(asset)
+        #     self.asset_widget.set_assets(assets)
+        # self.tag_widget.deselect_all()
+        # self.category_widget.category_tree.clearSelection()
+        # self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
+        favorite_widget = FavoriteWidget(self)
+        self._add_right_side_widget(favorite_widget)
 
     def _show_clear_trash_widget(self):
         """
@@ -319,27 +322,42 @@ class MainWidget(MainWidgetUI):
         delete_widget.exec_()
 
     def _clear_trash(self, *args):
+        """
+        清空数据库的无用信息
+        :param args:
+        :return:
+        """
         with mliber_global.db() as db:
+            # delete library
             disable_libraries = db.find("Library", [["status", "=", "Disable"]])
             for library in disable_libraries:
                 db.delete(library)
+            # delete category
             disable_categories = db.find("Category", [["status", "=", "Disable"],
                                                       ["library_id", "is", None]],
                                          "any")
             for category in disable_categories:
                 db.delete(category)
+            # delete tag
             disable_tags = db.find("Tag", [["status", "=", "Disable"]])
             for tag in disable_tags:
                 db.delete(tag)
+            # delete assets
             disable_assets = db.find("Asset", [["status", "=", "Disable"],
                                                ["library_id", "is", None],
                                                ["category_id", "is", None]],
                                      "any")
             for asset in disable_assets:
                 db.delete(asset)
+            # delete elements
             disable_elements = db.find("Element", [["status", "=", "Disable"], ["asset_id", "is", None]], "any")
             for element in disable_elements:
                 db.delete(element)
+            # delete favorites
+            favorites = db.find("Favorite", [["status", "=", "Disable"]])
+            for favorite in favorites:
+                db.delete(favorite)
+
         MessageBox.information(self, "Information", "Delete Done.")
 
     def _auto_login(self):

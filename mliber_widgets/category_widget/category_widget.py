@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QAction, QMenu
 from Qt.QtCore import Qt
-from category_tree import CategoryTree
+from mliber_widgets.category_widget.category_tree import CategoryTree
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.toolbutton import ToolButton
 from mliber_qt_components.indicator_button import IndicatorButton
