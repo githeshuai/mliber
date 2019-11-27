@@ -26,6 +26,7 @@ class MainWidget(MainWidgetUI):
         self._is_maximum = False
         self._drag_position = None
         self._left_pressed_index = None
+        self._favorite_is_shown = False
         self.setObjectName("MLIBER")
         # 无边框设置
         self.setMouseTracking(True)
@@ -310,6 +311,7 @@ class MainWidget(MainWidgetUI):
         # self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
         favorite_widget = FavoriteWidget(self)
         self._add_right_side_widget(favorite_widget)
+        self._favorite_is_shown = True
 
     def _show_clear_trash_widget(self):
         """
@@ -457,8 +459,9 @@ class MainWidget(MainWidgetUI):
         :param index: QModelIndex
         :return:
         """
-        if self._is_right_shown():
-            self._show_apply(index)
+        if not self._favorite_is_shown:
+            if self._is_right_shown():
+                self._show_apply(index)
         
     def _show_apply(self, index):
         """
@@ -511,6 +514,7 @@ class MainWidget(MainWidgetUI):
             for i in xrange(count):
                 self.right_stack.takeAt(0)
             self.right_stack.addWidget(widget)
+        self._favorite_is_shown = False
 
     def _show_window_menu(self):
         """

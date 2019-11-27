@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from Qt.QtWidgets import QListView, QAbstractItemView, QApplication, QMenu, QAction, QDialogButtonBox
 from Qt.QtCore import QSize, Signal, Qt, QModelIndex, QItemSelectionModel
-from Qt.QtGui import QCursor, QIcon
+from Qt.QtGui import QCursor, QIcon, QDrag, QPixmap
 from asset_model import AssetModel, AssetProxyModel
 from asset_delegate import AssetDelegate
 from create_tag_widget import CreateTagWidget
@@ -48,6 +48,11 @@ class AssetListView(QListView):
         self.setFocusPolicy(Qt.NoFocus)
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
+        self.setFlow(QListView.LeftToRight)
+        self.setMovement(QListView.Snap)
+        self.setDragEnabled(True)
+        self.setAcceptDrops(False)
+        self.setDragDropMode(QListView.DragOnly)
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -71,6 +76,21 @@ class AssetListView(QListView):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._show_context_menu)
         self.doubleClicked.connect(self._on_item_double_clicked)
+
+    def startDrag(self, supportedActions):
+        """
+        :param supportedActions:
+        :return:
+        """
+        indexes = self._selected_indexes()
+        if len(indexes) > 0:
+            data = self.model().sourceModel().mimeData(indexes)
+            if not data:
+                return
+        drag = QDrag(self)
+        drag.setPixmap(QPixmap())
+        drag.setMimeData(data)
+        drag.exec_(supportedActions, Qt.MoveAction)
 
     def _on_item_double_clicked(self, index):
         """

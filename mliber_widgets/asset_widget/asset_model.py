@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
-from Qt.QtCore import QModelIndex, Qt, QSortFilterProxyModel, QAbstractListModel, QRegExp
+from Qt.QtCore import QModelIndex, Qt, QSortFilterProxyModel, QAbstractListModel, QRegExp, QByteArray, \
+    QDataStream, QIODevice, QMimeData
+from mliber_site_packages import yaml
 
 
 class AssetModel(QAbstractListModel):
@@ -24,7 +26,8 @@ class AssetModel(QAbstractListModel):
                 pass
 
     def flags(self, index):
-        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        if index.isValid():
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled
 
     def insertRows(self, position, count, value, parent=QModelIndex()):
         self.beginInsertRows(parent, position, position+count-1)
@@ -93,6 +96,45 @@ class AssetModel(QAbstractListModel):
                "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" \
                % (name, element_types, tag_names, description, path)
         return html
+
+    def mimeTypes(self):
+        types = ['application/x-pynode-item-instance']
+        return types
+
+    def mimeData(self, indexes):
+        """
+        Encode serialized data from the item at the given index into a QMimeData object.
+        """
+        data = ''
+        items = list()
+        for index in indexes:
+            item = self.item_from_index(index)
+            items.append([item.asset.id, item.asset.name])
+        try:
+            data += yaml.dump_all(items)  # 如果是字符串不用cPickle
+        except Exception as e:
+            print "Error: %s" % str(e)
+        encoded_data = QByteArray()
+        stream = QDataStream(encoded_data, QIODevice.WriteOnly)
+        stream << data
+        mime_data = QMimeData()
+        mime_data.setData('application/x-pynode-item-instance', encoded_data)
+        return mime_data
+
+    def item_from_index(self, index):
+        """
+        get item from index
+        :param index:
+        :return:
+        """
+        row = index.row()
+        return self.model_data[row]
+
+    def supportedDropActions(self):
+        """
+        :return:
+        """
+        return Qt.MoveAction | Qt.CopyAction
 
 
 class AssetProxyModel(QSortFilterProxyModel):

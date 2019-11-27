@@ -122,6 +122,10 @@ class Asset(Base):
     def __str__(self):
         return self.name.encode("utf-8")
 
+    def __reduce__(self):
+        'Return state information for pickling'
+        return self.__class__, (self.id, str(self.name))
+
 
 class Tag(Base):
     """

@@ -8,14 +8,16 @@
 
 # Import built-in modules
 from datetime import datetime
+from itertools import tee
 # Import third-party modules
 from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem, QFrame, QAbstractItemView, QInputDialog, QDialog, \
     QFormLayout, QLineEdit, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QMenu, QAction
 from Qt.QtGui import QCursor
-from Qt.QtCore import Signal, Qt
+from Qt.QtCore import Signal, Qt, QDataStream, QIODevice
 # Import local modules
 import mliber_global
 import mliber_resource
+from mliber_site_packages import yaml
 
 
 class CreateFavoriteWidget(QDialog):
@@ -95,6 +97,8 @@ class FavoriteTree(QTreeWidget):
         self.setSelectionMode(self.ExtendedSelection)
         self.setFocusPolicy(Qt.NoFocus)
         self.setHeaderHidden(True)
+        self.setDropIndicatorShown(True)
+        self.setAcceptDrops(True)
         self.setFrameShape(QFrame.NoFrame)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
@@ -284,3 +288,31 @@ class FavoriteTree(QTreeWidget):
         selected_favorites = self.selected_favorites()
         favorites = self._get_children_favorites(selected_favorites)
         self.selection_changed.emit(favorites)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat('application/x-pynode-item-instance'):
+            event.setDropAction(Qt.MoveAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasFormat('application/x-pynode-item-instance'):
+            event.setDropAction(Qt.MoveAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasFormat('application/x-pynode-item-instance'):
+            event.setDropAction(Qt.MoveAction)
+            data = event.mimeData().data('application/x-pynode-item-instance')
+            stream = QDataStream(data, QIODevice.ReadOnly)
+            text = stream.readQString()
+            items = yaml.load_all(str(text))
+            for item in items:
+                print item
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()

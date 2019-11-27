@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import yaml
+from mliber_site_packages import yaml
 
 
 class YamlParser(object):
