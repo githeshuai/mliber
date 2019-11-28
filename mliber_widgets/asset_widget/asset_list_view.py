@@ -318,25 +318,6 @@ class AssetListView(QListView):
         create_tag_dialog.exec_()
 
     @staticmethod
-    def _store_asset(user, asset_id):
-        """
-        收藏asset
-        :param user: <int>
-        :param asset_id: <int>
-        :return:
-        """
-        with mliber_global.db() as db:
-            user = db.find_one("User", [["id", "=", user.id]])
-            assets = user.assets
-            asset_ids = [asset.id for asset in assets]
-            if asset_id in asset_ids:
-                return
-            asset_ids.append(asset_id)
-            db = db
-            assets = db.find("Asset", [["id", "in", asset_ids]])
-            db.update("User", user.id, {"assets": assets})
-
-    @staticmethod
     def _remove_asset_from_user(user, asset_id):
         """
         讲资产从我的收藏中移出
@@ -360,14 +341,8 @@ class AssetListView(QListView):
         :return:
         """
         item = self.item_at_index(index)
-        user = self.user
-        asset = item.asset
         if not item.stored_by_me:
-            self._store_asset(user, asset.id)
             self.model().sourceModel().setData(index, ["store", True], Qt.UserRole)
-        else:
-            self._remove_asset_from_user(user, asset.id)
-            self.model().sourceModel().setData(index, ["store", False], Qt.UserRole)
 
     def store_selected_assets(self):
         """
@@ -409,10 +384,7 @@ class AssetListView(QListView):
         menu = QMenu(self)
         user = mliber_global.user()
         open_action = QAction("Open in Explorer", self, triggered=self._open_in_explorer)
-        store_action = QAction(mliber_resource.icon("store.png"), "Add to Favorites", self,
-                               triggered=self.store_selected_assets)
         menu.addAction(open_action)
-        menu.addAction(store_action)
         if len(selected_assets) == 1:
             detail_action = QAction("Show Detail", self, triggered=self._show_detail)
             replace_thumbnail_action = QAction("Replace Thumbnail", self, triggered=self._replace_thumbnail)

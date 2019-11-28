@@ -295,20 +295,6 @@ class MainWidget(MainWidgetUI):
         显示我的收藏
         :return: 
         """
-        # start = time.time()
-        # filters = [["user_id", "=", self.user.id]]
-        # with mliber_global.db() as db:
-        #     library_assets = db.find("Favorite", filters)
-        #     assets = list()
-        #     for asset in library_assets:
-        #         users = asset.master
-        #         for user in users:
-        #             if user.id == self.user.id:
-        #                 assets.append(asset)
-        #     self.asset_widget.set_assets(assets)
-        # self.tag_widget.deselect_all()
-        # self.category_widget.category_tree.clearSelection()
-        # self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
         favorite_widget = FavoriteWidget(self)
         favorite_widget.favorite_tree.store_signal.connect(self._store_asset)
         self._add_right_side_widget(favorite_widget)

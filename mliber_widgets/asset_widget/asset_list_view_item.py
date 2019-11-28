@@ -74,11 +74,11 @@ class AssetListItem(object):
         是否被自己收藏
         :return:
         """
-        masters = self.asset.master
-        if masters:
-            master_ids = [master.id for master in masters]
+        favorites = self.asset.favorite
+        if favorites:
+            user_ids = [favorite.user_id for favorite in favorites]
             user = mliber_global.user()
-            if user.id in master_ids:
+            if user.id in user_ids:
                 return True
         return False
 

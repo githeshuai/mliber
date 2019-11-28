@@ -102,6 +102,7 @@ class FavoriteTree(QTreeWidget):
     selection_changed = Signal(list)
     deleted_signal = Signal()
     store_signal = Signal()
+    remove_from_favorite_signal = Signal()
 
     def __init__(self, parent=None):
         super(FavoriteTree, self).__init__(parent)
@@ -259,8 +260,22 @@ class FavoriteTree(QTreeWidget):
         :return:
         """
         selected_items = self.selected_items()
-        for item in selected_items:
-            asset = item.asset
+        with mliber_global.db() as db:
+            for item in selected_items:
+                if item.item_type == "asset":
+                    asset_id = item.asset.id
+                    parent_item = item.father
+                    # remove in ui
+                    parent_item.removeChild(item)
+                    # remove in database
+                    favorite = parent_item.favorite
+                    assets = favorite.assets
+                    asset_ids = [asset.id for asset in assets]
+                    if asset_id in asset_ids:
+                        asset_ids.remove(asset_id)
+                        assets = db.find("Asset", [["id", "in", asset_ids]])
+                        db.update("Favorite", favorite.id, {"assets": assets})
+                        self.remove_from_favorite_signal.emit()
 
     def delete_favorite(self):
         """
@@ -364,13 +379,14 @@ class FavoriteTree(QTreeWidget):
         """
         favorite_item.setExpanded(True)
         favorite = favorite_item.favorite
-        exist_assets = favorite.assets
-        exist_asset_ids = [asset.id for asset in exist_assets]
-        # 当前收藏夹所有的资产id
-        new_asset_ids = [asset_id for asset_id in asset_ids if asset_id not in exist_asset_ids]
-        if not new_asset_ids:
-            return
         with mliber_global.db() as db:
+            favorite = db.find_one("Favorite", [["id", "=", favorite.id]])
+            exist_assets = favorite.assets
+            exist_asset_ids = [asset.id for asset in exist_assets]
+            # 当前收藏夹所有的资产id
+            new_asset_ids = [asset_id for asset_id in asset_ids if asset_id not in exist_asset_ids]
+            if not new_asset_ids:
+                return
             new_assets = db.find("Asset", [["id", "in", new_asset_ids]])
             # 将这些新资产加入到store
             all_assets = exist_assets + new_assets
@@ -380,5 +396,5 @@ class FavoriteTree(QTreeWidget):
             for asset in new_assets:
                 asset_item = FavoriteTreeItem("asset", favorite_item)
                 asset_item.set_asset(asset)
-        # 发送信号，将asset添加都store
-        self.store_signal.emit()
+            # 发送信号， 在list上显示收藏图标
+            self.store_signal.emit()

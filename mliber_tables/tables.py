@@ -32,8 +32,6 @@ class User(Base):
     tag_permission = Column(Boolean, default=1)
     status = Column(Enum("Active", "Disable"), default="Active")
     description = Column(Text)
-    # relationship
-    assets = relationship("Asset", backref="master", secondary="store")   # 与收藏资产的管理
 
     def __str__(self):
         return self.name
@@ -218,13 +216,3 @@ class AssetFavoriteLink(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     asset_id = Column(Integer, ForeignKey("asset.id"))
     favorite_id = Column(Integer, ForeignKey("favorite.id"))
-
-
-class Store(Base):
-    """
-    个人收藏链接
-    """
-    __tablename__ = "store"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    asset_id = Column(Integer, ForeignKey("asset.id"))
-    user_id = Column(Integer, ForeignKey("user.id"))
