@@ -76,7 +76,7 @@ class AssetListItem(object):
         """
         favorites = self.asset.favorite
         if favorites:
-            user_ids = [favorite.user_id for favorite in favorites]
+            user_ids = [favorite.user_id for favorite in favorites if favorite.status == "Active"]
             user = mliber_global.user()
             if user.id in user_ids:
                 return True

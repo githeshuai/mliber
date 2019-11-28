@@ -18,6 +18,7 @@ from Qt.QtCore import Signal, Qt, QDataStream, QIODevice
 import mliber_global
 import mliber_resource
 from mliber_site_packages import yaml
+from mliber_qt_components.messagebox import MessageBox
 
 
 class CreateFavoriteWidget(QDialog):
@@ -244,9 +245,11 @@ class FavoriteTree(QTreeWidget):
         menu = QMenu(self)
         if item.item_type == "favorite":
             add_favorite_action = QAction("Add Favorite", self, triggered=self.add_favorite)
+            rename_favorite_action = QAction("Rename", self, triggered=self._rename_favorite)
             delete_action = QAction(mliber_resource.icon("delete.png"), u"Send to Trash", self,
                                     triggered=self.delete_favorite)
             menu.addAction(add_favorite_action)
+            menu.addAction(rename_favorite_action)
             menu.addSeparator()
             menu.addAction(delete_action)
         else:
@@ -283,12 +286,32 @@ class FavoriteTree(QTreeWidget):
                 assets = db.find("Asset", [["id", "in", now_asset_ids]])
                 db.update("Favorite", favorite.id, {"assets": assets})
 
+    def _rename_favorite(self):
+        """
+        修改favorite的名字
+        :return:
+        """
+        selected_items = self.selected_items()
+        if not len(selected_items) == 1:
+            MessageBox.warning(self, "Warning", "Only support rename one favorite once a time.")
+            return
+        item = selected_items[0]
+        favorite = item.favorite
+        name, ok = QInputDialog.getText(self, "New favorite name", "Input a new favorite name")
+        if name and ok:
+            with mliber_global.db() as db:
+                favorite = db.update("Favorite", favorite.id, {"name": name})
+                item.set_favorite(favorite)
+
     def delete_favorite(self):
         """
         delete favorite
         :return:
         """
         selected_items = self.selected_items()
+        if len(selected_items) != 1:
+            MessageBox.warning(self, "Warning", "Only support delete one favorite once a time")
+            return
         selected_item = selected_items[0]
         self.recursion_delete_favorite(selected_item.favorite)
         # 从tree widget中移除
@@ -298,7 +321,6 @@ class FavoriteTree(QTreeWidget):
             self.takeTopLevelItem(index)
         else:
             parent.removeChild(selected_item)
-            del selected_item
 
     def recursion_delete_favorite(self, favorite):
         """
@@ -338,9 +360,10 @@ class FavoriteTree(QTreeWidget):
         """
         :return: 
         """
+        assets = self.selected_assets()
         selected_favorites = self.selected_favorites()
         favorites = self._get_children_favorites(selected_favorites)
-        self.selection_changed.emit(favorites)
+        self.selection_changed.emit([favorites, assets])
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('application/x-pynode-item-instance'):

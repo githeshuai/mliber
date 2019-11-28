@@ -214,6 +214,28 @@ class MainWidget(MainWidgetUI):
         # status bar info
         self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
 
+    def _on_favorite_selection_changed(self, favorites_and_assets):
+        """
+        当favorite改变的时候
+        :param favorites_and_assets: [[favorites], [assets]]
+        :return:
+        """
+        favorites, assets = favorites_and_assets
+        favorite_assets = []
+        with mliber_global.db() as db:
+            if favorites:
+                favorite_ids = [favorite.id for favorite in favorites]
+                favorites = db.find("Favorite", [["id", "in", favorite_ids], ["status", "=", "Active"]])
+                for favorite in favorites:
+                    current_favorite_assets = favorite.assets
+                    favorite_assets.extend(current_favorite_assets)
+            all_assets = favorite_assets + assets
+            asset_ids = [asset.id for asset in all_assets]
+            all_assets = db.find("Asset", [["id", "in", asset_ids], ["status", "=", "Active"]])
+            self.asset_widget.set_assets(all_assets)
+            self.tag_widget.deselect_all()
+            self._clear_category_selection()
+
     def _clear_favorite_selection(self):
         """
         clear favorite selection
@@ -315,6 +337,7 @@ class MainWidget(MainWidgetUI):
         """
         self.favorite_widget = FavoriteWidget(self)
         self.favorite_widget.favorite_tree.store_signal.connect(self._store_asset)
+        self.favorite_widget.favorite_tree.selection_changed.connect(self._on_favorite_selection_changed)
         self._add_right_side_widget(self.favorite_widget)
         self._favorite_is_shown = True
 
