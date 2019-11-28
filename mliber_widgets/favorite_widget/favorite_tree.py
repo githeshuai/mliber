@@ -73,6 +73,7 @@ class FavoriteTreeItem(QTreeWidgetItem):
     def __init__(self, item_type="favorite", parent=None):
         super(FavoriteTreeItem, self).__init__(parent)
         self.favorite = None
+        self.asset = None
         self.father = parent
         self.item_type = item_type
         self.setIcon(0, mliber_resource.icon("%s.png" % self.item_type))
@@ -88,13 +89,13 @@ class FavoriteTreeItem(QTreeWidgetItem):
         #        "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" % (self.favorite.id, path)
         # self.setToolTip(0, html)
 
-    def add_asset(self, asset_name):
+    def set_asset(self, asset):
         """
-        :param asset_name: <str>
+        :param asset: <Asset>
         :return:
         """
-        child_item = FavoriteTreeItem("asset", self)
-        child_item.setText(0, asset_name)
+        self.asset = asset
+        self.setText(0, asset.name)
 
 
 class FavoriteTree(QTreeWidget):
@@ -318,11 +319,35 @@ class FavoriteTree(QTreeWidget):
             data = event.mimeData().data('application/x-pynode-item-instance')
             stream = QDataStream(data, QIODevice.ReadOnly)
             text = stream.readQString()
-            items = yaml.load_all(str(text))
-            for item in items:
-                asset_id, asset_name = item
-                parent_item.add_asset(asset_name)
+            asset_ids = yaml.load_all(str(text))
+            self._add_asset_to_favorite(parent_item, asset_ids)
             event.setDropAction(Qt.CopyAction)
             event.accept()
         else:
             event.ignore()
+
+    @staticmethod
+    def _add_asset_to_favorite(favorite_item, asset_ids):
+        """
+        将资产添加资产到收藏夹
+        :param favorite_item: <QTreeWidgetItem>
+        :param asset_ids: <list> list of ids
+        :return:
+        """
+        favorite_item.setExpanded(True)
+        favorite = favorite_item.favorite
+        exist_assets = favorite.assets
+        exist_asset_ids = [asset.id for asset in exist_assets]
+        # 当前收藏夹所有的资产id
+        new_asset_ids = [asset_id for asset_id in asset_ids if asset_id not in exist_asset_ids]
+        if not new_asset_ids:
+            return
+        with mliber_global.db() as db:
+            new_assets = db.find("Asset", [["id", "in", new_asset_ids]])
+            all_assets = exist_assets + new_assets
+            favorite = db.update("Favorite", favorite.id, {"assets": all_assets})
+            favorite_item.set_favorite(favorite)  # 重新设置favorite
+            # add to current favorite item
+            for asset in new_assets:
+                asset_item = FavoriteTreeItem("asset", favorite_item)
+                asset_item.set_asset(asset)

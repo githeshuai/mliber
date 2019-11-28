@@ -109,7 +109,7 @@ class AssetModel(QAbstractListModel):
         items = list()
         for index in indexes:
             item = self.item_from_index(index)
-            items.append([item.asset.id, item.asset.name])
+            items.append(item.asset.id)
         try:
             data += yaml.dump_all(items)  # 如果是字符串不用cPickle
         except Exception as e:
