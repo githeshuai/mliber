@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 import os
-import pysnooper
 import logging
-from dayu_path import DayuPath
+from mliber_site_packages.dayu_path import DayuPath
 from asset_maker import AssetMaker
 from mliber_libs.os_libs.path import Path
 from mliber_conf.element_type import ELEMENT_TYPE
 from mliber_conf.templates import ELEMENT_PATH, ELEMENT_SEQUENCE_PATH
+from mliber_site_packages import pysnooper
 
 
 class AssetUploader(AssetMaker):

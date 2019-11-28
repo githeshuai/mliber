@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import logging
-import pysnooper
+from mliber_site_packages import pysnooper
 from mliber_api.api_utils import find_library, find_category, find_asset, \
     get_asset_relative_dir, get_thumbnail_pattern, get_element_relative_path, add_tag_of_asset
 import mliber_global
