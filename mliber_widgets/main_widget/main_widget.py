@@ -26,6 +26,7 @@ class MainWidget(MainWidgetUI):
         self._is_maximum = False
         self._drag_position = None
         self._left_pressed_index = None
+        self.favorite_widget = None
         self._favorite_is_shown = False
         self.setObjectName("MLIBER")
         # 无边框设置
@@ -209,8 +210,24 @@ class MainWidget(MainWidgetUI):
             assets = db.find("Asset", [["category_id", "in", category_ids], ["status", "=", "Active"]])
         self.asset_widget.set_assets(assets)
         self.tag_widget.deselect_all()
+        self._clear_favorite_selection()
         # status bar info
         self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
+
+    def _clear_favorite_selection(self):
+        """
+        clear favorite selection
+        :return:
+        """
+        if self._favorite_is_shown:
+            self.favorite_widget.deselect_all()
+
+    def _clear_category_selection(self):
+        """
+        clear cateogry selection
+        :return:
+        """
+        self.category_widget.deselect_all()
 
     def _on_tag_selection_changed(self, tags):
         """
@@ -219,7 +236,8 @@ class MainWidget(MainWidgetUI):
         """
         # category tree取消选择
         start = time.time()
-        self.category_widget.category_tree.clearSelection()
+        self._clear_category_selection()
+        self._clear_favorite_selection()
         library_assets = []
         if tags:
             tag_ids = [tag.id for tag in tags]
@@ -295,9 +313,9 @@ class MainWidget(MainWidgetUI):
         显示我的收藏
         :return: 
         """
-        favorite_widget = FavoriteWidget(self)
-        favorite_widget.favorite_tree.store_signal.connect(self._store_asset)
-        self._add_right_side_widget(favorite_widget)
+        self.favorite_widget = FavoriteWidget(self)
+        self.favorite_widget.favorite_tree.store_signal.connect(self._store_asset)
+        self._add_right_side_widget(self.favorite_widget)
         self._favorite_is_shown = True
 
     def _store_asset(self):

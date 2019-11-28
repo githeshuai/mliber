@@ -121,3 +121,10 @@ class CategoryWidget(QWidget):
         """
         self.category_tree.clear()
         self.search_le.setText("")
+
+    def deselect_all(self):
+        """
+        clear selection
+        :return:
+        """
+        self.category_tree.clearSelection()

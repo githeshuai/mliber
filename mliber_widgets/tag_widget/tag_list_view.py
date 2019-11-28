@@ -310,6 +310,7 @@ class TagListView(QListView):
         :return:
         """
         self.selectAll()
+        self._emit_selection_changed()
 
     def deselect_all(self):
         """
@@ -317,6 +318,7 @@ class TagListView(QListView):
         :return:
         """
         self.clearSelection()
+        self._emit_selection_changed()
 
     def mouseReleaseEvent(self, event):
         """

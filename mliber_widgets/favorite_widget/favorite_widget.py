@@ -134,3 +134,10 @@ class FavoriteWidget(QWidget):
         :return:
         """
         self.favorite_tree.expandAll()
+
+    def deselect_all(self):
+        """
+        清空选择
+        :return:
+        """
+        self.favorite_tree.clearSelection()
