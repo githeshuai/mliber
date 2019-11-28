@@ -121,8 +121,6 @@ class FavoriteTree(QTreeWidget):
         set signals
         :return:
         """
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._show_context_menu)
         self.itemPressed.connect(self._on_item_selection_changed)
 
     @property
@@ -143,8 +141,17 @@ class FavoriteTree(QTreeWidget):
         :return:
         """
         selected_items = self.selected_items()
-        favorites = [item.favorite for item in selected_items]
+        favorites = [item.favorite for item in selected_items if item.favorite]
         return favorites
+
+    def selected_assets(self):
+        """
+        get selected assets
+        :return:
+        """
+        selected_items = self.selected_items()
+        assets = [item.asset for item in selected_items if item.asset]
+        return assets
 
     def add_favorite(self):
         """
@@ -206,13 +213,19 @@ class FavoriteTree(QTreeWidget):
         with mliber_global.db() as db:
             favorites = db.find("Favorite", [["user_id", "=", self.user.id],
                                              ["status", "=", "Active"]])
+            # 将所有的favorite添加到top level
             for favorite in favorites:
                 favorite_item = FavoriteTreeItem(parent=self)
                 favorite_item.set_favorite(favorite)
                 self.items_mapping[favorite.name] = favorite_item
                 items.append(favorite_item)
                 id_item_mapping[favorite.id] = favorite_item
-
+                # 将asset放在各自的favorite里
+                assets = favorite.assets
+                for asset in assets:
+                    asset_item = FavoriteTreeItem("asset", parent=favorite_item)
+                    asset_item.set_asset(asset)
+            # 将favorite放在各自的父层级下
             for item in items:
                 parent_id = item.favorite.parent_id
                 if parent_id:
@@ -220,19 +233,34 @@ class FavoriteTree(QTreeWidget):
                     self.takeTopLevelItem(index)
                     id_item_mapping.get(parent_id).addChild(item)
 
-    def _show_context_menu(self):
+    def contextMenuEvent(self, event):
         """
         显示右键菜单
         :return:
         """
+        item = self.itemAt(event.pos())
+
         menu = QMenu(self)
-        add_favorite_action = QAction("Add Favorite", self, triggered=self.add_favorite)
-        delete_action = QAction(mliber_resource.icon("delete.png"), u"Send to Trash", self,
-                                triggered=self.delete_favorite)
-        menu.addAction(add_favorite_action)
-        menu.addSeparator()
-        menu.addAction(delete_action)
+        if item.item_type == "favorite":
+            add_favorite_action = QAction("Add Favorite", self, triggered=self.add_favorite)
+            delete_action = QAction(mliber_resource.icon("delete.png"), u"Send to Trash", self,
+                                    triggered=self.delete_favorite)
+            menu.addAction(add_favorite_action)
+            menu.addSeparator()
+            menu.addAction(delete_action)
+        else:
+            remove_from_favorite_action = QAction("Remove From Favorite", self, triggered=self._remove_from_favorite)
+            menu.addAction(remove_from_favorite_action)
         menu.exec_(QCursor.pos())
+
+    def _remove_from_favorite(self):
+        """
+        remove form my favorite
+        :return:
+        """
+        selected_items = self.selected_items()
+        for item in selected_items:
+            asset = item.asset
 
     def delete_favorite(self):
         """
