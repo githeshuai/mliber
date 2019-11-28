@@ -344,6 +344,7 @@ class FavoriteTree(QTreeWidget):
             return
         with mliber_global.db() as db:
             new_assets = db.find("Asset", [["id", "in", new_asset_ids]])
+            # 将这些新资产加入到store
             all_assets = exist_assets + new_assets
             favorite = db.update("Favorite", favorite.id, {"assets": all_assets})
             favorite_item.set_favorite(favorite)  # 重新设置favorite

@@ -20,7 +20,7 @@ class AssetListItem(object):
         self.icon_size = self._parent.iconSize()
         self.has_tag = True if self.asset.tags else False
         self.has_description = True if self.asset.description else False
-        self.stored_by_me = self.is_stored_by_me()
+        # self.stored_by_me = self.is_stored_by_me()
 
     def start(self):
         """
