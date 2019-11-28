@@ -16,3 +16,9 @@ unreal:
   import:
     - name: import texutre
       hook: unreal_texture_import
+
+
+standalone:
+  import:
+    - name: open in explorer
+      hook: open_in_explorer

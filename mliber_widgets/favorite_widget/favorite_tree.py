@@ -259,23 +259,29 @@ class FavoriteTree(QTreeWidget):
         remove form my favorite
         :return:
         """
+        favorite_asset_mapping = dict()
         selected_items = self.selected_items()
+        for item in selected_items:
+            if item.item_type == "asset":
+                asset_id = item.asset.id
+                parent_item = item.father
+                # remove in ui
+                parent_item.removeChild(item)
+                favorite = parent_item.favorite
+                favorite_id = favorite.id
+                if favorite_id not in favorite_asset_mapping.keys():
+                    favorite_asset_mapping[favorite_id] = [asset_id]
+                else:
+                    favorite_asset_mapping[favorite_id].append(asset_id)
+
         with mliber_global.db() as db:
-            for item in selected_items:
-                if item.item_type == "asset":
-                    asset_id = item.asset.id
-                    parent_item = item.father
-                    # remove in ui
-                    parent_item.removeChild(item)
-                    # remove in database
-                    favorite = parent_item.favorite
-                    assets = favorite.assets
-                    asset_ids = [asset.id for asset in assets]
-                    if asset_id in asset_ids:
-                        asset_ids.remove(asset_id)
-                        assets = db.find("Asset", [["id", "in", asset_ids]])
-                        db.update("Favorite", favorite.id, {"assets": assets})
-                        self.remove_from_favorite_signal.emit()
+            for favorite_id, asset_ids in favorite_asset_mapping.iteritems():
+                favorite = db.find_one("Favorite", [["id", "=", favorite_id]])
+                exist_assets = favorite.assets
+                exist_asset_ids = [asset.id for asset in exist_assets]
+                now_asset_ids = list(set(exist_asset_ids)-set(asset_ids))
+                assets = db.find("Asset", [["id", "in", now_asset_ids]])
+                db.update("Favorite", favorite.id, {"assets": assets})
 
     def delete_favorite(self):
         """
