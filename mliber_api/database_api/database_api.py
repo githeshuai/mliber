@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from contextlib import contextmanager
-from mliber_site_packages.sqlalchemy.sql import and_, or_  # do not delete
+from sqlalchemy.sql import and_, or_  # do not delete
 from mliber_libs.sql_libs.database_factory import DataBaseFactory
 from mliber_tables.tables import User, Library, Category, Asset, Tag, Element, Favorite, AssetFavoriteLink
 
