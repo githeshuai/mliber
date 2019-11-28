@@ -25,7 +25,7 @@ class AssetDelegate(QStyledItemDelegate):
         self._default_img = mliber_resource.pixmap("image.png")
         self._sequence_img = mliber_resource.pixmap("video.png")
         self._store_img = mliber_resource.pixmap("store.png")
-        # self._no_store_img = mliber_resource.pixmap("no_store.png")
+        self._no_store_img = mliber_resource.pixmap("no_store.png")
         self._description_img = mliber_resource.pixmap("description.png")
         self._no_description_img = mliber_resource.pixmap("no_description.png")
         self._tag_img = mliber_resource.pixmap("tag.png")
@@ -97,7 +97,7 @@ class AssetDelegate(QStyledItemDelegate):
             image = q_image or self._default_img
             image_rect = self._draw_centralized_pic(painter, option, image)
             self._draw_text(painter, option, item.name)
-            # self._draw_stored_flag(painter, option, item)
+            self._draw_stored_flag(painter, option, item)
             self._draw_description_flag(painter, option, item)
             self._draw_tag_flag(painter, option, item)
             if PAINT_DESCRIPTION:
@@ -239,9 +239,9 @@ class AssetDelegate(QStyledItemDelegate):
         """
         image = self._description_image_of_item(item)
         r = option.rect
-        x = r.x() + PADDING
+        x = r.x() + FLAG_SIZE + PADDING
         y = r.y() + PADDING
-        rect = QRect(x, y, FLAG_SIZE, FLAG_SIZE)
+        rect = QRect(x, y, 14, 14)
         painter.drawPixmap(rect, image)
 
     def _draw_tag_flag(self, painter, option, item):
@@ -253,7 +253,7 @@ class AssetDelegate(QStyledItemDelegate):
         """
         image = self._tag_image_of_item(item)
         r = option.rect
-        x = r.x() + FLAG_SIZE + PADDING
+        x = r.x() + (FLAG_SIZE + PADDING) * 2
         y = r.y() + PADDING
         rect = QRect(x, y, 14, 14)
         painter.drawPixmap(rect, image)

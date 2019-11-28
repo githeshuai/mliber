@@ -101,6 +101,7 @@ class FavoriteTreeItem(QTreeWidgetItem):
 class FavoriteTree(QTreeWidget):
     selection_changed = Signal(list)
     deleted_signal = Signal()
+    store_signal = Signal()
 
     def __init__(self, parent=None):
         super(FavoriteTree, self).__init__(parent)
@@ -326,8 +327,7 @@ class FavoriteTree(QTreeWidget):
         else:
             event.ignore()
 
-    @staticmethod
-    def _add_asset_to_favorite(favorite_item, asset_ids):
+    def _add_asset_to_favorite(self, favorite_item, asset_ids):
         """
         将资产添加资产到收藏夹
         :param favorite_item: <QTreeWidgetItem>
@@ -352,3 +352,5 @@ class FavoriteTree(QTreeWidget):
             for asset in new_assets:
                 asset_item = FavoriteTreeItem("asset", favorite_item)
                 asset_item.set_asset(asset)
+        # 发送信号，将asset添加都store
+        self.store_signal.emit()

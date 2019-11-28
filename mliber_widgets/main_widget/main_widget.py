@@ -310,8 +310,16 @@ class MainWidget(MainWidgetUI):
         # self.category_widget.category_tree.clearSelection()
         # self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time() - start))
         favorite_widget = FavoriteWidget(self)
+        favorite_widget.favorite_tree.store_signal.connect(self._store_asset)
         self._add_right_side_widget(favorite_widget)
         self._favorite_is_shown = True
+
+    def _store_asset(self):
+        """
+        当拖拽到favorite的是时候，将资产加入store
+        :return:
+        """
+        self.asset_widget.asset_list_view.store_selected_assets()
 
     def _show_clear_trash_widget(self):
         """
