@@ -73,33 +73,24 @@ class CategoryTree(QTreeWidget):
         self.clear()
         if not self.library:
             return
+        id_item_mapping = dict()
+        items = list()
         with mliber_global.db() as db:
-            cats = db.find("Category", [["parent_id", "is", None],
-                                        ["library_id", "=", self.library.id],
+            cats = db.find("Category", [["library_id", "=", self.library.id],
                                         ["status", "=", "Active"]])
             for cat in cats:
                 cat_item = CategoryTreeItem(self)
                 cat_item.set_category(cat)
                 self.items_mapping[cat.name] = cat_item
-                self._create_children_item(cat, cat_item)
+                items.append(cat_item)
+                id_item_mapping[cat.id] = cat_item
 
-    def _create_children_item(self, cat, parent_item):
-        """
-        递归获取子类型
-        :param cat: Category对象
-        :param parent_item: <QTreeWidgetItem>
-        :return:
-        """
-        cat_id = cat.id
-        with mliber_global.db() as db:
-            children = db.find("Category", [["parent_id", "=", cat_id], ["status", "=", "Active"]])
-            if not children:
-                return
-            for child in children:
-                child_item = CategoryTreeItem(parent_item)
-                child_item.set_category(child)
-                self.items_mapping[child.name] = child_item
-                self._create_children_item(child, child_item)
+            for item in items:
+                parent_id = item.category.parent_id
+                if parent_id:
+                    index = self.indexOfTopLevelItem(item)
+                    self.takeTopLevelItem(index)
+                    id_item_mapping.get(parent_id).addChild(item)
 
     def _show_context_menu(self):
         """

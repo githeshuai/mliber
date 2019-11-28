@@ -70,11 +70,12 @@ class CreateFavoriteWidget(QDialog):
 
 
 class FavoriteTreeItem(QTreeWidgetItem):
-    def __init__(self, parent=None):
+    def __init__(self, item_type="favorite", parent=None):
         super(FavoriteTreeItem, self).__init__(parent)
         self.favorite = None
         self.father = parent
-        self.setIcon(0, mliber_resource.icon("favorites.png"))
+        self.item_type = item_type
+        self.setIcon(0, mliber_resource.icon("%s.png" % self.item_type))
 
     def set_favorite(self, favorite):
         """
@@ -86,6 +87,14 @@ class FavoriteTreeItem(QTreeWidgetItem):
         # html = "<p><font size=3 color=#8a8a8a>id:</font><font color=#fff> %s</font></p>" \
         #        "<p><font size=3 color=#8a8a8a>path:</font><font color=#fff> %s</font></p>" % (self.favorite.id, path)
         # self.setToolTip(0, html)
+
+    def add_asset(self, asset_name):
+        """
+        :param asset_name: <str>
+        :return:
+        """
+        child_item = FavoriteTreeItem("asset", self)
+        child_item.setText(0, asset_name)
 
 
 class FavoriteTree(QTreeWidget):
@@ -164,7 +173,7 @@ class FavoriteTree(QTreeWidget):
             favorite = db.create("Favorite", {"name": name, "parent_id": parent_id,
                                               "user_id": self.user.id, "description": description})
             # 在ui上显示
-            tree_widget_item = FavoriteTreeItem(parent_item or self)
+            tree_widget_item = FavoriteTreeItem(parent=parent_item or self)
             tree_widget_item.set_favorite(favorite)
             self.items_mapping[name] = tree_widget_item
             if parent_item:
@@ -189,32 +198,25 @@ class FavoriteTree(QTreeWidget):
         self.clear()
         if not self.user:
             return
+
+        id_item_mapping = dict()
+        items = list()
         with mliber_global.db() as db:
-            favorites = db.find("Favorite", [["parent_id", "is", None],
-                                             ["user_id", "=", self.user.id],
+            favorites = db.find("Favorite", [["user_id", "=", self.user.id],
                                              ["status", "=", "Active"]])
             for favorite in favorites:
-                top_favorite_item = FavoriteTreeItem(self)
-                top_favorite_item.set_favorite(favorite)
-                self.items_mapping[favorite.name] = top_favorite_item
-                self._create_children_item(favorite, top_favorite_item)
-    
-    def _create_children_item(self, favorite, parent_item):
-        """
-        :param favorite: <Favorite>
-        :param parent_item: <QTreeWidgetItem>
-        :return: 
-        """
-        favorite_id = favorite.id
-        with mliber_global.db() as db:
-            children = db.find("Favorite", [["parent_id", "=", favorite_id], ["status", "=", "Active"]])
-            if not children:
-                return
-            for child in children:
-                child_item = FavoriteTreeItem(parent_item)
-                child_item.set_favorite(child)
-                self.items_mapping[child.name] = child_item
-                self._create_children_item(child, child_item)
+                favorite_item = FavoriteTreeItem(parent=self)
+                favorite_item.set_favorite(favorite)
+                self.items_mapping[favorite.name] = favorite_item
+                items.append(favorite_item)
+                id_item_mapping[favorite.id] = favorite_item
+
+            for item in items:
+                parent_id = item.favorite.parent_id
+                if parent_id:
+                    index = self.indexOfTopLevelItem(item)
+                    self.takeTopLevelItem(index)
+                    id_item_mapping.get(parent_id).addChild(item)
 
     def _show_context_menu(self):
         """
@@ -304,6 +306,13 @@ class FavoriteTree(QTreeWidget):
             event.ignore()
 
     def dropEvent(self, event):
+        current_item = self.itemAt(event.pos())
+        if not current_item:
+            return
+        if current_item.item_type == "favorite":
+            parent_item = current_item
+        else:
+            parent_item = current_item.parent()
         if event.mimeData().hasFormat('application/x-pynode-item-instance'):
             event.setDropAction(Qt.MoveAction)
             data = event.mimeData().data('application/x-pynode-item-instance')
@@ -311,7 +320,8 @@ class FavoriteTree(QTreeWidget):
             text = stream.readQString()
             items = yaml.load_all(str(text))
             for item in items:
-                print item
+                asset_id, asset_name = item
+                parent_item.add_asset(asset_name)
             event.setDropAction(Qt.CopyAction)
             event.accept()
         else:
