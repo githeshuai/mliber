@@ -248,6 +248,10 @@ class CreateWidget(QScrollArea):
             self.main_layout.addLayout(frame_range_layout)
 
     def _show_progress_bar(self):
+        """
+        显示进度条
+        :return:
+        """
         self.progress_bar = QProgressBar(self)
         self.progress_bar.hide()
         self.progress_bar.setTextVisible(False)

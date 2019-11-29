@@ -4,8 +4,7 @@ from Qt.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QMenu, 
 from tag_list_view import TagListView
 import mliber_global
 from mliber_qt_components.search_line_edit import SearchLineEdit
-from mliber_qt_components.toolbutton import ToolButton
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import ShelfButton
 
 
 class TagWidget(QWidget):
@@ -16,7 +15,7 @@ class TagWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         top_layout.setContentsMargins(0, 0, 0, 0)
-        self.tag_btn = IndicatorButton("Tag", self)
+        self.tag_btn = ShelfButton("Tag", self)
         self.search_le = SearchLineEdit(22, 12, self)
         top_layout.addWidget(self.tag_btn)
         top_layout.addStretch()
@@ -28,13 +27,14 @@ class TagWidget(QWidget):
         main_layout.addWidget(self.tag_list_view)
         # set signals
         self._set_signals()
+        # create tag menu
+        self._create_tag_menu()
 
     def _set_signals(self):
         """
         信号连接
         :return:
         """
-        self.tag_btn.clicked.connect(self._show_tag_menu)
         self.search_le.text_changed.connect(self._filter)
 
     @property
@@ -46,23 +46,9 @@ class TagWidget(QWidget):
         创建setting菜单
         :return:
         """
-        menu = QMenu(self)
-        select_all_action = QAction("Select All", self, triggered=self._select_all)
-        deselect_all_action = QAction("Deselect All", self, triggered=self.deselect_all)
-        menu.addSeparator()
-        menu.addAction(select_all_action)
-        menu.addAction(deselect_all_action)
-        return menu
-
-    def _show_tag_menu(self):
-        """
-        显示settings菜单
-        :return:
-        """
-        menu = self._create_tag_menu()
-        point = self.tag_btn.rect().bottomLeft()
-        point = self.tag_btn.mapToGlobal(point)
-        menu.exec_(point)
+        self.tag_btn.set_menu()
+        self.tag_btn.add_menu_action("Select All", self._select_all)
+        self.tag_btn.add_menu_action("Deselect All", self.deselect_all)
 
     def _add_tag(self, arg):
         """

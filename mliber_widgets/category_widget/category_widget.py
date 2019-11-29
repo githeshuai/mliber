@@ -4,7 +4,8 @@ from Qt.QtCore import Qt
 from mliber_widgets.category_widget.category_tree import CategoryTree
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.toolbutton import ToolButton
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import ShelfButton
+from mliber_qt_components.messagebox import MessageBox
 import mliber_global
 
 
@@ -16,7 +17,7 @@ class CategoryWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         # category button
-        self.category_btn = IndicatorButton("Category", self)
+        self.category_btn = ShelfButton("Category", self)
         # refresh button
         self.refresh_btn = ToolButton(self)
         self.refresh_btn.set_size(25, 25)
@@ -32,6 +33,8 @@ class CategoryWidget(QWidget):
         self.category_tree = CategoryTree(self)
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.category_tree)
+        # set category_menu
+        self._set_category_menu()
         # set signals
         self._set_signals()
 
@@ -40,9 +43,19 @@ class CategoryWidget(QWidget):
         信号连接
         :return:
         """
-        self.category_btn.clicked.connect(self._show_category_menu)
         self.search_le.text_changed.connect(self._search)
         self.refresh_btn.clicked.connect(self.refresh_ui)
+
+    def _set_category_menu(self):
+        """
+        set category button menu
+        :return:
+        """
+        self.category_btn.set_menu()
+        self.category_btn.add_menu_action("Add Category", self._add_category)
+        self.category_btn.add_menu_separator()
+        self.category_btn.add_menu_action("Collapse All", self.collapse_all)
+        self.category_btn.add_menu_action("Expand All", self.expand_all)
 
     def refresh_ui(self):
         """
@@ -105,7 +118,14 @@ class CategoryWidget(QWidget):
         :return:
         """
         # self.category_tree.clearSelection()
-        self.category_tree.add_category()
+        user = mliber_global.user()
+        if not user:
+            MessageBox.warning(self, "Warning", "Login First")
+            return
+        if user.category_permission:
+            self.category_tree.add_category()
+        else:
+            MessageBox.warning(self, "Warning", "Permission denied")
 
     def _search(self, text):
         """

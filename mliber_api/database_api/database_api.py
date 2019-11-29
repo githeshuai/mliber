@@ -185,7 +185,8 @@ class Database(object):
         self.create("User", {"name": "admin",
                              "chinese_name": u"管理员",
                              "user_permission": 1,
-                             "library_permission": 1})
+                             "library_permission": 1,
+                             "database_permission": 1})
 
     def close(self):
         """

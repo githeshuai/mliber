@@ -3,10 +3,10 @@ from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QMenu, 
 from Qt.QtCore import Signal
 from asset_list_view import AssetListView
 from mliber_qt_components.search_line_edit import SearchLineEdit
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import ShelfButton
 from mliber_qt_components.toolbutton import ToolButton
 import mliber_global
-import mliber_resource
+from mliber_qt_components.messagebox import MessageBox
 
 
 class AssetWidget(QWidget):
@@ -21,7 +21,7 @@ class AssetWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         top_layout.setSpacing(0)
-        self.asset_btn = IndicatorButton("Asset", self)
+        self.asset_btn = ShelfButton("Asset", self)
         self.search_le = SearchLineEdit(25, 12, self)
         self.refresh_btn = ToolButton(self)
         self.refresh_btn.set_size(27, 27)
@@ -37,6 +37,8 @@ class AssetWidget(QWidget):
         main_layout.addWidget(self.asset_list_view)
         # set signals
         self._set_signals()
+        # create asset menu
+        self._create_asset_menu()
 
     def _set_signals(self):
         """
@@ -44,7 +46,6 @@ class AssetWidget(QWidget):
         :return:
         """
         self.search_le.text_changed.connect(self._filter)
-        self.asset_btn.clicked.connect(self._show_asset_menu)
 
     def set_assets(self, assets):
         """
@@ -90,33 +91,35 @@ class AssetWidget(QWidget):
         显示asset菜单
         :return:
         """
-        menu = QMenu(self)
-        export_from_software_action = QAction("Export from software", self, triggered=self._export_from_software)
-        create_from_local = QAction("Create from local", self, triggered=self._create_from_local)
-        menu.addAction(export_from_software_action)
-        menu.addAction(create_from_local)
-        return menu
+        self.asset_btn.set_menu()
+        self.asset_btn.add_menu_action("Export from software", self._export_from_software)
+        self.asset_btn.add_menu_action("Create from local", self._create_from_local)
 
-    def _show_asset_menu(self):
+    def _create_asset(self, mode):
         """
-        显示settings菜单
+        :param mode: <str> software or local, software means export form software, local means create from local
         :return:
         """
         user = mliber_global.user()
+        if not user:
+            MessageBox.warning(self, "Warning", "Login First")
+            return
         if user.asset_permission:
-            menu = self._create_asset_menu()
-            point = self.asset_btn.rect().bottomLeft()
-            point = self.asset_btn.mapToGlobal(point)
-            menu.exec_(point)
+            if mode == "software":
+                self.export_from_software.emit()
+            else:
+                self.create_from_local.emit()
+        else:
+            MessageBox.warning(self, "Warning", "Permission denied")
 
     def _export_from_software(self):
         """
         :return:
         """
-        self.export_from_software.emit()
+        self._create_asset("software")
 
     def _create_from_local(self):
         """
         :return:
         """
-        self.create_from_local.emit()
+        self._create_asset("local")

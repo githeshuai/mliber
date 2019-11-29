@@ -3,7 +3,7 @@ from Qt.QtWidgets import QWidget, QHBoxLayout, QToolButton, QPushButton, QFrame,
 from Qt.QtCore import QSize, Qt
 import mliber_resource
 import mliber_version
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import IndicatorButton, ShelfButton
 from mliber_qt_components.toolbutton import ToolButton
 
 
@@ -27,16 +27,16 @@ class ToolbarUI(QFrame):
         # login
         self.login_button = IndicatorButton("Login", self)
         # settings
-        self.settings_button = IndicatorButton("Settings", self)
+        self.settings_button = ShelfButton("Settings", self)
         # window
-        self.window_button = IndicatorButton("Window", self)
+        self.window_button = ShelfButton("Window", self)
         # library
         self.library_button = IndicatorButton("", self)
         self.library_button.setMinimumWidth(200)
         # user
-        self.user_button = ToolButton(self)
+        self.user_button = ShelfButton("", self)
         self.user_button.set_icon("user_fill.png")
-        self.user_button.setText("User")
+        # self.user_button.setText("User")
         space_item_2 = QSpacerItem(50, 40, QSizePolicy.Fixed, QSizePolicy.Expanding)
         # button layout
         button_layout = QHBoxLayout()

@@ -36,6 +36,8 @@ class MainWidget(MainWidgetUI):
         self._set_style()
         # set signals
         self._set_signals()
+        # show window menu
+        self._show_window_menu()
 
     def _set_style(self):
         """
@@ -71,7 +73,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.login_button.clicked.connect(self._show_login)
         self.tool_bar.user_manage_action_triggered.connect(self._show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self._show_library_manager)
-        self.tool_bar.window_button.clicked.connect(self._show_window_menu)
+        # self.tool_bar.window_button.clicked.connect(self._show_window_menu)
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
         self.tool_bar.library_button.clicked.connect(self._show_library_manager)
@@ -555,22 +557,10 @@ class MainWidget(MainWidgetUI):
         """
         :return:
         """
-        menu = QMenu(self)
-        show_left_action = QAction("Show Left", self, triggered=self._show_left, shortcut="Alt+1")
-        show_left_action.setCheckable(True)
-        show_left_action.setChecked(self._is_left_shown())
-        show_right_action = QAction("Show Right", self, triggered=self._show_right, shortcut="Alt+2")
-        show_right_action.setCheckable(True)
-        show_right_action.setChecked(self._is_right_shown())
-        full_screen_action = QAction("Full Screen", self, triggered=self._full_screen, shortcut="Alt+F")
-        full_screen_action.setCheckable(True)
-        full_screen_action.setChecked(self._is_full_screen())
-        menu.addAction(show_left_action)
-        menu.addAction(show_right_action)
-        menu.addAction(full_screen_action)
-        point = self.tool_bar.window_button.rect().bottomLeft()
-        point = self.tool_bar.window_button.mapToGlobal(point)
-        menu.exec_(point)
+        self.tool_bar.window_button.set_menu()
+        self.tool_bar.window_button.add_menu_action("Show Left", self._show_left, True, self._is_left_shown(), "Alt+1")
+        self.tool_bar.window_button.add_menu_action("Show Right", self._show_right, True, self._is_right_shown(), "Alt+2")
+        self.tool_bar.window_button.add_menu_action("Full Screen", self._full_screen, True, self._is_full_screen(), "Alt+F")
 
     def _is_left_shown(self):
         """

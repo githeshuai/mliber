@@ -30,6 +30,7 @@ class User(Base):
     category_permission = Column(Boolean, default=1)
     asset_permission = Column(Boolean, default=1)
     tag_permission = Column(Boolean, default=1)
+    database_permission = Column(Boolean, default=0)
     status = Column(Enum("Active", "Disable"), default="Active")
     description = Column(Text)
 

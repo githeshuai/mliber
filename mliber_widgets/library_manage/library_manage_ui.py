@@ -4,7 +4,7 @@ from Qt.QtCore import Qt
 from library_list_view import LibraryListView
 from mliber_qt_components.search_line_edit import SearchLineEdit
 from mliber_qt_components.toolbutton import ToolButton
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import ShelfButton
 
 
 class LibraryManageUI(QDialog):
@@ -22,7 +22,7 @@ class LibraryManageUI(QDialog):
         top_layout = QHBoxLayout(search_frame)
         top_layout.setContentsMargins(0, 5, 0, 2)
         # toolbar
-        self.menu_bar = IndicatorButton("Library", self)
+        self.menu_bar = ShelfButton("Library", self)
         top_layout.addWidget(self.menu_bar)
         # search
         top_layout.addStretch()

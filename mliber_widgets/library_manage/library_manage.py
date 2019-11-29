@@ -21,6 +21,7 @@ class LibraryManage(LibraryManageUI):
         super(LibraryManage, self).__init__(parent)
         # set signals
         self._set_signals()
+        self._add_menu()
         # 右键菜单
         self.library_list_view.setContextMenuPolicy(Qt.CustomContextMenu)
         self.library_list_view.customContextMenuRequested.connect(self._show_context_menu)
@@ -46,7 +47,6 @@ class LibraryManage(LibraryManageUI):
         self.search_btngrp.buttonClicked.connect(self._switch_search_type)
         self.search_le.return_pressed.connect(self._filter)
         self.type_combo.currentIndexChanged.connect(self._filter)
-        self.menu_bar.clicked.connect(self.add_menu)
         self.refresh_btn.clicked.connect(self.refresh_ui)
         self.library_list_view.double_clicked.connect(self.on_library_list_view_double_clicked)
 
@@ -62,20 +62,14 @@ class LibraryManage(LibraryManageUI):
         self.library_double_clicked.emit()
         self.close()
 
-    def add_menu(self):
+    def _add_menu(self):
         """
         menu bar add menu
         :return:
         """
-        menu = QMenu(self)
-        if self.user.library_permission:
-            add_action = QAction("Add", self, triggered=self._show_create_library_dialog)
-            menu.addAction(add_action)
-        exit_action = QAction("exit", self, triggered=self.close)
-        menu.addAction(exit_action)
-        point = self.menu_bar.rect().bottomLeft()
-        point = self.menu_bar.mapToGlobal(point)
-        menu.exec_(point)
+        self.menu_bar.set_menu()
+        self.menu_bar.add_menu_action("Add", self._show_create_library_dialog)
+        self.menu_bar.add_menu_action("Exit", self.close)
 
     def _show_context_menu(self):
         """
@@ -143,9 +137,15 @@ class LibraryManage(LibraryManageUI):
         添加library
         :return:
         """
-        self.library_widget = CreateLibraryDialog(mode="create", parent=self)
-        self.library_widget.create.connect(self._add_library)
-        self.library_widget.exec_()
+        if not self.user:
+            MessageBox.warning(self, "Warning", "Login First")
+            return
+        if self.user.library_permission:
+            self.library_widget = CreateLibraryDialog(mode="create", parent=self)
+            self.library_widget.create.connect(self._add_library)
+            self.library_widget.exec_()
+        else:
+            MessageBox.warning(self, "Warning", "Permission denied")
 
     def _show_edit_library_dialog(self):
         """
