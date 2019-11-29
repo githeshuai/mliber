@@ -3,6 +3,7 @@ from mliber_libs.sql_libs.mysql import MySql
 from mliber_libs.sql_libs.postgresql import PostgreSql
 from mliber_libs.sql_libs.sqlite import Sqlite
 from mliber_custom import DATABASES
+from mliber_libs.os_libs import system
 
 
 class DataBaseFactory(object):
@@ -21,7 +22,7 @@ class DataBaseFactory(object):
         self.password = self.database_conf_data.get("PASSWORD")
         self.host = self.database_conf_data.get("HOST")
         self.database_name = self.database_conf_data.get("NAME")
-        self.database_path = self.database_conf_data.get("PATH")
+        self.database_path = self.database_conf_data.get("PATH").get(system.operation_system())
 
     def database(self):
         """

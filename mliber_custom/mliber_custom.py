@@ -14,7 +14,10 @@ DATABASES = {
     'sqlite': {
         "TYPE": "sqlite",
         "ENGINE": "sqlite",
-        "PATH": "D:/test.db"
+        "PATH":
+            {"windows": "D:/test.db",
+             "linux": "/media/D/test.db",
+             "mac": ""}
     },
 
     'mysql': {
@@ -43,7 +46,7 @@ DATABASES = {
 # 注意： 该路径一定要是所有人都有777的权限。
 PUBLIC_PATH = {
     "windows": "D:/mliber_repo",
-    "linux": "/media/X/mliber_repo",
+    "linux": "/media/D/mliber_repo",
     "mac": ""
 }
 
@@ -53,10 +56,10 @@ HOOK_DIR = []
 
 
 # 缩略图的最大尺寸
-THUMBNAIL_SIZE = 1024
+THUMBNAIL_SIZE = 256
 
 
 # 是否将描述打印在资产上
-PAINT_DESCRIPTION = True                # 是否将描述打印在资产图片上
+PAINT_DESCRIPTION = False                # 是否将描述打印在资产图片上
 DESCRIPTION_COLOR = [255, 255, 0]       # 打印描述的颜色
 DESCRIPTION_FONT_SIZE = 10              # 打印描述的字体大小
