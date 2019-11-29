@@ -122,7 +122,7 @@ class AssetListView(QListView):
         :return:
         """
         relative_path = asset.path
-        abs_path = relative_path.format(root=self.library.root_path())
+        abs_path = relative_path.format(root=asset.library.root_path())
         return abs_path
 
     def _get_asset_icon_path(self, asset):
@@ -439,7 +439,7 @@ class AssetListView(QListView):
             return
         path = element.path
         if path:
-            path = path.format(root=self.library.root_path())
+            path = path.format(root=asset.library.root_path())
         start = element.start
         end = element.end
         asset_name = asset.name
@@ -480,7 +480,7 @@ class AssetListView(QListView):
                     db.update("Element", element.id, {"status": "Disable", "updated_by": self.user.id,
                                                       "updated_at": datetime.now()})
             if delete_source:
-                asset_path = asset.path.format(root=self.library.root_path())
+                asset_path = asset.path.format(root=asset.library.root_path())
                 try:
                     Path(asset_path).remove()
                 except WindowsError as e:

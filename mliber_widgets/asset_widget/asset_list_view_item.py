@@ -88,7 +88,6 @@ class AssetListItem(object):
         :return:
         """
         if item == "path":
-            library = mliber_global.library()
-            root_path = library.root_path()
+            root_path = self.asset.library.root_path()
             return self.asset.path.format(root=root_path)
         return getattr(self.asset, item)
