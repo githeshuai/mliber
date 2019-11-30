@@ -15,13 +15,14 @@ from mliber_widgets.favorite_widget.favorite_tree import FavoriteTree
 import mliber_global
 from mliber_qt_components.toolbutton import ToolButton
 from mliber_qt_components.search_line_edit import SearchLineEdit
-from mliber_qt_components.indicator_button import IndicatorButton
+from mliber_qt_components.indicator_button import ShelfButton
 
 
 class FavoriteWidget(QWidget):
     def __init__(self, parent=None):
         super(FavoriteWidget, self).__init__(parent)
         self._setup_ui()
+        self._create_favorite_menu()
         self._set_signals()
         self.refresh_ui()
 
@@ -35,7 +36,7 @@ class FavoriteWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         # category button
-        self.favorite_btn = IndicatorButton("Favorite", self)
+        self.favorite_btn = ShelfButton("Favorite", self)
         # refresh button
         self.refresh_btn = ToolButton(self)
         self.refresh_btn.set_size(25, 25)
@@ -56,7 +57,6 @@ class FavoriteWidget(QWidget):
         """
         :return:
         """
-        self.favorite_btn.clicked.connect(self._show_favorite_menu)
         self.search_le.text_changed.connect(self._search)
         self.refresh_btn.clicked.connect(self.refresh_ui)
 
@@ -65,25 +65,11 @@ class FavoriteWidget(QWidget):
         创建setting菜单
         :return:
         """
-        menu = QMenu(self)
-        add_favorite_action = QAction("Add Category", self, triggered=self._add_favorite)
-        menu.addAction(add_favorite_action)
-        collapse_all_action = QAction("Collapse All", self, triggered=self.collapse_all)
-        expand_all_action = QAction("Expand All", self, triggered=self.expand_all)
-        menu.addSeparator()
-        menu.addAction(collapse_all_action)
-        menu.addAction(expand_all_action)
-        return menu
-
-    def _show_favorite_menu(self):
-        """
-        显示settings菜单
-        :return:
-        """
-        menu = self._create_favorite_menu()
-        point = self.favorite_btn.rect().bottomLeft()
-        point = self.favorite_btn.mapToGlobal(point)
-        menu.exec_(point)
+        self.favorite_btn.set_menu()
+        self.favorite_btn.add_menu_action("Add Category", self._add_favorite)
+        self.favorite_btn.add_menu_separator()
+        self.favorite_btn.add_menu_action("Collapse All", self.collapse_all)
+        self.favorite_btn.add_menu_action("Expand All", self.expand_all)
 
     def _add_favorite(self):
         """
