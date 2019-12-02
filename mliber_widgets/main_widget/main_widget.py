@@ -70,10 +70,10 @@ class MainWidget(MainWidgetUI):
         信号连接
         :return:
         """
+        # toolbar
         self.tool_bar.login_button.clicked.connect(self._show_login)
         self.tool_bar.user_manage_action_triggered.connect(self._show_user_manager)
         self.tool_bar.library_manage_action_triggered.connect(self._show_library_manager)
-        # self.tool_bar.window_button.clicked.connect(self._show_window_menu)
         self.tool_bar.change_password_action_triggered.connect(self._change_password)
         self.tool_bar.my_favorites_action_triggered.connect(self._show_my_favorites)
         self.tool_bar.library_button.clicked.connect(self._show_library_manager)
@@ -81,8 +81,11 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
+        # category widget
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
+        # tag widget
         self.tag_widget.tag_list_view.selection_changed.connect(self._on_tag_selection_changed)
+        # asset list view
         self.asset_widget.asset_list_view.add_tag_signal.connect(self._add_tag)
         self.asset_widget.export_from_software.connect(self._show_create_widget)
         self.asset_widget.create_from_local.connect(self._show_lazy_widget)
