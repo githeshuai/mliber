@@ -4,11 +4,11 @@ from mliber_libs.maya_libs.maya_objects import MayaAbc
 
 
 class Hook(BaseHook):
-    def __init__(self, path, objects, start, end, asset_name=""):
-        super(Hook, self).__init__(path, objects, start, end, asset_name)
+    def __init__(self, path, objects, start, end, asset_name, software, plugin):
+        super(Hook, self).__init__(path, objects, start, end, asset_name, software, plugin)
         self.maya_object = MayaAbc(self.path)
         
-    def plugin_version(self):
+    def plugin(self):
         """
         :return: 
         """

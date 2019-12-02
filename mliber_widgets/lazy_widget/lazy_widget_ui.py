@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QButtonGroup, QCheckBox, \
-    QPushButton, QLabel, QLineEdit, QStackedWidget, QAbstractButton, QTextEdit, QScrollArea, QProgressBar
+    QPushButton, QLabel, QLineEdit, QStackedWidget, QAbstractButton, QTextEdit, QScrollArea, QProgressBar, QFormLayout
 from Qt.QtCore import Qt
 from mliber_qt_components.thumbnail_widget import ThumbnailWidget
 from mliber_qt_components.drag_file_widget import DragFileWidget
@@ -47,16 +47,22 @@ class LazyWidgetUI(QScrollArea):
         self.stacked_widget = QStackedWidget(self)
         self.stacked_widget.setMaximumHeight(30)
         # asset name widget
-        self.asset_name_widget = QWidget(self)
-        asset_name_layout = QHBoxLayout(self.asset_name_widget)
+        asset_name_widget = QWidget(self)
+        asset_name_layout = QHBoxLayout(asset_name_widget)
         asset_name_layout.setContentsMargins(0, 0, 0, 0)
         asset_name_label = QLabel("name", self)
         asset_name_label.setMaximumWidth(35)
         self.asset_name_le = QLineEdit(self)
         asset_name_layout.addWidget(asset_name_label)
         asset_name_layout.addWidget(self.asset_name_le)
+        # software widget
+        software_and_plugin_layout = QFormLayout()
+        self.software_le = QLineEdit(self)
+        self.plugin_le = QLineEdit(self)
+        software_and_plugin_layout.addRow("software", self.software_le)
+        software_and_plugin_layout.addRow("plugin", self.plugin_le)
         # add to stacked
-        self.stacked_widget.addWidget(self.asset_name_widget)
+        self.stacked_widget.addWidget(asset_name_widget)
         self.batch_description_label = QLabel(self)
         self.batch_description_label.setWordWrap(True)
         self.batch_description_label.setText(u"<font color=#ff8c00>批量创建的时候，文件列表中每个文件都会视为一个单独的资产，"
@@ -90,6 +96,7 @@ class LazyWidgetUI(QScrollArea):
         main_layout.addWidget(self.thumbnail_widget)
         main_layout.addWidget(self.batch_check)
         main_layout.addWidget(self.stacked_widget)
+        main_layout.addLayout(software_and_plugin_layout)
         main_layout.addLayout(description_layout)
         main_layout.addWidget(self.progress_bar)
         main_layout.addWidget(self.create_button)

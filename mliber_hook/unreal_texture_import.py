@@ -4,8 +4,8 @@ from mliber_libs.unreal_libs import asset_import, unreal_utils
 
 
 class Hook(BaseHook):
-    def __init__(self, path, objects, start, end, asset_name):
-        super(Hook, self).__init__(path, objects, start, end, asset_name)
+    def __init__(self, path, objects, start, end, asset_name, software, plugin):
+        super(Hook, self).__init__(path, objects, start, end, asset_name, software, plugin)
 
     def execute(self, *args, **kwargs):
         destination_path = "/Game/Textures"

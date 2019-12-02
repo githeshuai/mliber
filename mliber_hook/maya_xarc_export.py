@@ -4,11 +4,11 @@ from mliber_libs.maya_libs.maya_objects import MayaXgenProxy
 
 
 class Hook(BaseHook):
-    def __init__(self, path, objects, start, end, asset_name=""):
-        super(Hook, self).__init__(path, objects, start, end, asset_name)
+    def __init__(self, path, objects, start, end, asset_name, software, plugin):
+        super(Hook, self).__init__(path, objects, start, end, asset_name, software, plugin)
         self.maya_object = MayaXgenProxy(self.path)
 
-    def plugin_version(self):
+    def plugin(self):
         return self.maya_object.plugin_version()
 
     def execute(self, *args, **kwargs):

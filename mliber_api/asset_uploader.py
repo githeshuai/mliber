@@ -11,9 +11,12 @@ from mliber_site_packages import pysnooper
 
 class AssetUploader(AssetMaker):
     def __init__(self, database_name, library_id, category_id, asset_name, objects, types=list(), start=1, end=1,
-                 thumbnail_files=list(), tag_names=list(), description="", overwrite=True, created_by=None):
+                 thumbnail_files=list(), tag_names=list(), description="", overwrite=True, created_by=None,
+                 software="", plugin=""):
         super(AssetUploader, self).__init__(database_name, library_id, category_id, asset_name, objects, types, start,
                                             end, thumbnail_files, tag_names, description, overwrite, created_by)
+        self.software = software
+        self.plugin = plugin
 
     @staticmethod
     def _get_ext_from_file(source_file):
@@ -128,7 +131,7 @@ class AssetUploader(AssetMaker):
         self._copy_source_files(self.objects, element_abs_path)
         logging.info("[MLIBER] info: Copy files done.")
         # 创建element
-        element = self._create_element(self.db, element_type, element_relative_path)
+        element = self._create_element(self.db, element_type, element_relative_path, self.software, self.plugin)
         logging.info("[MLIBER] info: Create element done.")
         elements = [element]
         return elements

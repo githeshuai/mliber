@@ -29,6 +29,8 @@ class AssetMaker(object):
         :param description: <str> 描述
         :param overwrite: <bool> 如果资产存在,是否覆盖
         :param created_by: <int> 创建者ID
+        :param software: <str> 例如Maya2018
+        :param plugin: <str> 例如mtoa3.3.0
         :return:
         """
         self.database = database_name
@@ -123,17 +125,18 @@ class AssetMaker(object):
                 continue
             try:
                 hook = load_hook(action.hook)
-                hook_instance = hook.Hook(element_abs_path, self.objects, self.start, self.end, self.asset_name)
+                hook_instance = hook.Hook(element_abs_path, self.objects, self.start, self.end, self.asset_name, "", "")
                 exported_path = hook_instance.main()
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
                 continue
             if not exported_path:
                 continue
-            plugin = hook_instance.plugin_version()
+            software = hook_instance.software()
+            plugin = hook_instance.plugin()
             relative_dir = Path(element_relative_path).parent()
             element_relative_path = Path(relative_dir).join(Path(exported_path).basename())  # element relative path
-            element = self._create_element(self.db, element_type, element_relative_path, Dcc().software(), plugin)
+            element = self._create_element(self.db, element_type, element_relative_path, software, plugin)
             elements.append(element)
             logging.info("[MLIBER] info: Export %s done." % element_type)
         return elements

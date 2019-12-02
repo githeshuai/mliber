@@ -127,6 +127,22 @@ class LazyWidget(LazyWidgetUI):
         """
         return mliber_global.user()
 
+    @property
+    def software(self):
+        """
+        software
+        :return:
+        """
+        return self.software_le.text()
+
+    @property
+    def plugin(self):
+        """
+        plugin
+        :return:
+        """
+        return self.plugin_le.text()
+
     def _pre_create(self):
         """
         create按钮按下的时候，执行的操作
@@ -176,7 +192,8 @@ class LazyWidget(LazyWidgetUI):
         self.progress_bar.setValue(4)
         asset_uploader = AssetUploader(database, library_id, category_id, self.asset_name, files,
                                        thumbnail_files=self.thumbnail_files, tag_names=self.tags,
-                                       description=self.description, overwrite=self.overwrite, created_by=created_by)
+                                       description=self.description, overwrite=self.overwrite, created_by=created_by,
+                                       software=self.software, plugin=self.plugin)
         asset_info = asset_uploader.upload()
         if asset_info:
             self.create_signal.emit([asset_info])
@@ -198,7 +215,7 @@ class LazyWidget(LazyWidgetUI):
             asset_uploader = AssetUploader(database, library_id, category_id, self.asset_name, [source_file],
                                            thumbnail_files=self.thumbnail_files, tag_names=self.tags,
                                            description=self.description, overwrite=self.overwrite,
-                                           created_by=created_by)
+                                           created_by=created_by, software=self.software, plugin=self.plugin)
             asset_info = asset_uploader.upload()
             if asset_info:
                 self.create_signal.emit([asset_info])

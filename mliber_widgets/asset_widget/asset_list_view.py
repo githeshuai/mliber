@@ -442,13 +442,15 @@ class AssetListView(QListView):
             path = path.format(root=asset.library.root_path())
         start = element.start
         end = element.end
+        software = element.software
+        plugin_version = element.plugin
         asset_name = asset.name
         try:
             hook_module = mliber_utils.load_hook(hook)
             if not hook_module:
                 logging.error("Hook: %s not found." % hook)
                 return
-            hook_instance = hook_module.Hook(path, "", start, end, asset_name)
+            hook_instance = hook_module.Hook(path, "", start, end, asset_name, software, plugin_version)
             hook_instance.main()
         except Exception as e:
             logging.error(str(e))

@@ -4,8 +4,8 @@ from mliber_libs.maya_libs.maya_objects import MayaGpuCache
 
 
 class Hook(BaseHook):
-    def __init__(self, path, objects, start, end, asset_name):
-        super(Hook, self).__init__(path, objects, start, end, asset_name)
+    def __init__(self, path, objects, start, end, asset_name, software, plugin):
+        super(Hook, self).__init__(path, objects, start, end, asset_name, software, plugin)
         self.maya_object = MayaGpuCache(self.path)
 
     def execute(self, *args, **kwargs):
