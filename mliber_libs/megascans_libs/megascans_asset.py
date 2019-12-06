@@ -127,9 +127,9 @@ class MegascansAsset(object):
         get asset name
         :return:
         """
-        name = self._json_data.get("name")
-        if name:
-            return name.replace(" ", "_")
+        # name = self._json_data.get("name")
+        # if name:
+        #     return name.replace(" ", "_")
         return Path(self._asset_dir).basename()
 
     def tags(self):

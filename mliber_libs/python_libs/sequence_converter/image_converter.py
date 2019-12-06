@@ -93,6 +93,6 @@ class ImageConverter(object):
 
 
 if __name__ == "__main__":
-    src = "D:/textures/hdr/_street_sun_light_hdr.exr"
-    dst = "D:/exr.png"
+    src = r"X:\work\ZCK\Megascans\Downloaded\brush\brushes_prints_sb0rdiop\sb0rdiop_Preview.png"
+    dst = "D:/test.jpg"
     ImageConverter(src, dst).convert()

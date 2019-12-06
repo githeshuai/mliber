@@ -31,6 +31,13 @@ class InfoWidget(QWidget):
         # set signals
         self.set_signals()
 
+    def set_button_shown(self, show_status):
+        """
+        :param show_status: <bool>
+        :return:
+        """
+        self.cancel_btn.setHidden(not show_status)
+
     def set_signals(self):
         """
         信号连接
@@ -53,7 +60,7 @@ class InfoWidget(QWidget):
         :param text:
         :return:
         """
-        self.append("<font family=Arial color=#FFF>[DS] info: %s</font>" % text)
+        self.append("<font family=Arial color=#FFF>[MLIBER] info: %s</font>" % text)
 
     def append_warning(self, text):
         """
@@ -61,7 +68,7 @@ class InfoWidget(QWidget):
         :param text:
         :return:
         """
-        self.append("<font family=Arial color=#FFD700>[DS] warning: %s</font>" % text)
+        self.append("<font family=Arial color=#FFD700>[MLIBER] warning: %s</font>" % text)
 
     def append_error(self, text):
         """
@@ -69,7 +76,7 @@ class InfoWidget(QWidget):
         :param text:
         :return:
         """
-        self.append("<font family=Arial color=#F00>[DS] error: %s</font>" % text)
+        self.append("<font family=Arial color=#F00>[MLIBER] error: %s</font>" % text)
 
     def append_pass(self, text):
         """
@@ -77,7 +84,7 @@ class InfoWidget(QWidget):
         :param text:
         :return:
         """
-        self.append("<font family=Arial color=#32CD32>[DS] pass: %s</font>" % text)
+        self.append("<font family=Arial color=#32CD32>[MLIBER] pass: %s</font>" % text)
 
     def set_progress_range(self, start, end):
         """

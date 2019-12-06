@@ -456,6 +456,7 @@ class MainWidget(MainWidgetUI):
         :return:
         """
         megascans_widget = MegascansWidget(self)
+        megascans_widget.created_signal.connect(self._create_done)
         self._add_right_side_widget(megascans_widget)
 
     def _show_create_widget(self):

@@ -55,6 +55,8 @@ class MayaWidget(QWidget):
 
 
 class MegascansWidget(QWidget):
+    created_signal = Signal(list)
+
     def __init__(self, parent=None):
         super(MegascansWidget, self).__init__(parent)
         self._setup_ui()
@@ -85,6 +87,7 @@ class MegascansWidget(QWidget):
         detail_layout = QHBoxLayout(detail_group)
         detail_layout.setContentsMargins(0, 0, 0, 0)
         self.info_widget = InfoWidget(self)
+        self.info_widget.set_button_shown(False)
         detail_layout.addWidget(self.info_widget)
         # create button
         self.create_btn = QPushButton("Create", self)
@@ -155,12 +158,14 @@ class MegascansWidget(QWidget):
             asset_maker = AssetMaker(database_name, library_id, category_id, asset_name, objects=None, types=types,
                                      thumbnail_files=thumbnail, tag_names=tags, created_by=user_id, source=asset_dir)
             try:
-                asset_maker.make()
+                asset = asset_maker.make()
+                if asset:
+                    self.created_signal.emit([asset])
                 self.info_widget.append_pass("%s publish completed" % asset_name)
             except RuntimeError as e:
                 self.info_widget.append_error(str(e))
                 self.info_widget.append_error("%s publish failed" % asset_name)
-            self.info_widget.set_progress_value(index)
+            self.info_widget.set_progress_value(index+1)
 
     def _create_asset(self):
         """
