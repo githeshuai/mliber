@@ -3,20 +3,18 @@ icon: "resource.png"
 
 maya:
   import:
-    - name: import texture
-      hook: maya_texture_import
-
+    - name: open in explorer
+      hook: open_in_explorer
 
 nuke:
   import:
-    - name: import texture
-      hook: nuke_texture_import
-
+    - name: open in explorer
+      hook: open_in_explorer
 
 unreal:
   import:
-    - name: import texutre
-      hook: unreal_texture_import
+    - name: open in explorer
+      hook: open_in_explorer
 
 
 standalone:
