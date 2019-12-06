@@ -4,10 +4,10 @@
 class Dcc(object):
 
     def software_info(self):
-        return
+        return ""
 
     def selected_objects(self):
-        return
+        return []
 
     def parent_win(self):
         return

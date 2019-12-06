@@ -1,0 +1,21 @@
+check_selected: True
+show_frame_range: False
+
+types:
+  - ma
+  - mb
+  - abc
+  - gpu
+  - fbx
+  - obj
+  - ass
+  - rs
+  - xarc
+
+double_clicked:
+  maya:
+    type: ma
+    hook: maya_ma_import
+  standalone:
+    type: ma
+    hook: open_in_explorer

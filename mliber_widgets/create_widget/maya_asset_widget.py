@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 from Qt.QtWidgets import QCheckBox, QWidget, QHBoxLayout
-from create_widget import CreateWidget
+from mliber_widgets.create_widget.create_widget import CreateWidget
 from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.dcc_libs.dcc import Dcc
 

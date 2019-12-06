@@ -48,6 +48,14 @@ class DragFileWidget(QWidget):
         """
         self.file_list.clear()
 
+    def set_filter(self, filter_list):
+        """
+        只显示固定格式的文件
+        :param filter_list: <list>
+        :return:
+        """
+        self.file_list.set_filter(filter_list)
+
 
 if __name__ == "__main__":
     from mliber_libs.qt_libs.render_ui import render_ui

@@ -11,6 +11,7 @@ from mliber_widgets.apply_widget import ApplyWidget
 from mliber_widgets.lazy_widget import LazyWidget
 from mliber_widgets.password_widget import PasswordWidget
 from mliber_widgets.favorite_widget import FavoriteWidget
+from mliber_widgets.create_widget.megascans_widget import MegascansWidget
 import mliber_utils
 import mliber_global
 import mliber_resource
@@ -29,6 +30,7 @@ class MainWidget(MainWidgetUI):
         self.favorite_widget = None
         self._favorite_is_shown = False
         self.setObjectName("MLIBER")
+        self.setWindowTitle("MLIBER")
         # 无边框设置
         self.setMouseTracking(True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
@@ -448,11 +450,22 @@ class MainWidget(MainWidgetUI):
                 app.set_value(mliber_library=None)
             self._refresh_library()
 
+    def _show_megascans_widget(self):
+        """
+        show megascans widget
+        :return:
+        """
+        megascans_widget = MegascansWidget(self)
+        self._add_right_side_widget(megascans_widget)
+
     def _show_create_widget(self):
         """
         show create widget
         :return:
         """
+        if self.library_type == "Megascans":
+            self._show_megascans_widget()
+            return
         show_created = False
         if self.library_type and self.category:
             for cls_name, cls in create_widget.classes.iteritems():
@@ -470,6 +483,9 @@ class MainWidget(MainWidgetUI):
         显示从外部导入的widget
         :return:
         """
+        if self.library_type == "Megascans":
+            self._show_megascans_widget()
+            return
         if self.library_type and self.category:
             lazy_widget = LazyWidget(self)
             lazy_widget.create_signal.connect(self._create_done)

@@ -22,10 +22,19 @@ class BaseHook(object):
         self.path = path.replace("\\", "/")
         self.start = start
         self.end = end
+        self.source = None
         self._software_name = software_name
         self._plugin_name = plugin_name
         # custom
         self._error_list = []
+
+    def set_source(self, path=None):
+        """
+        设置一个原路劲，用于简单的拷贝，例如megascans publish
+        :param path:
+        :return:
+        """
+        self.source = path
 
     def software(self):
         """

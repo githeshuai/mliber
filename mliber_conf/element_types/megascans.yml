@@ -1,0 +1,25 @@
+ext: ".*"
+icon: "resource.png"
+
+maya:
+  import:
+    - name: import texture
+      hook: maya_texture_import
+
+
+nuke:
+  import:
+    - name: import texture
+      hook: nuke_texture_import
+
+
+unreal:
+  import:
+    - name: import texutre
+      hook: unreal_texture_import
+
+
+standalone:
+  export:
+    name: publish
+    hook: megascans_publish

@@ -71,7 +71,13 @@ def maya_start_up():
 # ######################################################################################
 @splash
 def show_in_houdini():
-    show()
+    with render_ui():
+        import hou
+        mliber_widget = MainWidget(PARENT_WINDOW)
+        mliber_widget.setStyleSheet(hou.qt.styleSheet())
+        mliber_widget.setProperty("houdiniStyle", True)
+        mliber_widget.show()
+        return mliber_widget
 
 
 # ######################################################################################

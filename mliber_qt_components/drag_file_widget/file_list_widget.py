@@ -14,6 +14,14 @@ class FileListWidget(QListWidget):
         self.setSelectionMode(QListWidget.ExtendedSelection)
         self.setIconSize(QSize(30, 30))
         self.setFocusPolicy(Qt.NoFocus)
+        self._filter_list = None
+
+    def set_filter(self, filter_list):
+        """
+        :param filter_list: ["abc", "json", ....]
+        :return:
+        """
+        self._filter_list = filter_list
 
     def remove(self):
         """
@@ -86,6 +94,10 @@ class FileListWidget(QListWidget):
             return
         if file_path.endswith(".swatches"):
             return
+        if self._filter_list:
+            ext = os.path.splitext(file_path)[-1][1:].lower()
+            if ext not in self._filter_list:
+                return
         exists = self.all_items_text()
         if file_path in exists:
             return

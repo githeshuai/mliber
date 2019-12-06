@@ -25,5 +25,7 @@ class DccFactory(object):
         else:
             if self._engine != "standalone":
                 logging.warning("%s not supported" % self._engine)
-            return
+                return
+            from _dcc import Dcc
+            return Dcc()
         return dcc_instance

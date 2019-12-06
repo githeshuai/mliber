@@ -20,6 +20,8 @@ class CellElementWidget(QWidget):
         self._path = None
         self._start = 1
         self._end = 1
+        self._software = ""
+        self._plugin = ""
         self._asset_name = ""
         self.setAutoFillBackground(True)
         main_layout = QHBoxLayout(self)
@@ -79,6 +81,8 @@ class CellElementWidget(QWidget):
         """
         software_str = software if software else ""
         plugin_str = plugin if plugin else ""
+        self._software = software
+        self._plugin = plugin
         final_str = "%s %s" % (software_str, plugin_str)
         self.software_le.setText(final_str)
 
@@ -147,7 +151,8 @@ class CellElementWidget(QWidget):
             if not hook_module:
                 logging.error("Hook: %s not found." % hook_name)
                 return
-            hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name)
+            hook_instance = hook_module.Hook(self._path, "", self._start, self._end, self._asset_name,
+                                             self._software, self._plugin)
             hook_instance.main()
         except Exception as e:
             logging.error(str(e))

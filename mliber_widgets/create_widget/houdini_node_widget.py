@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from create_widget import CreateWidget
+from mliber_widgets.create_widget.create_widget import CreateWidget
 
 
 class HoudiniNodeWidget(CreateWidget):

@@ -13,7 +13,8 @@ from mliber_utils import load_hook
 
 class AssetMaker(object):
     def __init__(self, database_name, library_id, category_id, asset_name, objects, types, start=1, end=1,
-                 thumbnail_files=list(), tag_names=list(), description="", overwrite=True, created_by=None):
+                 thumbnail_files=list(), tag_names=list(), description="", overwrite=True, created_by=None,
+                 source=None):
         """
         maya资产创建
         :param database_name: custom配置中的database名字
@@ -31,6 +32,7 @@ class AssetMaker(object):
         :param created_by: <int> 创建者ID
         :param software: <str> 例如Maya2018
         :param plugin: <str> 例如mtoa3.3.0
+        :param source: <str> 用于不是从软件导出，只是拷贝文件或者文件夹的情况，例如megascans publish
         :return:
         """
         self.database = database_name
@@ -46,6 +48,7 @@ class AssetMaker(object):
         self.description = description
         self.overwrite = overwrite
         self.created_by = created_by
+        self.source = source
         #
         self.db = None  # database api操作对象
         self.library = None  # Library 实体
@@ -126,6 +129,7 @@ class AssetMaker(object):
             try:
                 hook = load_hook(action.hook)
                 hook_instance = hook.Hook(element_abs_path, self.objects, self.start, self.end, self.asset_name, "", "")
+                hook_instance.set_source(self.source)
                 exported_path = hook_instance.main()
             except Exception as e:
                 logging.error("[MLIBER] error: %s" % str(e))
@@ -135,7 +139,10 @@ class AssetMaker(object):
             software = hook_instance.software()
             plugin = hook_instance.plugin()
             relative_dir = Path(element_relative_path).parent()
-            element_relative_path = Path(relative_dir).join(Path(exported_path).basename())  # element relative path
+            if Path(exported_path).isdir():
+                element_relative_path = relative_dir
+            else:
+                element_relative_path = Path(relative_dir).join(Path(exported_path).basename())  # element relative path
             element = self._create_element(self.db, element_type, element_relative_path, software, plugin)
             elements.append(element)
             logging.info("[MLIBER] info: Export %s done." % element_type)
