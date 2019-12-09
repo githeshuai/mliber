@@ -54,6 +54,22 @@ class InfoWidget(QWidget):
         app = QApplication.instance()
         app.processEvents()
 
+    def append_content(self, info_type, info_content):
+        """
+        append content to text exit
+        :param info_type: <str> info warning error
+        :param info_content: <str>
+        :return:
+        """
+        if info_type == "info":
+            self.append_info(info_content)
+        elif info_type == "warning":
+            self.append_warning(info_content)
+        elif info_type == "error":
+            self.append_error(info_content)
+        elif info_type == "success":
+            self.append_pass(info_content)
+
     def append_info(self, text):
         """
         增加显示信息， 显示为白色
@@ -123,3 +139,12 @@ class InfoWidget(QWidget):
         :return:
         """
         self.cancel_btn.setEnabled(True)
+
+    def clear(self):
+        """
+        clear
+        :return:
+        """
+        self.progress_bar.setRange(0, 10)
+        self.progress_bar.setValue(0)
+        self.info_te.clear()

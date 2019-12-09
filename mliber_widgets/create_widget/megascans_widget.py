@@ -7,11 +7,11 @@
 # Notes     :
 
 # Import built-in modules
-
+import subprocess
 # Import third-party modules
-from PySide2.QtWidgets import *
-from PySide2.QtGui import *
-from PySide2.QtCore import *
+from Qt.QtWidgets import *
+from Qt.QtGui import *
+from Qt.QtCore import *
 # Import local modules
 from mliber_qt_components.messagebox import MessageBox
 from mliber_qt_components.action_widget import ActionWidget
@@ -20,38 +20,135 @@ from mliber_qt_components.info_dialog import InfoWidget
 from mliber_libs.megascans_libs.megascans_asset import MegascansAsset
 from mliber_libs.os_libs.path import Path
 import mliber_global
+import mliber_utils
 from mliber_api.asset_maker import AssetMaker
+from mliber_custom import MAYA_VERSION_MAPPING, RENDERER_MAPPING
 
 
 class MayaWidget(QWidget):
     def __init__(self, parent=None):
         super(MayaWidget, self).__init__(parent)
         self._setup_ui()
+        self._set_signals()
+        self._init()
 
     def _setup_ui(self):
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         # form layout
         form_layout = QFormLayout()
-        self._maya_path_le = QLineEdit(self)
-        self._maya_path_le.setPlaceholderText("mayapy path here")
+        self._maya_path_combo = QComboBox(self)
         self._renderer_combo = QComboBox(self)
         self._renderer_combo.addItems(["Arnold", "Redshift", "Vray"])
-        self._render_plugin_le = QLineEdit(self)
-        self._render_plugin_le.setPlaceholderText(".mll or .so plugin file here")
+        self._render_plugin_combo = QComboBox(self)
         self._lod_combo = QComboBox(self)
         self._lod_combo.addItems(["LOD0", "LOD1", "LOD2", "LOD3", "LOD4", "LOD5"])
         self._resolution_combo = QComboBox(self)
         self._resolution_combo.addItems(["8K", "4K", "2K", "1K"])
-        form_layout.addRow("mayapy path", self._maya_path_le)
+        form_layout.addRow("mayapy path", self._maya_path_combo)
         form_layout.addRow("Renderer", self._renderer_combo)
-        form_layout.addRow("Renderer Plugin", self._render_plugin_le)
+        form_layout.addRow("Renderer Plugin", self._render_plugin_combo)
         form_layout.addRow("Lod", self._lod_combo)
         form_layout.addRow("Resolution", self._resolution_combo)
         # action widget
         self._action_widget = ActionWidget("Megascans", "maya", self)
+        # texture widget
+        texture_layout = QHBoxLayout()
+        texture_layout.setContentsMargins(0, 0, 0, 0)
+        self.export_texture_check = QCheckBox("Export textures", self)
+        self.export_texture_check.setChecked(True)
+        texture_layout.addWidget(self.export_texture_check)
         # add to main
         main_layout.addLayout(form_layout)
         main_layout.addWidget(self._action_widget)
+        main_layout.addLayout(texture_layout)
+
+    def _set_signals(self):
+        """
+        set signals
+        :return:
+        """
+        self._renderer_combo.currentIndexChanged.connect(self._switch_renderer)
+
+    def _switch_renderer(self):
+        """
+        切换渲染器
+        :return:
+        """
+        renderer = self.renderer
+        render_versions = RENDERER_MAPPING.get(renderer, {}).keys()
+        self._render_plugin_combo.clear()
+        self._render_plugin_combo.addItems(render_versions)
+
+    def _init(self):
+        """
+        initialize
+        :return:
+        """
+        self._maya_path_combo.addItems(MAYA_VERSION_MAPPING.keys())
+        self._switch_renderer()
+
+    @property
+    def maya_py(self):
+        """
+        get maya py path
+        :return:
+        """
+        maya_version = self._maya_path_combo.currentText()
+        return MAYA_VERSION_MAPPING.get(maya_version)
+
+    @property
+    def renderer(self):
+        """
+        get renderer
+        :return:
+        """
+        return self._renderer_combo.currentText()
+
+    @property
+    def renderer_plugin_path(self):
+        """
+        get renderer plugin path
+        :param self:
+        :return:
+        """
+        renderer_version = self._render_plugin_combo.currentText()
+        return RENDERER_MAPPING.get(self.renderer, {}).get(renderer_version)
+
+    @property
+    def lod(self):
+        """
+        get current LOD
+        :param self:
+        :return:
+        """
+        return self._lod_combo.currentText()
+
+    @property
+    def resolution(self):
+        """
+        get current resolution
+        :return:
+        """
+        return self._resolution_combo.currentText()
+
+    @property
+    def types(self):
+        """
+        get selected element types
+        :return:
+        """
+        buttons = self._action_widget.checked_buttons()
+        types = [button.type for button in buttons]
+        return types
+
+    @property
+    def export_texture(self):
+        """
+        是否导出贴图
+        :return: <bool>
+        """
+        return self.export_texture_check.isChecked()
 
 
 class MegascansWidget(QWidget):
@@ -79,9 +176,9 @@ class MegascansWidget(QWidget):
         # stacked widget
         self.stacked_widget = QStackedWidget(self)
         null_widget = QWidget(self)
-        maya_widget = MayaWidget(self)
+        self.maya_widget = MayaWidget(self)
         self.stacked_widget.addWidget(null_widget)
-        self.stacked_widget.addWidget(maya_widget)
+        self.stacked_widget.addWidget(self.maya_widget)
         # info widget
         detail_group = QGroupBox("Detail")
         detail_layout = QHBoxLayout(detail_group)
@@ -167,9 +264,73 @@ class MegascansWidget(QWidget):
                 self.info_widget.append_error("%s publish failed" % asset_name)
             self.info_widget.set_progress_value(index+1)
 
+    @staticmethod
+    def _get_job_file():
+        """
+        get job megascans to maya file
+        :return:
+        """
+        jobs_dir = mliber_utils.package("mliber_jobs")
+        return Path(jobs_dir).join("job_megascans_to_maya.py")
+
+    def _validate_resolve_in_maya(self):
+        """
+        validate resolve in maya
+        :return:
+        """
+        categories = mliber_global.categories()
+        if not categories:
+            MessageBox.warning(self, "Warning", "Select one category first.")
+            return False
+        maya_py_path = self.maya_widget.maya_py
+        if not Path(maya_py_path).isfile():
+            MessageBox.warning(self, "Warning", "Mayapy %s is not an exist file." % maya_py_path)
+            return False
+        render_plugin_path = self.maya_widget.renderer_plugin_path
+        if not Path(render_plugin_path).isfile():
+            MessageBox.warning(self, "Warning", "Renderer %s is not an exist file." % maya_py_path)
+            return False
+        return True
+
+    def _resolve_in_maya(self):
+        """
+        自动生成maya文件
+        :return:
+        """
+        job_file = self._get_job_file()
+        # database_name, library_id, category_id, asset_dir,  types,
+        # render_plugin_path, lod, resolution, renderer, export_texture,
+        # overwrite, created_by
+        database_name = mliber_global.database()
+        library_id = mliber_global.library().id
+        category_id = mliber_global.categories()[0].id
+        types = self.maya_widget.types
+        renderer_plugin_path = self.maya_widget.renderer_plugin_path
+        lod = self.maya_widget.lod
+        resolution = self.maya_widget.resolution
+        renderer = self.maya_widget.renderer
+        export_texture = self.maya_widget.export_texture
+        created_by = mliber_global.user().id
+        self.info_widget.set_progress_range(0, len(self.json_files))
+        for index, json_file in enumerate(self.json_files):
+            asset_dir = Path(json_file).parent()
+            cmd = [self.maya_widget.maya_py, job_file, database_name, str(library_id), str(category_id), asset_dir,
+                   ",".join(types), renderer_plugin_path, lod, resolution, renderer,
+                   str(export_texture), "True", str(created_by)]
+            sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            while sp.poll() is None:
+                line = sp.stdout.readline()
+                line = line.strip()
+                self.info_widget.append_info(line)
+            self.info_widget.set_progress_value(index + 1)
+
     def _create_asset(self):
         """
         :return:
         """
+        self.info_widget.clear()
         if self.mode == "only_copy":
             self._crete_with_only_copy()
+        elif self.mode == "resolve in maya":
+            if self._validate_resolve_in_maya():
+                self._resolve_in_maya()

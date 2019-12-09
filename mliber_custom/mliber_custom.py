@@ -63,3 +63,12 @@ THUMBNAIL_SIZE = 256
 PAINT_DESCRIPTION = False                # 是否将描述打印在资产图片上
 DESCRIPTION_COLOR = [255, 255, 0]       # 打印描述的颜色
 DESCRIPTION_FONT_SIZE = 10              # 打印描述的字体大小
+
+
+# maya version
+MAYA_VERSION_MAPPING = {"2018": "C:/Program Files/Autodesk/Maya2018/bin/mayapy.exe"}
+
+
+# mtoa mapping
+RENDERER_MAPPING = {"Arnold": {"3.3.0": "C:/solidangle/mtoadeploy/2018/plug-ins/mtoa.mll"}}
+
