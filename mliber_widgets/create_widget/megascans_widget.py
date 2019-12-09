@@ -234,8 +234,6 @@ class MegascansWidget(QWidget):
         仅仅只是拷贝的情况
         :return:
         """
-        # database_name, library_id, category_id, asset_name, objects, types, start=1, end=1,
-        # thumbnail_files=list(), tag_names=list(), description="", overwrite=True, created_by=None, source=None
         user = mliber_global.user()
         if not user.asset_permission:
             MessageBox.warning("self", "Warning", "Permission denied !")
@@ -298,9 +296,7 @@ class MegascansWidget(QWidget):
         :return:
         """
         job_file = self._get_job_file()
-        # database_name, library_id, category_id, asset_dir,  types,
-        # render_plugin_path, lod, resolution, renderer, export_texture,
-        # overwrite, created_by
+        # get data
         database_name = mliber_global.database()
         library_id = mliber_global.library().id
         category_id = mliber_global.categories()[0].id
@@ -318,10 +314,22 @@ class MegascansWidget(QWidget):
                    ",".join(types), renderer_plugin_path, lod, resolution, renderer,
                    str(export_texture), "True", str(created_by)]
             sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            while sp.poll() is None:
+            while True:
+                return_code = sp.poll()
+                if return_code == 0:
+                    break
+                elif return_code == 1:
+                    command_info = "%s was terminated for some reason." % cmd
+                    self.info_widget.append_error(command_info)
+                    break
+                elif return_code is not None:
+                    command_info = "exit return code is: %s" % str(return_code)
+                    self.info_widget.append_error(command_info)
+                    break
                 line = sp.stdout.readline()
                 line = line.strip()
-                self.info_widget.append_info(line)
+                if line:
+                    self.info_widget.append_info(line)
             self.info_widget.set_progress_value(index + 1)
 
     def _create_asset(self):
