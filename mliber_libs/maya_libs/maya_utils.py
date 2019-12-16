@@ -154,7 +154,7 @@ def get_plugin_version(plugin_name):
     if plugin_loaded(plugin_name):
         version = mc.pluginInfo(plugin_name, q=1, v=1)
         return "{}-{}".format(plugin_name.split(".")[0], version)
-    return None
+    return ""
 
 
 def selected_objects():
