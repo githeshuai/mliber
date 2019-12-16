@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from Qt.QtWidgets import QPushButton, QWidgetAction, QLabel, QMenu, QToolButton, QAction
-from Qt.QtCore import Qt, Slot, QSize, QRect, QPoint
+from Qt.QtCore import Qt, Slot, QSize, QRect, QPoint, Signal
 from mliber_conf import mliber_config
 import mliber_resource
 
@@ -47,6 +47,8 @@ class ShelfButtonMenu(QMenu):
 
 
 class ShelfButton(QToolButton):
+    enter_signal = Signal()
+
     def __init__(self, text, parent=None):
         """
         built in
@@ -84,6 +86,7 @@ class ShelfButton(QToolButton):
         super(ShelfButton, self).enterEvent(event)
         if self.menu() and self.menu().isHidden():
             self.set_hover_style()
+            self.enter_signal.emit()
             self.showMenu()
 
     def resizeEvent(self, event):

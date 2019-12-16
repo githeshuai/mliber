@@ -83,6 +83,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.minimum_btn.clicked.connect(self._minimum)
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
+        self.tool_bar.window_button.enter_signal.connect(self._show_window_menu)
         # category widget
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         # tag widget
