@@ -32,9 +32,9 @@ class Toolbar(ToolbarUI):
         创建setting菜单
         :return:
         """
-        self.settings_button.set_menu()
-        self.settings_button.add_menu_action("User Manager", self._show_user_manage)
-        self.settings_button.add_menu_action("Library Manager", self._show_library_manage)
+        self.manager_button.set_menu()
+        self.manager_button.add_menu_action("User Manager", self._show_user_manage)
+        self.manager_button.add_menu_action("Library Manager", self._show_library_manage)
 
     def _show_user_manage(self):
         """
