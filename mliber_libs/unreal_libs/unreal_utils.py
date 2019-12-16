@@ -30,7 +30,7 @@ def version():
     """
     version_str = unreal.SystemLibrary.get_engine_version()
     version_name = version_str.split("-")[0]
-    return "Unreal" + version_name
+    return "unreal_%s" % version_name
 
 
 def select_in_content_browser(paths):

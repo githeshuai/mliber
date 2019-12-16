@@ -9,7 +9,7 @@ def selected():
 
 def version():
     version_str = hou.applicationVersionString()
-    return "Houdini %s" % version_str
+    return "houdini-%s" % version_str
 
 
 def parent_win():

@@ -16,7 +16,7 @@ class Clarisse(Dcc):
         return node_names
 
     def software_info(self):
-        return "Clarisse"
+        return "clarisse"
 
     def parent_win(self):
         return

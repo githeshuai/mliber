@@ -9,7 +9,7 @@ def version():
     获取版本
     :return:
     """
-    return "Nuke %s" % nuke.NUKE_VERSION_STRING
+    return "nuke-%s" % nuke.NUKE_VERSION_STRING
 
 
 def selected_nodes():
