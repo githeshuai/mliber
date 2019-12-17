@@ -330,6 +330,8 @@ class MainWidget(MainWidgetUI):
         self.tag_widget.set_tags(tags)
         # status bar
         self.status_bar.info("{} assets found  /  cost {}'s".format(len(assets), time.time()-start))
+        # hide right
+        self._hide_right()
 
     def _show_library_on_toolbar(self):
         """
@@ -617,7 +619,22 @@ class MainWidget(MainWidgetUI):
             return False
         return True
 
+    def _hide_right(self):
+        """
+        隐藏右侧
+        :return:
+        """
+        self.right_widget.setHidden(True)
+        if self._is_left_shown():
+            self.splitter.setSizes([250, self.width() - 250, 0])
+        else:
+            self.splitter.setSizes([0, self.width(), 0])
+
     def _show_right(self):
+        """
+        显示右侧
+        :return:
+        """
         self.right_widget.setHidden(self._is_right_shown())
         if self._is_right_shown():
             if self._is_left_shown():
