@@ -4,7 +4,7 @@ from Qt.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QMenu, 
 from tag_list_view import TagListView
 import mliber_global
 from mliber_qt_components.search_line_edit import SearchLineEdit
-from mliber_qt_components.indicator_button import ShelfButton
+from mliber_qt_components.indicator_button import IndicatorButton
 
 
 class TagWidget(QWidget):
@@ -15,7 +15,7 @@ class TagWidget(QWidget):
         # top layout
         top_layout = QHBoxLayout()
         top_layout.setContentsMargins(0, 0, 0, 0)
-        self.tag_btn = ShelfButton("Tag", self)
+        self.tag_btn = IndicatorButton("Tag", self)
         self.search_le = SearchLineEdit(22, 12, self)
         top_layout.addWidget(self.tag_btn)
         top_layout.addStretch()
@@ -28,7 +28,7 @@ class TagWidget(QWidget):
         # set signals
         self._set_signals()
         # create tag menu
-        self._create_tag_menu()
+        # self._create_tag_menu()
 
     def _set_signals(self):
         """

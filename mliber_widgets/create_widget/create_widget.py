@@ -101,6 +101,7 @@ class CreateWidget(QScrollArea):
         tag_label = TitleLabel("Tag", False, self)
         tag_label.setAlignment(Qt.AlignRight)
         self.tag_le = QLineEdit(self)
+        self.tag_le.setPlaceholderText(u"多个tag，以逗号隔开")
         # 描述label
         comment_label = TitleLabel("Comment", False, self)
         self.comment_tx = QTextEdit(self)
