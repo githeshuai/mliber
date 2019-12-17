@@ -14,8 +14,8 @@ class BaseHook(object):
         :param start: <int> 起始帧
         :param end: <int> 结束帧
         :param asset_name: <str> 资产名字
-        :param software_name: <str> 软件名字，例如Maya2018
-        :param plugin_name: <str>插件名字，例如mtoa3.3.0
+        :param software_name: <str> 软件名字，例如maya-2018
+        :param plugin_name: <str>插件名字，例如mtoa-3.3.0
         """
         self.asset_name = asset_name
         self.objects = objects
