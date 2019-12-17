@@ -84,6 +84,7 @@ class MainWidget(MainWidgetUI):
         self.tool_bar.maximum_btn.clicked.connect(self._maximum)
         self.tool_bar.close_btn.clicked.connect(self.close)
         self.tool_bar.window_button.enter_signal.connect(self._show_window_menu)
+        self.tool_bar.modify_settings_signal.connect(self._refresh_asset_view)
         # category widget
         self.category_widget.category_tree.selection_changed.connect(self._on_category_selection_changed)
         # tag widget
@@ -151,12 +152,22 @@ class MainWidget(MainWidgetUI):
         # 清空所有
         self.category_widget.clear()
         self.tag_widget.clear()
+        self._refresh_asset_view()
         self.asset_widget.clear()
         # set library
         mliber_global.app().set_value(mliber_library=None)
         # status bar 显示信息
         self.status_bar.info("Hi: %s, welcome and enjoy" % user_name)
 
+    def _refresh_asset_view(self):
+        """
+        set asset view settings
+        :return:
+        """
+        list_view = self.asset_widget.asset_list_view
+        list_view.set_settings()
+        list_view.refresh_self()
+        
     def _show_user_manager(self):
         """
         显示user manager

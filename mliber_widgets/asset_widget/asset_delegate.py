@@ -67,13 +67,17 @@ class AssetDelegate(QStyledItemDelegate):
         :param args:
         :return:
         """
-        self._parent.setUpdatesEnabled(False)
-        self._parent.repaint()
-        self._parent.setUpdatesEnabled(True)
+        self._parent.refresh_self()
 
     def sizeHint(self, option, index):
         item = self._parent.item_at_index(index)
-        size = QSize(item.icon_size.width(), item.icon_size.height() + 40)
+        if self._parent.show_asset_flag and self._parent.show_asset_name:
+            size = QSize(item.icon_size.width(), item.icon_size.height() + 40)
+        else:
+            if (not self._parent.show_asset_flag) and (not self._parent.show_asset_name):
+                size = QSize(item.icon_size.width(), item.icon_size.height())
+            else:
+                size = QSize(item.icon_size.width(), item.icon_size.height() + 20)
         return size
 
     def paint(self, painter, option, index):
@@ -96,11 +100,13 @@ class AssetDelegate(QStyledItemDelegate):
                 q_image = self._image_server.get_image(item.current_filename)
             image = q_image or self._default_img
             image_rect = self._draw_centralized_pic(painter, option, image)
-            self._draw_text(painter, option, item.name)
-            self._draw_stored_flag(painter, option, item)
-            self._draw_description_flag(painter, option, item)
-            self._draw_tag_flag(painter, option, item)
-            if PAINT_DESCRIPTION:
+            if self._parent.show_asset_name:
+                self._draw_text(painter, option, item.name)
+            if self._parent.show_asset_flag:
+                self._draw_stored_flag(painter, option, item)
+                self._draw_description_flag(painter, option, item)
+                self._draw_tag_flag(painter, option, item)
+            if self._parent.paint_description:
                 self._draw_description(painter, image_rect, item)
         finally:
             painter.restore()
@@ -127,6 +133,20 @@ class AssetDelegate(QStyledItemDelegate):
         painter.setBrush(QBrush(color))
         painter.drawRect(option.rect)
 
+    def get_rect_margin(self):
+        """
+        get rect margin
+        :return:
+        """
+        if self._parent.show_asset_flag and self._parent.show_asset_name:
+            return [0, 20, 0, -20]
+        else:
+            if (not self._parent.show_asset_flag) and (not self._parent.show_asset_name):
+                return [0, 0, 0, 0]
+            elif self._parent.show_asset_flag and not self._parent.show_asset_name:
+                return [0, 20, 0, 0]
+            return [0, 0, 0, -20]
+
     def _draw_centralized_pic(self, painter, option, img):
         """
         画图
@@ -135,7 +155,7 @@ class AssetDelegate(QStyledItemDelegate):
         :param img:
         :return:
         """
-        rect_margin = [0, 20, 0, -20]
+        rect_margin = self.get_rect_margin()
         img_rect = option.rect.adjusted(
             self._margin + rect_margin[0], self._margin + rect_margin[1],
             -self._margin + rect_margin[2], -self._margin + rect_margin[3])
@@ -263,8 +283,8 @@ class AssetDelegate(QStyledItemDelegate):
         将资产描述打印在图片上
         :return:
         """
-        font = QFont("Arial", DESCRIPTION_FONT_SIZE, QFont.Bold)
+        font = QFont("Arial", self._parent.paint_size, QFont.Bold)
         painter.setFont(font)
-        painter.setPen(QColor(*DESCRIPTION_COLOR))
+        painter.setPen(QColor(*self._parent.paint_color))
         flags = Qt.AlignBottom | Qt.AlignHCenter | Qt.TextWordWrap
         painter.drawText(rect, flags, item.description)

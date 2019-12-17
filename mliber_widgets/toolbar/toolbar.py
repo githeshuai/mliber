@@ -13,6 +13,7 @@ class Toolbar(ToolbarUI):
     change_password_action_triggered = Signal()
     my_favorites_action_triggered = Signal()
     clear_trash_action_triggered = Signal()
+    modify_settings_signal = Signal()
 
     def __init__(self, parent=None):
         super(Toolbar, self).__init__(parent)
@@ -65,6 +66,7 @@ class Toolbar(ToolbarUI):
         self.user_button.set_menu()
         self.user_button.add_menu_action("Change Password", self._change_password)
         self.user_button.add_menu_action("My Favorites", self._show_my_favorites)
+        self.user_button.add_menu_action("Settings", self._show_settings)
         self.user_button.add_menu_separator()
         self.user_button.add_menu_action("Clear Trash", self._clear_trash, icon_name="delete.png")
 
@@ -82,7 +84,23 @@ class Toolbar(ToolbarUI):
         """
         :return:
         """
+        if not mliber_global.user():
+            MessageBox.warning(self, "Warning", "Login First.")
+            return
         self.my_favorites_action_triggered.emit()
+
+    def _show_settings(self):
+        """
+        show setting dialog
+        :return:
+        """
+        if not mliber_global.user():
+            MessageBox.warning(self, "Warning", "Login First.")
+            return
+        from mliber_widgets.settings_widget import SettingsDialog
+        sd = SettingsDialog(self)
+        sd.setting_finished_signal.connect(self.modify_settings_signal)
+        sd.exec_()
 
     def _clear_trash(self):
         """

@@ -31,6 +31,13 @@ class Global(object):
         """
         return self.__dict.get(key)
 
+    def data(self):
+        """
+        get dict data
+        :return:
+        """
+        return self.__dict
+
 
 def app():
     """

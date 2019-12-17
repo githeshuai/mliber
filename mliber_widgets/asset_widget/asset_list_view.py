@@ -22,13 +22,12 @@ from mliber_qt_components.messagebox import MessageBox
 from mliber_libs.python_libs.sequence_converter import Converter
 from mliber_qt_components.screen_shot import ScreenShotWidget
 from mliber_libs.python_libs.temp import Temporary
-from mliber_custom import THUMBNAIL_SIZE
+from mliber_settings import Settings
 
 DEFAULT_ICON_SIZE = 128
 
 
 class AssetListView(QListView):
-    MAX_ICON_SIZE = THUMBNAIL_SIZE
     MIN_ICON_SIZE = 128
     add_tag_signal = Signal(basestring)
     show_detail_signal = Signal(QModelIndex)
@@ -40,8 +39,8 @@ class AssetListView(QListView):
         self._engine = Dcc.engine()
         self._mouse_hover_index = None
         self.assets = []
-        icon_size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
-        self.setIconSize(icon_size)
+        size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
+        self.setIconSize(size)
         self.setMouseTracking(True)
         self.setSpacing(8)
         self.setSelectionRectVisible(True)
@@ -59,6 +58,28 @@ class AssetListView(QListView):
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # set signals
         self._set_signals()
+
+    def set_settings(self):
+        """
+        根据用户设置，初始化参数
+        :return:
+        """
+        settings = Settings(self.user.name)
+        self.max_icon_size = settings.max_icon_size()
+        self.paint_description = settings.paint_description()
+        self.paint_color = settings.paint_color()
+        self.paint_size = settings.paint_size()
+        self.show_asset_flag = settings.show_asset_flag()
+        self.show_asset_name = settings.show_asset_name()
+
+    def refresh_self(self):
+        """
+        refresh self
+        :return:
+        """
+        self.setUpdatesEnabled(False)
+        self.repaint()
+        self.setUpdatesEnabled(True)
 
     @property
     def library(self):
@@ -205,10 +226,12 @@ class AssetListView(QListView):
     def _set_item_size(self, size):
         """
         set item size
-        :param size:
+        :param size: <QSize>
         :return:
         """
         source_model = self.model()
+        if not source_model:
+            return
         row_count = source_model.rowCount()
         if not row_count:
             return
@@ -524,8 +547,8 @@ class AssetListView(QListView):
             step = degrees / 15
             delta = step * 16
             zoom_amount += delta
-            if zoom_amount > self.MAX_ICON_SIZE:
-                zoom_amount = self.MAX_ICON_SIZE
+            if zoom_amount > self.max_icon_size:
+                zoom_amount = self.max_icon_size
             if zoom_amount < self.MIN_ICON_SIZE:
                 zoom_amount = self.MIN_ICON_SIZE
             size = QSize(zoom_amount, zoom_amount)

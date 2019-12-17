@@ -42,7 +42,7 @@ DATABASES = {
 
 
 # 公共路径配置
-# 该路径为公共路径，用来存放用户自定义的图片（比如library icon....）
+# 该路径为公共路径，用来存放用户自定义的图片（比如library icon....），还有存放用户的设置
 # 注意： 该路径一定要是所有人都有777的权限。
 PUBLIC_PATH = {
     "windows": "D:/mliber_repo",
@@ -60,9 +60,17 @@ THUMBNAIL_SIZE = 256
 
 
 # 是否将描述打印在资产上
-PAINT_DESCRIPTION = False                # 是否将描述打印在资产图片上
+PAINT_DESCRIPTION = True                # 是否将描述打印在资产图片上
 DESCRIPTION_COLOR = [255, 255, 0]       # 打印描述的颜色
 DESCRIPTION_FONT_SIZE = 10              # 打印描述的字体大小
+
+
+# 是否在资产图片上显示flag
+SHOW_ASSET_FLAG = True
+
+
+# 是否在资产图片上显示资产名字
+SHOW_ASSET_NAME = True
 
 
 # maya version
@@ -70,5 +78,8 @@ MAYA_VERSION_MAPPING = {"2018": "C:/Program Files/Autodesk/Maya2018/bin/mayapy.e
 
 
 # mtoa mapping
-RENDERER_MAPPING = {"Arnold": {"3.3.0": "C:/solidangle/mtoadeploy/2018/plug-ins/mtoa.mll"}}
+RENDERER_MAPPING = {
+    "Arnold": {"3.3.0": "C:/solidangle/mtoadeploy/2018/plug-ins/mtoa.mll"},
+    "Redshift": {"2.6.1": "C:/ProgramData/Redshift/Plugins/Maya/2018/nt-x86-64/redshift4maya.mll"}
+}
 
