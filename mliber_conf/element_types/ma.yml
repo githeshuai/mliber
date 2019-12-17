@@ -12,3 +12,9 @@ maya:
     name: ma export
     hook: maya_ma_export
     default: True
+
+
+standalone:
+  import:
+    - name: open with rez
+      hook: open_with_rez
