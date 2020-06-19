@@ -50,8 +50,8 @@ class AssetListView(QListView):
         self.setFlow(QListView.LeftToRight)
         self.setMovement(QListView.Snap)
         self.setDragEnabled(True)
-        self.setAcceptDrops(False)
-        self.setDragDropMode(QListView.DragOnly)
+        self.setAcceptDrops(True)
+        self.setDragDropMode(QListView.DragDrop)
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -573,13 +573,13 @@ class AssetListView(QListView):
             self.left_pressed.emit(index)
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
+        if event.mimeData().hasUrls() or event.mimeData().hasFormat("application/x-pynode-item-instance"):
             event.acceptProposedAction()
         else:
             event.ignore()
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasUrls:
+        if event.mimeData().hasUrls() or event.mimeData().hasFormat("application/x-pynode-item-instance"):
             event.acceptProposedAction()
         else:
             event.ignore()
