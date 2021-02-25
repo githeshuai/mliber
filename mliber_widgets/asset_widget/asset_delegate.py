@@ -121,7 +121,7 @@ class AssetDelegate(QStyledItemDelegate):
         :type index: QtCore.QModelIndex
         :rtype: None
         """
-        rect = option.rect
+        rect = option.rect.adjusted(1, 1, -1, -1)
         is_selected = option.state & QStyle.State_Selected
         is_mouse_over = option.state & QStyle.State_MouseOver
         pen_color = mliber_config.BACKGROUND_COLOR
@@ -129,11 +129,9 @@ class AssetDelegate(QStyledItemDelegate):
         pen.setWidth(4)
 
         if is_selected:
-            rect = rect.adjusted(1, 1, -1, -1)
             pen_color = QColor(57, 255, 255)
             pen.setWidth(2)
         elif is_mouse_over:
-            rect = rect.adjusted(1, 1, -1, -1)
             pen_color = mliber_config.ICON_HOVER_COLOR
             pen.setWidth(2)
 
@@ -148,13 +146,13 @@ class AssetDelegate(QStyledItemDelegate):
         :return:
         """
         if self._parent.show_asset_flag and self._parent.show_asset_name:
-            return [0, 20, 0, -20]
+            return [1, 20, -1, -20]
         else:
             if (not self._parent.show_asset_flag) and (not self._parent.show_asset_name):
-                return [0, 0, 0, 0]
+                return [1, 0, -1, 0]
             elif self._parent.show_asset_flag and not self._parent.show_asset_name:
-                return [0, 20, 0, 0]
-            return [0, 0, 0, -20]
+                return [1, 20, -1, 0]
+            return [1, 0, -1, -20]
 
     def _draw_centralized_pic(self, painter, option, img):
         """
