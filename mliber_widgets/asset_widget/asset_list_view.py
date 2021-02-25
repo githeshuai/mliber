@@ -24,7 +24,7 @@ from mliber_qt_components.screen_shot import ScreenShotWidget
 from mliber_libs.python_libs.temp import Temporary
 from mliber_settings import Settings
 
-DEFAULT_ICON_SIZE = 128
+DEFAULT_ICON_SIZE = 256
 
 
 class AssetListView(QListView):
@@ -42,7 +42,7 @@ class AssetListView(QListView):
         size = QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE)
         self.setIconSize(size)
         self.setMouseTracking(True)
-        self.setSpacing(8)
+        self.setSpacing(5)
         self.setSelectionRectVisible(True)
         self.setFocusPolicy(Qt.NoFocus)
         self.setViewMode(QListView.IconMode)

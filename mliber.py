@@ -83,12 +83,16 @@ def show_in_houdini():
 # ######################################################################################
 # ##################################### show in unreal #################################
 # ######################################################################################
-@splash
+
 def show_in_unreal():
+    import unreal
     from mliber_libs.unreal_libs import init_qt_app
     init_qt_app.init_qt_app()
     mliber_widget = MainWidget()
+    unreal.parent_external_window_to_slate(mliber_widget.winId())
     mliber_widget.show()
+    mliber_widget.raise_()
+    mliber_widget.activateWindow()
     return mliber_widget
 
 

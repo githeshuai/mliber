@@ -97,6 +97,7 @@ def load_hook(name):
     return mod
 
 
+
 def get_engine():
     try:
         if pkgutil.find_loader("maya"):
@@ -109,16 +110,25 @@ def get_engine():
             engine = "nukestudio"
         elif pkgutil.find_loader("ix"):
             engine = "clarisse"
-        elif pkgutil.find_loader("PyUtilModule.KatanaFile"):
+        # elif pkgutil.find_loader("PyUtilModule.KatanaFile"):
             # because pkgutil.find_loader("Katana") is None
-            engine = "katana"
-        elif pkgutil.find_loader("unreal"):
-            engine = "unreal"
+            # engine = "katana"
+        elif pkgutil.find_loader("photoshop"):
+            engine = "photoshop"
+        elif pkgutil.find_loader("pyfbsdk"):
+            engine = "motionbuilder"
         else:
-            engine = "standalone"
-    except:
+            try:
+                import unreal
+                engine = "unreal"
+            except BaseException as error:
+                engine = "standalone"
+    except BaseException as error:
+        print(error.message)
         engine = "standalone"
     return engine
+
+
 
 
 if __name__ == "__main__":

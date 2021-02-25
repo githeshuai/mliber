@@ -124,24 +124,22 @@ class AssetDelegate(QStyledItemDelegate):
         rect = option.rect
         is_selected = option.state & QStyle.State_Selected
         is_mouse_over = option.state & QStyle.State_MouseOver
-        color = mliber_config.BACKGROUND_COLOR
+        pen_color = mliber_config.BACKGROUND_COLOR
         pen = QPen()
         pen.setWidth(4)
 
         if is_selected:
             rect = rect.adjusted(1, 1, -1, -1)
-            color = QColor(57, 255, 255)
+            pen_color = QColor(57, 255, 255)
             pen.setWidth(2)
         elif is_mouse_over:
             rect = rect.adjusted(1, 1, -1, -1)
-            color = mliber_config.ICON_HOVER_COLOR
+            pen_color = mliber_config.ICON_HOVER_COLOR
             pen.setWidth(2)
-        else:
-            brush_color = QColor(mliber_config.TITLE_COLOR)
-            painter.setBrush(QBrush(brush_color))
 
-        pen.setColor(color)
+        pen.setColor(pen_color)
         painter.setPen(pen)
+        painter.setBrush(QBrush(QColor(40, 40, 40, 100)))
         painter.drawRoundedRect(rect, 2, 2)
 
     def get_rect_margin(self):
