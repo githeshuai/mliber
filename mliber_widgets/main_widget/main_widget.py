@@ -31,6 +31,7 @@ class MainWidget(MainWidgetUI):
         self._favorite_is_shown = False
         self.setObjectName("MLIBER")
         self.setWindowTitle("MLIBER")
+        self.setWindowIcon(mliber_resource.icon("logo.png"))
         # 无边框设置
         self.setMouseTracking(True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)

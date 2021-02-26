@@ -26,6 +26,9 @@ PARENT_WINDOW = Dcc().parent_win()
 # ######################################################################################
 @splash
 def show():
+    import ctypes
+
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("teamones_desktop")
     with render_ui():
         mliber_widget = MainWidget(PARENT_WINDOW)
         mliber_widget.show()

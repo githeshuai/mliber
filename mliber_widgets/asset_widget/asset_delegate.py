@@ -132,7 +132,7 @@ class AssetDelegate(QStyledItemDelegate):
             pen_color = QColor(57, 255, 255)
             pen.setWidth(2)
         elif is_mouse_over:
-            pen_color = mliber_config.ICON_HOVER_COLOR
+            pen_color = QColor(255, 255, 255, 75)
             pen.setWidth(2)
 
         pen.setColor(pen_color)
